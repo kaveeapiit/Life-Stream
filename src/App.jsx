@@ -5,7 +5,7 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import About from './pages/About';
-import Contact from './pages/Contact'; // ✅ Added Contact page import
+import Contact from './pages/Contact';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -14,7 +14,7 @@ function App() {
   const [footerData, setFooterData] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/footer') // This should be changed to /api/contact if contact info is coming from there
+    fetch('http://localhost:5000/api/footer') // Make sure this endpoint returns JSON
       .then(res => res.json())
       .then(data => {
         console.log('Footer data fetched:', data);
@@ -33,7 +33,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} /> {/* ✅ Added Contact route */}
+        <Route path="/contact" element={<Contact />} />
+        {/* Add more routes like /donate or /find if you build those pages */}
       </Routes>
       <Footer footer={footerData} />
     </Router>
