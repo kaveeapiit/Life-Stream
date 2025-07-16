@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import Header from '../components/Header';
+
+
 import Footer from '../components/Footer';
 
 export default function LandingPage() {
@@ -16,7 +17,7 @@ export default function LandingPage() {
   return (
     <div className="font-sans bg-white text-gray-800">
       {/* ✅ NAVBAR COMPONENT */}
-      <Header />
+      
 
       {/* Hero */}
       <section className="bg-red-50 px-10 py-16 md:flex justify-between items-center">
