@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 
-import Footer from '../components/Footer';
+// import Footer from '../components/Footer';
 
 export default function LandingPage() {
   const [data, setData] = useState(null);
@@ -81,7 +81,7 @@ export default function LandingPage() {
       </section>
 
       {/* ✅ FOOTER COMPONENT */}
-      <Footer footer={data.footer} />
+      {/* <Footer footer={data.footer} /> */}
     </div>
   );
 }

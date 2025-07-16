@@ -9,59 +9,63 @@ export default function About() {
       .then(setAbout);
   }, []);
 
-  if (!about) return <p className="text-center mt-10">Loading...</p>;
+  if (!about) return <p className="text-center mt-20 text-lg text-gray-600">Loading...</p>;
 
   return (
-    <div className="text-gray-800">
+    <div className="text-gray-800 font-sans">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-red-600 to-red-500 text-white text-center py-16">
-        <h1 className="text-3xl font-bold mb-2">Welcome to Life Stream</h1>
-        <p className="max-w-2xl mx-auto">
+      <section className="bg-gradient-to-r from-red-600 to-red-500 text-white text-center py-20 px-4 shadow-md">
+        <h1 className="text-4xl font-extrabold mb-4">Welcome to Life Stream</h1>
+        <p className="max-w-3xl mx-auto text-lg opacity-90 leading-relaxed">
           Empowering healthcare through efficient blood management. Connecting donors,
           recipients, and medical facilities to save lives across Sri Lanka.
         </p>
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-2 md:grid-cols-4 text-center py-10 bg-white">
+      <section className="grid grid-cols-2 md:grid-cols-4 text-center py-12 bg-gray-50">
         {about.stats.map((stat, index) => (
-          <div key={index} className="py-4">
-            <h2 className="text-2xl font-bold text-red-600">{stat.value}</h2>
-            <p className="text-gray-600 text-sm">{stat.label}</p>
+          <div key={index} className="py-6">
+            <h2 className="text-3xl font-extrabold text-red-600 mb-2">{stat.value}</h2>
+            <p className="text-gray-700 font-medium text-sm">{stat.label}</p>
           </div>
         ))}
       </section>
 
       {/* Vision & Mission */}
-      <section className="py-10 px-6 max-w-6xl mx-auto">
-        <h2 className="text-xl font-bold text-center mb-4">About Life Stream</h2>
-        <p className="text-center text-gray-600 mb-10">
-          Based in the heart of {about.location.city}, we are dedicated to revolutionizing blood
-          management through technology and compassion.
+      <section className="py-14 px-6 max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold text-center text-red-600 mb-6">About Life Stream</h2>
+        <p className="text-center text-gray-600 mb-12 text-base leading-relaxed">
+          Based in the heart of <span className="font-semibold text-gray-800">{about.location.city}</span>, we are
+          dedicated to revolutionizing blood management through technology and compassion.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
-          <div className="border p-6 rounded-lg">
-            <h3 className="text-red-600 font-semibold mb-2">{about.vision.title}</h3>
-            <p>{about.vision.description}</p>
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          <div className="border border-red-100 p-6 rounded-xl shadow-sm bg-white hover:shadow-md transition">
+            <h3 className="text-xl text-red-600 font-semibold mb-3">{about.vision.title}</h3>
+            <p className="text-gray-700 leading-relaxed">{about.vision.description}</p>
           </div>
-          <div className="border p-6 rounded-lg">
-            <h3 className="text-red-600 font-semibold mb-2">{about.mission.title}</h3>
-            <p>{about.mission.description}</p>
+          <div className="border border-red-100 p-6 rounded-xl shadow-sm bg-white hover:shadow-md transition">
+            <h3 className="text-xl text-red-600 font-semibold mb-3">{about.mission.title}</h3>
+            <p className="text-gray-700 leading-relaxed">{about.mission.description}</p>
           </div>
         </div>
 
         {/* Location */}
-        <div className="grid md:grid-cols-2 gap-6 items-center bg-red-50 p-6 rounded-lg">
+        <div className="grid md:grid-cols-2 gap-8 items-center bg-red-50 p-6 rounded-2xl shadow-inner">
           <div>
-            <h3 className="font-bold text-lg text-red-600 mb-2">📍 Our Location</h3>
-            <p className="font-medium mb-1">{about.location.city}</p>
-            <p className="text-sm mb-2">{about.location.description}</p>
-            <p className="text-sm text-gray-600">{about.location.phone}</p>
-            <p className="text-sm text-gray-600">{about.location.email}</p>
+            <h3 className="font-bold text-2xl text-red-700 mb-4">📍 Our Location</h3>
+            <p className="text-lg font-semibold mb-1">{about.location.city}</p>
+            <p className="text-base text-gray-700 mb-3">{about.location.description}</p>
+            <p className="text-sm text-gray-600 mb-1">📞 {about.location.phone}</p>
+            <p className="text-sm text-gray-600">✉️ {about.location.email}</p>
           </div>
           <div>
-            <img src={about.location.image} alt="Location" className="rounded-lg shadow" />
+            <img
+              src={about.location.image}
+              alt="Location"
+              className="rounded-xl shadow-lg w-full object-cover"
+            />
           </div>
         </div>
       </section>
