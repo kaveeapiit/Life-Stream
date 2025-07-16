@@ -9,3 +9,5 @@ export const pool = new Pool({
   password: '1234',
   port: 5432,
 });
+
+export default pool; // ✅ fixed

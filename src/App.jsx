@@ -7,6 +7,9 @@ import Register from './pages/Register';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
+import AdminLogin from './admin/pages/AdminLogin';
+import AdminDashboard from './admin/pages/AdminDashboard';
+
 import Header from './components/Header';
 import Footer from './components/Footer';
 
@@ -14,7 +17,7 @@ function App() {
   const [footerData, setFooterData] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/footer') // Make sure this endpoint returns JSON
+    fetch('http://localhost:5000/api/footer')
       .then(res => res.json())
       .then(data => {
         console.log('Footer data fetched:', data);
@@ -34,7 +37,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        {/* Add more routes like /donate or /find if you build those pages */}
+
+        {/* ✅ Admin routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
       <Footer footer={footerData} />
     </Router>
