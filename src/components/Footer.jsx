@@ -1,10 +1,20 @@
 export default function Footer({ footer }) {
+  if (!footer) {
+    return (
+      <footer className="bg-gray-900 text-white text-center py-6">
+        <p>Loading footer info...</p>
+      </footer>
+    );
+  }
+
   return (
     <footer className="bg-gray-900 text-white px-10 py-12">
       <div className="grid md:grid-cols-4 gap-8 text-sm">
         <div>
           <h4 className="font-bold mb-3">🩸 Life Stream</h4>
-          <p className="text-gray-400">Connecting donors with those in need. Every donation saves lives.</p>
+          <p className="text-gray-400">
+            Connecting donors with those in need. Every donation saves lives.
+          </p>
         </div>
         <div>
           <h4 className="font-bold mb-3">Quick Links</h4>
@@ -27,9 +37,9 @@ export default function Footer({ footer }) {
         <div>
           <h4 className="font-bold mb-3">Contact Info</h4>
           <ul className="space-y-2 text-gray-400">
-            <li>{footer.phone}</li>
-            <li>{footer.email}</li>
-            <li>{footer.address}</li>
+            <li>{footer.phone || 'Phone not available'}</li>
+            <li>{footer.email || 'Email not available'}</li>
+            <li>{footer.address || 'Address not available'}</li>
           </ul>
         </div>
       </div>
