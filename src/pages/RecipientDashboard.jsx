@@ -23,12 +23,12 @@ export default function RecipientDashboard() {
       <p className="mb-6">Request blood and track requests here.</p>
 
       {/* ✅ Logout Button */}
-      <button
+      {/* <button
         onClick={handleLogout}
         className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow"
       >
         Logout
-      </button>
+      </button> */}
     </div>
   );
 }

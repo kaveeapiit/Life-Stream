@@ -21,20 +21,27 @@ export default function Login() {
       if (res.ok && data.token && data.user) {
         alert("Login successful!");
 
-        // ✅ Save token and role to localStorage
+        // ✅ Save user data
         localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.user.role);
+        localStorage.setItem("name", data.user.name);
         localStorage.setItem("email", data.user.email);
+        localStorage.setItem("role", data.user.role);
 
-        // ✅ Role-based redirection
+        // ✅ Redirect based on role
         const role = data.user.role.toLowerCase();
         if (role === 'donor') {
           navigate('/donor');
         } else if (role === 'recipient') {
           navigate('/recipient');
         } else {
-          alert("Unknown role. Access denied.");
+          alert("Unknown role");
+          return;
         }
+
+        // ✅ Slight delay so navigation happens, then reload for header update
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       } else {
         alert(data.error || "Login failed.");
       }
