@@ -1,23 +1,45 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 
 export default function Login() {
-  const [form, setForm] = useState({ email: '', password: '', role: 'Donor' });
+  const [form, setForm] = useState({ email: '', password: '' });
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
-    });
-    const data = await res.json();
-    if (data.token) {
-      alert("Login successful!");
-      // You can store token in localStorage if needed
-      // localStorage.setItem("token", data.token);
-    } else {
-      alert("Login failed.");
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+      console.log("Login response:", data); // 🔍 For debugging
+
+      if (res.ok && data.token && data.user) {
+        alert("Login successful!");
+
+        // ✅ Save token and role to localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.user.role);
+        localStorage.setItem("email", data.user.email);
+
+        // ✅ Role-based redirection
+        const role = data.user.role.toLowerCase();
+        if (role === 'donor') {
+          navigate('/donor');
+        } else if (role === 'recipient') {
+          navigate('/recipient');
+        } else {
+          alert("Unknown role. Access denied.");
+        }
+      } else {
+        alert(data.error || "Login failed.");
+      }
+    } catch (err) {
+      alert("Login error: " + err.message);
     }
   };
 
@@ -36,14 +58,14 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="text-left space-y-4">
           {/* Email */}
           <div>
-            <label className="text-sm font-semibold text-gray-700">Email or Username</label>
+            <label className="text-sm font-semibold text-gray-700">Email</label>
             <div className="relative">
               <input
                 type="email"
                 placeholder="your@email.com"
                 required
                 className="w-full pl-10 pr-4 py-2 border border-red-200 rounded-md bg-red-50 text-black focus:outline-none focus:ring-2 focus:ring-red-400"
-                onChange={e => setForm({ ...form, email: e.target.value })}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
               <FaEnvelope className="absolute top-2.5 left-3 text-red-400" />
             </div>
@@ -58,26 +80,13 @@ export default function Login() {
                 placeholder="Enter your password"
                 required
                 className="w-full pl-10 pr-4 py-2 border border-red-200 rounded-md bg-red-50 text-black focus:outline-none focus:ring-2 focus:ring-red-400"
-                onChange={e => setForm({ ...form, password: e.target.value })}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
               <FaLock className="absolute top-2.5 left-3 text-red-400" />
             </div>
             <div className="text-right">
               <a href="#" className="text-xs text-red-500 font-medium hover:underline">Forgot Password?</a>
             </div>
-          </div>
-
-          {/* Role Selector */}
-          <div>
-            <label className="text-sm font-semibold text-gray-700">Login as</label>
-            <select
-              className="w-full mt-1 py-2 px-3 border border-red-200 bg-red-50 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-red-400"
-              onChange={e => setForm({ ...form, role: e.target.value })}
-              value={form.role}
-            >
-              <option>Donor</option>
-              <option>Recipient</option>
-            </select>
           </div>
 
           {/* Login Button */}
