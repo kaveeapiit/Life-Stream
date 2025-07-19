@@ -44,6 +44,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donation />} />
+        <Route path="/userdashboard" element={<UserDashboard />} />
+
 
         {/* Unified user dashboard route */}
         <Route path="/user" element={<UserDashboard />} />

@@ -14,7 +14,7 @@ export default function About() {
   return (
     <div className="text-white font-sans bg-gray-900 min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-red-600 to-red-500 text-white text-center py-20 px-4 shadow-md">
+      <section className="bg-gradient-to-r from-gray-800 to-gray-700 text-white text-center py-20 px-4 shadow-md">
         <h1 className="text-4xl font-extrabold mb-4">Welcome to Life Stream</h1>
         <p className="max-w-3xl mx-auto text-lg opacity-90 leading-relaxed">
           Empowering healthcare through efficient blood management. Connecting donors,
@@ -23,7 +23,7 @@ export default function About() {
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-2 md:grid-cols-4 text-center py-12 bg-red-700">
+      <section className="grid grid-cols-2 md:grid-cols-4 text-center py-12 bg-gray-800 border-t border-gray-700">
         {about.stats.map((stat, index) => (
           <div key={index} className="py-6">
             <h2 className="text-3xl font-extrabold text-white mb-2">{stat.value}</h2>
@@ -41,18 +41,18 @@ export default function About() {
         </p>
 
         <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <div className="border border-white p-6 rounded-xl shadow-sm bg-red-800 hover:shadow-md transition">
+          <div className="border border-gray-500 p-6 rounded-xl bg-gray-800 hover:border-red-600 hover:shadow-md transition">
             <h3 className="text-xl text-white font-semibold mb-3">{about.vision.title}</h3>
             <p className="text-white leading-relaxed">{about.vision.description}</p>
           </div>
-          <div className="border border-white p-6 rounded-xl shadow-sm bg-red-800 hover:shadow-md transition">
+          <div className="border border-gray-500 p-6 rounded-xl bg-gray-800 hover:border-red-600 hover:shadow-md transition">
             <h3 className="text-xl text-white font-semibold mb-3">{about.mission.title}</h3>
             <p className="text-white leading-relaxed">{about.mission.description}</p>
           </div>
         </div>
 
         {/* Location */}
-        <div className="grid md:grid-cols-2 gap-8 items-center bg-red-700 p-6 rounded-2xl shadow-inner">
+        <div className="grid md:grid-cols-2 gap-8 items-center bg-gray-800 p-6 rounded-2xl shadow-inner border border-gray-700">
           <div>
             <h3 className="font-bold text-2xl text-white mb-4">📍 Our Location</h3>
             <p className="text-lg font-semibold mb-1">{about.location.city}</p>
