@@ -8,10 +8,7 @@ import Register from './pages/Register';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Donation from './pages/Donation';
-
-// User dashboards
-import DonorDashboard from './pages/DonorDashboard';
-import RecipientDashboard from './pages/RecipientDashboard';
+import UserDashboard from './pages/UserDashboard'; // ✅ Unified dashboard
 
 // Admin pages
 import AdminLogin from './admin/pages/AdminLogin';
@@ -48,9 +45,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donation />} />
 
-        {/* User dashboards */}
-        <Route path="/donor" element={<DonorDashboard />} />
-        <Route path="/recipient" element={<RecipientDashboard />} />
+        {/* Unified user dashboard route */}
+        <Route path="/user" element={<UserDashboard />} />
 
         {/* Admin routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

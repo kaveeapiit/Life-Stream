@@ -5,8 +5,7 @@ export default function Register() {
   const [form, setForm] = useState({
     name: '',
     email: '',
-    password: '',
-    role: 'Donor'
+    password: ''
   });
 
   const handleSubmit = async (e) => {
@@ -18,6 +17,7 @@ export default function Register() {
     });
     const data = await res.json();
     alert(data.message || 'Registered Successfully');
+    window.location.href = "/login"; // ✅ Redirect to login
   };
 
   return (
@@ -76,19 +76,6 @@ export default function Register() {
               />
               <FaLock className="absolute top-2.5 left-3 text-red-400" />
             </div>
-          </div>
-
-          {/* Role Selector */}
-          <div>
-            <label className="text-sm font-semibold text-gray-700">Register as</label>
-            <select
-              className="w-full mt-1 py-2 px-3 border border-red-200 bg-red-50 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-red-400"
-              onChange={e => setForm({ ...form, role: e.target.value })}
-              value={form.role}
-            >
-              <option>Donor</option>
-              <option>Recipient</option>
-            </select>
           </div>
 
           {/* Register Button */}

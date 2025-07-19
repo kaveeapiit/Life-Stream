@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import manIcon from '../assets/man.png'; // ✅ Import your man.png from src/assets
+import manIcon from '../assets/man.png';
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -10,9 +10,9 @@ export default function Header() {
   useEffect(() => {
     const name = localStorage.getItem('name');
     const email = localStorage.getItem('email');
-    const role = localStorage.getItem('role');
-    if ((name || email) && role) {
-      setUser({ name, email, role });
+
+    if (name || email) {
+      setUser({ name, email });
     }
   }, []);
 
@@ -53,7 +53,7 @@ export default function Header() {
                 {user.name || user.email?.split('@')[0]}
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-36 bg-white border rounded shadow-md z-50">
+                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-50">
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"

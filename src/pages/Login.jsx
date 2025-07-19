@@ -16,29 +16,20 @@ export default function Login() {
       });
 
       const data = await res.json();
-      console.log("Login response:", data); // 🔍 For debugging
+      console.log("Login response:", data); // ✅ Debugging
 
       if (res.ok && data.token && data.user) {
         alert("Login successful!");
 
-        // ✅ Save user data
+        // ✅ Store minimal user info (no role)
         localStorage.setItem("token", data.token);
         localStorage.setItem("name", data.user.name);
         localStorage.setItem("email", data.user.email);
-        localStorage.setItem("role", data.user.role);
 
-        // ✅ Redirect based on role
-        const role = data.user.role.toLowerCase();
-        if (role === 'donor') {
-          navigate('/donor');
-        } else if (role === 'recipient') {
-          navigate('/recipient');
-        } else {
-          alert("Unknown role");
-          return;
-        }
+        // ✅ Redirect to unified user dashboard
+        navigate('/user');
 
-        // ✅ Slight delay so navigation happens, then reload for header update
+        // ✅ Optional: force reload to update header state
         setTimeout(() => {
           window.location.reload();
         }, 100);
