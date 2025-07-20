@@ -21,15 +21,16 @@ export default function Login() {
       if (res.ok && data.token && data.user) {
         alert("Login successful!");
 
-        // ✅ Store minimal user info (no role)
+        // ✅ Store user info in localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("name", data.user.name);
         localStorage.setItem("email", data.user.email);
+        localStorage.setItem("bloodType", data.user.blood_type || ''); // ✅ Store blood type
 
-        // ✅ Redirect to unified user dashboard
+        // ✅ Navigate to user dashboard
         navigate('/user');
 
-        // ✅ Optional: force reload to update header state
+        // ✅ Optional reload for UI update
         setTimeout(() => {
           window.location.reload();
         }, 100);
@@ -44,7 +45,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-xl p-10 w-full max-w-md text-center">
-        {/* Logo + Title */}
+        {/* 🔴 Logo & Title */}
         <div className="mb-6">
           <div className="w-14 h-14 mx-auto mb-2">
             <img src="/favicon.png" alt="Life Stream Logo" />
@@ -53,6 +54,7 @@ export default function Login() {
           <p className="text-sm text-gray-500 -mt-1">Blood Donation Management</p>
         </div>
 
+        {/* 🔒 Login Form */}
         <form onSubmit={handleSubmit} className="text-left space-y-4">
           {/* Email */}
           <div>
@@ -87,7 +89,7 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Login Button */}
+          {/* Submit Login */}
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-2 bg-red-600 text-white py-2 rounded shadow hover:bg-red-700 transition"
@@ -95,7 +97,7 @@ export default function Login() {
             <FaSignInAlt /> Login
           </button>
 
-          {/* Register Button */}
+          {/* Link to Register */}
           <a
             href="/register"
             className="w-full flex items-center justify-center gap-2 border border-red-600 text-red-600 py-2 rounded hover:bg-red-50 transition"

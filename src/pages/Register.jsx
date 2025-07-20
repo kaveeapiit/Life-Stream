@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { FaEnvelope, FaLock, FaUser, FaUserPlus, FaSignInAlt } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUser, FaUserPlus, FaSignInAlt, FaTint } from 'react-icons/fa';
 
 export default function Register() {
   const [form, setForm] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    bloodType: ''
   });
 
   const handleSubmit = async (e) => {
@@ -75,6 +76,29 @@ export default function Register() {
                 onChange={e => setForm({ ...form, password: e.target.value })}
               />
               <FaLock className="absolute top-2.5 left-3 text-red-400" />
+            </div>
+          </div>
+
+          {/* ✅ Blood Type */}
+          <div>
+            <label className="text-sm font-semibold text-gray-700">Blood Type</label>
+            <div className="relative">
+              <select
+                required
+                className="w-full pl-10 pr-4 py-2 border border-red-200 rounded-md bg-red-50 text-black focus:outline-none focus:ring-2 focus:ring-red-400"
+                onChange={e => setForm({ ...form, bloodType: e.target.value })}
+              >
+                <option value="">Select your blood type</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+              <FaTint className="absolute top-2.5 left-3 text-red-400" />
             </div>
           </div>
 

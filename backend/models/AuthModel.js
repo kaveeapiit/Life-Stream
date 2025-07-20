@@ -1,10 +1,10 @@
 import pool from '../config/db.js';
 
-// ✅ Create a new user without role
-export const createUser = async (name, email, hashedPassword) => {
+// ✅ Create a new user with bloodType
+export const createUser = async (name, email, hashedPassword, bloodType) => {
   const result = await pool.query(
-    'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-    [name, email, hashedPassword]
+    'INSERT INTO users (name, email, password, blood_type) VALUES ($1, $2, $3, $4) RETURNING *',
+    [name, email, hashedPassword, bloodType]
   );
   return result.rows[0];
 };
