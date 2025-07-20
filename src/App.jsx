@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // General pages
 import LandingPage from './pages/LandingPage';
@@ -14,7 +14,7 @@ import UserDashboard from './pages/UserDashboard';
 import AdminLogin from './admin/pages/AdminLogin';
 import AdminDashboard from './admin/pages/AdminDashboard';
 
-// Hospital pages ✅ NEW
+// Hospital pages
 import HospitalLogin from './hospital/pages/HospitalLogin';
 import HospitalDashboard from './hospital/pages/HospitalDashboard';
 
@@ -22,24 +22,31 @@ import HospitalDashboard from './hospital/pages/HospitalDashboard';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-function App() {
+function AppWrapper() {
+  const location = useLocation();
   const [footerData, setFooterData] = useState(null);
+
+  // ❌ Hide header/footer on these routes
+  const hideLayoutPaths = [
+    '/admin/login',
+    '/admin/dashboard',
+    '/hospital/login',
+    '/hospital/dashboard',
+  ];
+
+  const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
 
   useEffect(() => {
     fetch('http://localhost:5000/api/footer')
       .then((res) => res.json())
-      .then((data) => {
-        console.log('Footer data fetched:', data);
-        setFooterData(data);
-      })
-      .catch((err) => {
-        console.error('Failed to fetch footer data:', err);
-      });
+      .then((data) => setFooterData(data))
+      .catch((err) => console.error('Footer fetch failed:', err));
   }, []);
 
   return (
-    <Router>
-      <Header />
+    <>
+      {!shouldHideLayout && <Header />}
+
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -49,7 +56,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donation />} />
 
-        {/* User Dashboard */}
+        {/* User Routes */}
         <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/user" element={<UserDashboard />} />
 
@@ -57,13 +64,20 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-        {/* ✅ Hospital Routes */}
+        {/* Hospital Routes */}
         <Route path="/hospital/login" element={<HospitalLogin />} />
         <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
       </Routes>
-      <Footer footer={footerData} />
-    </Router>
+
+      {!shouldHideLayout && <Footer footer={footerData} />}
+    </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <AppWrapper />
+    </Router>
+  );
+}
