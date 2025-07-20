@@ -8,11 +8,15 @@ import Register from './pages/Register';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Donation from './pages/Donation';
-import UserDashboard from './pages/UserDashboard'; // ✅ Unified dashboard
+import UserDashboard from './pages/UserDashboard';
 
 // Admin pages
 import AdminLogin from './admin/pages/AdminLogin';
 import AdminDashboard from './admin/pages/AdminDashboard';
+
+// Hospital pages ✅ NEW
+import HospitalLogin from './hospital/pages/HospitalLogin';
+import HospitalDashboard from './hospital/pages/HospitalDashboard';
 
 // Shared components
 import Header from './components/Header';
@@ -37,22 +41,25 @@ function App() {
     <Router>
       <Header />
       <Routes>
-        {/* Public routes */}
+        {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donation />} />
+
+        {/* User Dashboard */}
         <Route path="/userdashboard" element={<UserDashboard />} />
-
-
-        {/* Unified user dashboard route */}
         <Route path="/user" element={<UserDashboard />} />
 
-        {/* Admin routes */}
+        {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+        {/* ✅ Hospital Routes */}
+        <Route path="/hospital/login" element={<HospitalLogin />} />
+        <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
       </Routes>
       <Footer footer={footerData} />
     </Router>

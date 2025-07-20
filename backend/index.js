@@ -9,6 +9,7 @@ import footerRoutes from './routes/footerRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import donationRoutes from './routes/donationRoutes.js'; // ✅ Donation route
+import hospitalRoutes from './routes/hospitalRoutes.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/footer', footerRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/donation', donationRoutes); // ✅ Register donation routes
+app.use('/api/hospital', hospitalRoutes);
 
 // ✅ Start server
 const PORT = 5000;
