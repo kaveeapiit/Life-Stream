@@ -1,8 +1,8 @@
 import express from 'express';
-import { createDonation } from '../controllers/donationController.js';
+import { submitDonation } from '../controllers/donationController.js';
 
 const router = express.Router();
 
-router.post('/', createDonation); // POST /api/donation
+router.post('/', submitDonation); // POST /api/donation
 
 export default router;
