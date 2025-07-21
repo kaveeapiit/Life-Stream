@@ -9,7 +9,8 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Donation from './pages/Donation';
 import UserDashboard from './pages/UserDashboard';
-import FindBlood from './pages/FindBlood'; // ✅ NEW
+import FindBlood from './pages/FindBlood';
+import Profile from './pages/Profile';
 
 // Admin pages
 import AdminLogin from './admin/pages/AdminLogin';
@@ -28,6 +29,7 @@ function AppWrapper() {
   const location = useLocation();
   const [footerData, setFooterData] = useState(null);
 
+  // Routes where HEADER is hidden
   const hideLayoutPaths = [
     '/admin/login',
     '/admin/dashboard',
@@ -36,7 +38,19 @@ function AppWrapper() {
     '/hospital/donor-approval',
   ];
 
+  // Routes where FOOTER is hidden
+  const hideFooterPaths = [
+    '/admin/login',
+    '/admin/dashboard',
+    '/hospital/login',
+    '/hospital/dashboard',
+    '/hospital/donor-approval',
+    '/profile', // ✅ Hides footer on Profile page
+    '/UserDashboard',
+  ];
+
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
+  const shouldHideFooter = hideFooterPaths.includes(location.pathname);
 
   useEffect(() => {
     fetch('http://localhost:5000/api/footer')
@@ -57,7 +71,8 @@ function AppWrapper() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donation />} />
-        <Route path="/find-blood" element={<FindBlood />} /> {/* ✅ NEW */}
+        <Route path="/find-blood" element={<FindBlood />} />
+        <Route path="/profile" element={<Profile />} />
 
         {/* User Routes */}
         <Route path="/userdashboard" element={<UserDashboard />} />
@@ -73,7 +88,8 @@ function AppWrapper() {
         <Route path="/hospital/donor-approval" element={<DonorApproval />} />
       </Routes>
 
-      {!shouldHideLayout && <Footer footer={footerData} />}
+      {/* ✅ Only hide footer when shouldHideFooter is true */}
+      {!shouldHideFooter && <Footer footer={footerData} />}
     </>
   );
 }

@@ -11,6 +11,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import donationRoutes from './routes/donationRoutes.js';
 import hospitalRoutes from './routes/hospitalRoutes.js';
 import recipientRoutes from './routes/recipientRoutes.js'; // ✅ NEW
+import userRoutes from './routes/userRoutes.js';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/donation', donationRoutes);
 app.use('/api/hospital', hospitalRoutes);
 app.use('/api/recipient', recipientRoutes); // ✅ Added here
+app.use('/api/user', userRoutes);
 
 // ✅ Start server
 const PORT = 5000;
