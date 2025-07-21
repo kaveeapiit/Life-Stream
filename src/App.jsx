@@ -17,6 +17,7 @@ import AdminDashboard from './admin/pages/AdminDashboard';
 // Hospital pages
 import HospitalLogin from './hospital/pages/HospitalLogin';
 import HospitalDashboard from './hospital/pages/HospitalDashboard';
+import DonorApproval from './hospital/pages/DonorApproval'; // ✅ import added
 
 // Shared components
 import Header from './components/Header';
@@ -26,12 +27,13 @@ function AppWrapper() {
   const location = useLocation();
   const [footerData, setFooterData] = useState(null);
 
-  // ❌ Hide header/footer on these routes
+  // ❌ Hide layout on these paths
   const hideLayoutPaths = [
     '/admin/login',
     '/admin/dashboard',
     '/hospital/login',
     '/hospital/dashboard',
+    '/hospital/donor-approval' // ✅ Add this too if no layout needed
   ];
 
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
@@ -67,6 +69,7 @@ function AppWrapper() {
         {/* Hospital Routes */}
         <Route path="/hospital/login" element={<HospitalLogin />} />
         <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
+        <Route path="/hospital/donor-approval" element={<DonorApproval />} /> {/* ✅ added */}
       </Routes>
 
       {!shouldHideLayout && <Footer footer={footerData} />}

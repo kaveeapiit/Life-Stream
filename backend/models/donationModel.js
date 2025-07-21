@@ -16,7 +16,7 @@ export const insertDonation = async ({ userId, name, email, bloodType, location 
   ]);
 };
 
-// ✅ Fetch all donations for a user by email, latest first
+// ✅ Fetch all donations for a user by email
 export const fetchDonationsByEmail = async (email) => {
   const query = `
     SELECT * FROM donations
@@ -25,4 +25,22 @@ export const fetchDonationsByEmail = async (email) => {
   `;
   const result = await pool.query(query, [email]);
   return result.rows;
+};
+
+// ✅ Get all pending donations (for admin/hospital view)
+export const getPendingDonations = async () => {
+  const result = await pool.query(
+    'SELECT * FROM donations WHERE status = $1 ORDER BY created_at DESC',
+    ['Pending']
+  );
+  return result.rows;
+};
+
+// ✅ Update donation status to Approved or Declined
+export const updateDonationStatus = async (id, status) => {
+  const result = await pool.query(
+    'UPDATE donations SET status = $1 WHERE id = $2 RETURNING *',
+    [status, id]
+  );
+  return result.rows[0];
 };
