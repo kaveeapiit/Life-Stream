@@ -9,6 +9,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Donation from './pages/Donation';
 import UserDashboard from './pages/UserDashboard';
+import FindBlood from './pages/FindBlood'; // ✅ NEW
 
 // Admin pages
 import AdminLogin from './admin/pages/AdminLogin';
@@ -17,7 +18,7 @@ import AdminDashboard from './admin/pages/AdminDashboard';
 // Hospital pages
 import HospitalLogin from './hospital/pages/HospitalLogin';
 import HospitalDashboard from './hospital/pages/HospitalDashboard';
-import DonorApproval from './hospital/pages/DonorApproval'; // ✅ import added
+import DonorApproval from './hospital/pages/DonorApproval';
 
 // Shared components
 import Header from './components/Header';
@@ -27,13 +28,12 @@ function AppWrapper() {
   const location = useLocation();
   const [footerData, setFooterData] = useState(null);
 
-  // ❌ Hide layout on these paths
   const hideLayoutPaths = [
     '/admin/login',
     '/admin/dashboard',
     '/hospital/login',
     '/hospital/dashboard',
-    '/hospital/donor-approval' // ✅ Add this too if no layout needed
+    '/hospital/donor-approval',
   ];
 
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
@@ -57,6 +57,7 @@ function AppWrapper() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donation />} />
+        <Route path="/find-blood" element={<FindBlood />} /> {/* ✅ NEW */}
 
         {/* User Routes */}
         <Route path="/userdashboard" element={<UserDashboard />} />
@@ -69,7 +70,7 @@ function AppWrapper() {
         {/* Hospital Routes */}
         <Route path="/hospital/login" element={<HospitalLogin />} />
         <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
-        <Route path="/hospital/donor-approval" element={<DonorApproval />} /> {/* ✅ added */}
+        <Route path="/hospital/donor-approval" element={<DonorApproval />} />
       </Routes>
 
       {!shouldHideLayout && <Footer footer={footerData} />}

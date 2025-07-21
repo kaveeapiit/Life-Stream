@@ -42,7 +42,7 @@ export default function Header() {
         <nav className="hidden md:flex space-x-6 text-gray-700 text-sm font-semibold">
           <div onClick={() => navigate('/')} className="cursor-pointer hover:text-red-600 hover:underline underline-offset-4 transition duration-200">Home</div>
           <div onClick={() => navigate('/donate')} className="cursor-pointer hover:text-red-600 hover:underline underline-offset-4 transition duration-200">Donate</div>
-          <div onClick={() => navigate('/find')} className="cursor-pointer hover:text-red-600 hover:underline underline-offset-4 transition duration-200">Find Blood</div>
+          <div onClick={() => navigate('/find-blood')} className="cursor-pointer hover:text-red-600 hover:underline underline-offset-4 transition duration-200">Find Blood</div>
           <div onClick={() => navigate('/about')} className="cursor-pointer hover:text-red-600 hover:underline underline-offset-4 transition duration-200">About</div>
           <div onClick={() => navigate('/contact')} className="cursor-pointer hover:text-red-600 hover:underline underline-offset-4 transition duration-200">Contact</div>
         </nav>
