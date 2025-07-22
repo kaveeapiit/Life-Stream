@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import favicon from '../assets/favicon.png'; // adjust path relative to this file
 
 export default function LandingPage() {
   const [data, setData] = useState(null);
@@ -84,8 +85,7 @@ export default function LandingPage() {
         <div className="md:w-1/2 animate-fadeInUp" style={{ animationDelay: '120ms' }}>
           <div className="relative w-full max-w-md mx-auto group">
             <img
-              src="/blood-donation.jpg"
-              alt="Blood Donation"
+              src={favicon} alt="Blood Donation"
               className="rounded-2xl shadow-2xl shadow-black/50 border border-white/10 transform transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute -bottom-6 left-6 bg-white/95 text-gray-800 border border-gray-200 shadow-lg px-6 py-4 rounded-full flex items-center gap-3 text-sm">
