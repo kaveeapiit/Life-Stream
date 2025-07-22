@@ -9,7 +9,7 @@ export default function Login() {
   const [err, setErr] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setErr('');
     setLoading(true);
@@ -31,7 +31,7 @@ export default function Login() {
       } else {
         setErr(data.error || 'Login failed.');
       }
-    } catch (e2) {
+    } catch {
       setErr('Network error. Try again.');
     } finally {
       setLoading(false);
@@ -64,9 +64,9 @@ export default function Login() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* email */}
-          <FloatInput
+          <StaticInput
             icon={<FaEnvelope className="text-red-400" />}
             label="Email"
             type="email"
@@ -78,7 +78,7 @@ export default function Login() {
 
           {/* password */}
           <div className="relative">
-            <FloatInput
+            <StaticInput
               icon={<FaLock className="text-red-400" />}
               label="Password"
               type={showPw ? 'text' : 'password'}
@@ -90,7 +90,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowPw(v => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
+              className="absolute right-3 top-[52px] -translate-y-1/2 text-gray-400 hover:text-gray-200"
               aria-label={showPw ? 'Hide password' : 'Show password'}
             >
               {showPw ? <FaEyeSlash /> : <FaEye />}
@@ -127,37 +127,48 @@ export default function Login() {
       <style>{`
         @keyframes fadeIn { from {opacity:0; transform: translateY(8px);} to {opacity:1; transform: translateY(0);} }
         .animate-fadeIn { animation: fadeIn .4s ease forwards; }
+
+        /* Chrome autofill fix */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0 1000px rgba(17,24,39,0.5) inset !important;
+          -webkit-text-fill-color: #fff !important;
+          caret-color: #fff;
+          transition: background-color 9999s ease-in-out 0s;
+        }
       `}</style>
     </div>
   );
 }
 
-/* Floating label input */
-function FloatInput({ icon, label, value, ...props }) {
+/* ---- Static label input (no floating) ---- */
+function StaticInput({ icon, label, value, name, type = 'text', onChange, required }) {
   return (
-    <div className="relative">
-      <span className="absolute top-1/2 -translate-y-1/2 left-3">{icon}</span>
-      <input
-        {...props}
-        value={value}
-        placeholder=" "
-        className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white placeholder-transparent
-                   focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
-      />
-      <label
-        className={`absolute left-10 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-all
-        ${value ? 'top-1 text-xs text-red-400' : ''}`}
-      >
-        {label}
-      </label>
+    <div>
+      <label htmlFor={name} className="block mb-1 text-sm font-semibold text-gray-300">{label}</label>
+      <div className="relative">
+        <span className="absolute top-1/2 -translate-y-1/2 left-3">{icon}</span>
+        <input
+          id={name}
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          required={required}
+          placeholder={label}
+          className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700
+                     text-base font-semibold text-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        />
+      </div>
     </div>
   );
 }
 
-/* Fixed MagneticBtn using useRef */
+/* Magnetic button */
 function MagneticBtn({ children, className = '', ...rest }) {
   const ref = useRef(null);
-
   const onMove = e => {
     const el = ref.current;
     if (!el) return;
@@ -166,11 +177,7 @@ function MagneticBtn({ children, className = '', ...rest }) {
     const y = e.clientY - r.top - r.height / 2;
     el.style.transform = `translate(${x * 0.06}px, ${y * 0.06}px)`;
   };
-
-  const reset = () => {
-    if (ref.current) ref.current.style.transform = 'translate(0,0)';
-  };
-
+  const reset = () => { if (ref.current) ref.current.style.transform = 'translate(0,0)'; };
   return (
     <button
       ref={ref}

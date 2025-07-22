@@ -1,17 +1,40 @@
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Droplet, FlaskConical, LogOut } from 'lucide-react';
+import { LayoutDashboard, Droplet, FlaskConical, LogOut, Menu } from 'lucide-react';
 
 export default function HospitalSidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [open, setOpen] = useState(false);       // mobile drawer
+  const [mounted, setMounted] = useState(false); // entry anim
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 50);
+    return () => clearTimeout(t);
+  }, []);
+
+  // close on outside click (mobile)
+  useEffect(() => {
+    const handler = e => {
+      if (open && ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const logout = () => {
+    localStorage.clear();
+    navigate('/hospital/login');
+  };
 
   const Item = ({ to, icon: Icon, label }) => {
-    const active = pathname.startsWith(to);
+    const active = pathname.toLowerCase().startsWith(to.toLowerCase());
     return (
       <li
-        onClick={() => navigate(to)}
-        className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg transition
-        ${active ? 'bg-white/20 text-white' : 'hover:bg-white/10 text-gray-200'}`}
+        onClick={() => { navigate(to); setOpen(false); }}
+        className={`cursor-pointer flex items-center gap-3 px-4 py-2 rounded-lg transition
+        ${active ? 'bg-white/20 text-white' : 'text-gray-200 hover:bg-white/10'}`}
       >
         <Icon size={18} /> {label}
       </li>
@@ -19,25 +42,52 @@ export default function HospitalSidebar() {
   };
 
   return (
-    <aside className="fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-red-800/90 to-red-900/90 backdrop-blur-md text-white p-6 shadow-2xl flex flex-col justify-between z-50">
-      <div>
-        <h2 className="text-2xl font-extrabold mb-10 tracking-wide">Hospital Panel</h2>
-        <ul className="space-y-2 text-sm font-medium">
-          <Item to="/hospital/dashboard" icon={LayoutDashboard} label="Dashboard" />
-          <Item to="/hospital/donor-approval" icon={Droplet} label="Donor Approval" />
-          <Item to="/hospital/recipient-approval" icon={FlaskConical} label="Recipient Approval" />
-        </ul>
-      </div>
-
+    <>
+      {/* Mobile trigger */}
       <button
-        onClick={() => {
-          localStorage.clear();
-          navigate('/hospital/login');
-        }}
-        className="flex items-center justify-center gap-2 bg-white text-red-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-100 transition"
+        onClick={() => setOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-red-700/80 text-white"
       >
-        <LogOut size={18} /> Logout
+        <Menu size={20} />
       </button>
-    </aside>
+
+      {/* Dark overlay (mobile) */}
+      <div
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300
+        ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      />
+
+      {/* Sidebar */}
+      <aside
+        ref={ref}
+        className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-red-800/90 to-red-900/90
+        backdrop-blur-md text-white p-6 shadow-2xl flex flex-col justify-between z-50
+        transition-transform duration-300
+        ${open ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        ${mounted ? '' : 'opacity-0'}`}
+      >
+        <div>
+          <h2 className="text-2xl font-extrabold mb-10 tracking-wide animate-fadeIn">Hospital Panel</h2>
+          <ul className="space-y-3 text-sm font-medium">
+            <Item to="/hospital/dashboard" icon={LayoutDashboard} label="Dashboard" />
+            <Item to="/hospital/donor-approval" icon={Droplet} label="Donor Approval" />
+            <Item to="/hospital/recipient-approval" icon={FlaskConical} label="Recipient Approval" />
+          </ul>
+        </div>
+
+        <button
+          onClick={logout}
+          className="flex items-center justify-center gap-2 bg-white text-red-800 font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-100 transition"
+        >
+          <LogOut size={18} /> Logout
+        </button>
+      </aside>
+
+      {/* Anim */}
+      <style>{`
+        @keyframes fadeIn { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform: translateY(0);} }
+        .animate-fadeIn { animation: fadeIn .4s ease forwards; }
+      `}</style>
+    </>
   );
 }

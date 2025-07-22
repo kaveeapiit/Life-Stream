@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 export default function Donation() {
   const [form, setForm] = useState({
@@ -22,12 +23,9 @@ export default function Donation() {
     }
   }, []);
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-
   const handleSubmit = async e => {
     e.preventDefault();
     if (!isLoggedIn) return;
-
     setLoading(true);
     setStatus({ type: '', message: '' });
 
@@ -37,7 +35,6 @@ export default function Donation() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
-
       const data = await res.json();
       if (res.ok) {
         setStatus({ type: 'success', message: '🎉 Donation registered!' });
@@ -83,56 +80,26 @@ export default function Donation() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name */}
-          <FloatInput
-            label="Full Name"
-            name="name"
-            value={form.name}
-            readOnly
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <ChipField label="Full Name" value={form.name} readOnly />
+          <ChipField label="Email" value={form.email} readOnly type="email" />
+          <ChipField label="Blood Type" value={form.bloodType || 'N/A'} readOnly />
+
+          <FancySelect
+            label="Nearest Blood Bank"
+            value={form.location}
+            onChange={val => setForm({ ...form, location: val })}
+            placeholder="Select Location"
+            options={[
+              { value: 'Colombo National Blood Bank', primary: 'Colombo', secondary: 'National Blood Bank' },
+              { value: 'Kandy General Hospital',       primary: 'Kandy',   secondary: 'General Hospital'   },
+              { value: 'Galle Teaching Hospital',      primary: 'Galle',   secondary: 'Teaching Hospital'  },
+              { value: 'Jaffna Hospital',              primary: 'Jaffna',  secondary: 'Hospital'           },
+              { value: 'Kurunegala Hospital',          primary: 'Kurunegala', secondary: 'Hospital'        },
+              { value: 'Badulla Hospital',             primary: 'Badulla', secondary: 'Hospital'           },
+              { value: 'Anuradhapura Hospital',        primary: 'Anuradhapura', secondary: 'Hospital'      },
+            ]}
           />
-
-          {/* Email */}
-          <FloatInput
-            type="email"
-            label="Email"
-            name="email"
-            value={form.email}
-            readOnly
-          />
-
-          {/* Blood type */}
-          <div className="relative">
-            <div className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-gray-200">
-              {form.bloodType || 'N/A'}
-            </div>
-            <span className="absolute left-4 -top-2 bg-gray-900 px-2 text-xs text-red-400">
-              Blood Type
-            </span>
-          </div>
-
-          {/* Location */}
-          <div className="relative">
-            <select
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
-            >
-              <option value="">Select Location</option>
-              <option value="Colombo National Blood Bank">Colombo National Blood Bank</option>
-              <option value="Kandy General Hospital">Kandy General Hospital</option>
-              <option value="Galle Teaching Hospital">Galle Teaching Hospital</option>
-              <option value="Jaffna Hospital">Jaffna Hospital</option>
-              <option value="Kurunegala Hospital">Kurunegala Hospital</option>
-              <option value="Badulla Hospital">Badulla Hospital</option>
-              <option value="Anuradhapura Hospital">Anuradhapura Hospital</option>
-            </select>
-            <span className="absolute left-4 -top-2 bg-gray-900 px-2 text-xs text-red-400">
-              Nearest Blood Bank
-            </span>
-          </div>
 
           <button
             type="submit"
@@ -144,7 +111,6 @@ export default function Donation() {
             {isLoggedIn ? (loading ? 'Submitting…' : 'Submit Donation') : 'Please login'}
           </button>
 
-          {/* progress bar when loading */}
           {loading && (
             <div className="w-full h-1 bg-gray-700 rounded overflow-hidden mt-2">
               <div className="h-full bg-red-500 animate-loadingBar" />
@@ -153,7 +119,6 @@ export default function Donation() {
         </form>
       </div>
 
-      {/* animation css */}
       <style>{`
         @keyframes fadeIn { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform: translateY(0);} }
         .animate-fadeIn { animation: fadeIn .4s ease forwards; }
@@ -164,28 +129,130 @@ export default function Donation() {
   );
 }
 
-/* Floating label input */
-function FloatInput({ label, name, value, onChange, type = 'text', readOnly = false }) {
+/* ---------- Components ---------- */
+
+function ChipField({ label, value, type = 'text', readOnly = false }) {
   return (
     <div className="relative">
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        readOnly={readOnly}
-        placeholder=" "
-        className={`w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white placeholder-transparent
-        focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition
-        ${readOnly && 'opacity-70 cursor-not-allowed'}`}
-        required={!readOnly}
-      />
-      <label
-        className={`absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-all
-        ${value ? 'top-1 text-xs text-red-400' : ''}`}
-      >
+      <span className="absolute -top-2 left-4 px-2 py-0.5 bg-gray-900 text-xs text-red-400 rounded">
         {label}
-      </label>
+      </span>
+      {readOnly ? (
+        <div className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-gray-200">
+          {value}
+        </div>
+      ) : (
+        <input
+          type={type}
+          value={value}
+          readOnly={readOnly}
+          className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white
+                     focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        />
+      )}
+    </div>
+  );
+}
+
+/* Custom select with two-color options */
+function FancySelect({ label, value, onChange, options, placeholder = 'Select…' }) {
+  const [open, setOpen] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(-1);
+  const btnRef = useRef(null);
+  const listRef = useRef(null);
+
+  // close on outside
+  useEffect(() => {
+    const handler = e => {
+      if (!open) return;
+      if (
+        btnRef.current && !btnRef.current.contains(e.target) &&
+        listRef.current && !listRef.current.contains(e.target)
+      ) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  // keyboard nav
+  const onKeyDown = e => {
+    if (!open) {
+      if (['ArrowDown','Enter',' '].includes(e.key)) {
+        e.preventDefault(); setOpen(true); setActiveIdx(0);
+      }
+      return;
+    }
+    if (e.key === 'Escape') { setOpen(false); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(i => (i + 1) % options.length); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx(i => (i - 1 + options.length) % options.length); }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIdx >= 0) {
+        onChange(options[activeIdx].value);
+        setOpen(false);
+      }
+    }
+  };
+
+  const selected = options.find(o => o.value === value);
+
+  return (
+    <div className="relative">
+      <span className="absolute -top-2 left-4 px-2 py-0.5 bg-gray-900 text-xs text-red-400 rounded">{label}</span>
+
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        onKeyDown={onKeyDown}
+        className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white
+                   flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span className={`${selected ? '' : 'text-gray-400'}`}>
+          {selected ? (
+            <>
+              <span className="text-red-300 font-semibold">{selected.primary}</span>{' '}
+              <span className="text-gray-200">{selected.secondary}</span>
+            </>
+          ) : (
+            placeholder
+          )}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <ul
+          ref={listRef}
+          role="listbox"
+          tabIndex={-1}
+          onKeyDown={onKeyDown}
+          className="absolute z-50 mt-2 w-full max-h-60 overflow-auto rounded-lg bg-gray-900 border border-gray-700 shadow-xl focus:outline-none"
+        >
+          {options.map((o, idx) => {
+            const isActive = idx === activeIdx;
+            const isSelected = o.value === value;
+            return (
+              <li
+                key={o.value}
+                role="option"
+                aria-selected={isSelected}
+                className={`px-4 py-2 text-sm cursor-pointer flex gap-1
+                  ${isActive ? 'bg-white/10' : ''}
+                  ${isSelected ? 'bg-white/5' : ''}
+                  hover:bg-white/10`}
+                onMouseEnter={() => setActiveIdx(idx)}
+                onClick={() => { onChange(o.value); setOpen(false); }}
+              >
+                <span className="text-red-300 font-semibold">{o.primary}</span>
+                <span className="text-gray-200">{o.secondary}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

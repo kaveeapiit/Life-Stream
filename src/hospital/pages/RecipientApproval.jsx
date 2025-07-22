@@ -10,6 +10,7 @@ export default function RecipientApproval() {
     fetch('http://localhost:5000/api/recipient/pending')
       .then(res => res.json())
       .then(data => setRecipients(data))
+      .catch(err => console.error('Failed to fetch recipients', err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -28,16 +29,19 @@ export default function RecipientApproval() {
   };
 
   const filtered = recipients.filter(r =>
-    [r.name, r.email, r.blood_type, r.location].join(' ').toLowerCase().includes(q.toLowerCase())
+    [r.name, r.email, r.blood_type, r.location]
+      .join(' ')
+      .toLowerCase()
+      .includes(q.toLowerCase())
   );
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <HospitalSidebar />
 
-      <main className="flex-1 pl-64 p-8 md:p-12 space-y-10 overflow-x-hidden">
+      <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 space-y-10 overflow-x-hidden">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fadeIn">
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
             Recipient Approval
           </h1>
@@ -116,7 +120,7 @@ export default function RecipientApproval() {
         </section>
       </main>
 
-      {/* tiny fade-in animation */}
+      {/* fade-in anim */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(4px); }
@@ -128,7 +132,7 @@ export default function RecipientApproval() {
   );
 }
 
-/* Small helper component */
+/* Helper */
 function InfoRow({ label, value }) {
   return (
     <p className="mb-2 text-sm">

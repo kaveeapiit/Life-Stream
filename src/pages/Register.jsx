@@ -9,7 +9,7 @@ export default function Register() {
   const [err, setErr] = useState('');
   const [ok, setOk] = useState('');
 
-  const calcStrength = (pw) => {
+  const calcStrength = pw => {
     let s = 0;
     if (pw.length >= 8) s++;
     if (/[A-Z]/.test(pw)) s++;
@@ -18,7 +18,7 @@ export default function Register() {
     return s;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setErr(''); setOk(''); setLoading(true);
     try {
@@ -61,18 +61,20 @@ export default function Register() {
         {err && <Alert type="error">{err}</Alert>}
         {ok && <Alert type="success">{ok}</Alert>}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <FloatInput
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <StaticInput
             icon={<FaUser className="text-red-400" />}
             label="Full Name"
+            name="name"
             value={form.name}
             onChange={e => setForm({ ...form, name: e.target.value })}
             required
           />
 
-          <FloatInput
+          <StaticInput
             icon={<FaEnvelope className="text-red-400" />}
             label="Email"
+            name="email"
             type="email"
             value={form.email}
             onChange={e => setForm({ ...form, email: e.target.value })}
@@ -80,54 +82,44 @@ export default function Register() {
           />
 
           {/* Password with strength */}
-          <div className="relative space-y-2">
-            <FloatInput
-              icon={<FaLock className="text-red-400" />}
-              label="Password"
-              type={showPw ? 'text' : 'password'}
-              value={form.password}
-              onChange={e => {
-                const pw = e.target.value;
-                setForm({ ...form, password: pw });
-                setStrength(calcStrength(pw));
-              }}
-              required
-            />
-            <button
-              type="button"
-              onClick={() => setShowPw(v => !v)}
-              className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-200"
-              aria-label={showPw ? 'Hide password' : 'Show password'}
-            >
-              {showPw ? <FaEyeSlash /> : <FaEye />}
-            </button>
-
-            {form.password && (
-              <StrengthBar level={strength} />
-            )}
+          <div className="space-y-2">
+            <div className="relative">
+              <StaticInput
+                icon={<FaLock className="text-red-400" />}
+                label="Password"
+                name="password"
+                type={showPw ? 'text' : 'password'}
+                value={form.password}
+                onChange={e => {
+                  const pw = e.target.value;
+                  setForm({ ...form, password: pw });
+                  setStrength(calcStrength(pw));
+                }}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw(v => !v)}
+                className="absolute right-3 top-[46px] -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                aria-label={showPw ? 'Hide password' : 'Show password'}
+              >
+                {showPw ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+            {form.password && <StrengthBar level={strength} />}
           </div>
 
           {/* Blood Type */}
-          <div className="relative">
-            <span className="absolute top-1/2 -translate-y-1/2 left-3">
-              <FaTint className="text-red-400" />
-            </span>
-            <select
-              required
-              value={form.bloodType}
-              onChange={e => setForm({ ...form, bloodType: e.target.value })}
-              className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
-            >
-              <option value="">Select your blood type</option>
-              {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(bt => (
-                <option key={bt} value={bt}>{bt}</option>
-              ))}
-            </select>
-            <label className={`absolute left-10 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-all
-              ${form.bloodType ? 'top-1 text-xs text-red-400' : ''}`}>
-              Blood Type
-            </label>
-          </div>
+          <StaticSelect
+            icon={<FaTint className="text-red-400" />}
+            label="Blood Type"
+            name="bloodType"
+            value={form.bloodType}
+            onChange={e => setForm({ ...form, bloodType: e.target.value })}
+            options={['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(bt => ({ value: bt, label: bt }))}
+            placeholder="Select your blood type"
+            required
+          />
 
           <MagneticBtn
             type="submit"
@@ -158,27 +150,62 @@ export default function Register() {
   );
 }
 
-/* ---------- Components ---------- */
+/* ---------- Reusable components ---------- */
 
-function FloatInput({ icon, label, value, onChange, type = 'text', required }) {
+function StaticInput({ icon, label, name, value, onChange, type = 'text', required }) {
   return (
-    <div className="relative">
-      <span className="absolute top-1/2 -translate-y-1/2 left-3">{icon}</span>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        required={required}
-        placeholder=" "
-        className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white placeholder-transparent
-                   focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
-      />
-      <label
-        className={`absolute left-10 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-all
-        ${value ? 'top-1 text-xs text-red-400' : ''}`}
-      >
-        {label}
-      </label>
+    <div>
+      <label htmlFor={name} className="block mb-1 text-sm font-semibold text-gray-300">{label}</label>
+      <div className="relative">
+        <span className="absolute top-1/2 -translate-y-1/2 left-3">{icon}</span>
+        <input
+          id={name}
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          required={required}
+          placeholder={label}
+          className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700
+                     text-base font-semibold text-white placeholder-gray-400
+                     focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        />
+      </div>
+    </div>
+  );
+}
+
+function StaticSelect({ icon, label, name, value, onChange, options, placeholder, required }) {
+  return (
+    <div>
+      <label htmlFor={name} className="block mb-1 text-sm font-semibold text-gray-300">{label}</label>
+      <div className="relative">
+        <span className="absolute top-1/2 -translate-y-1/2 left-3">{icon}</span>
+        <select
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          required={required}
+          className="w-full pl-10 pr-8 py-3 rounded-lg bg-gray-900/50 border border-gray-700
+                     text-base font-semibold text-white appearance-none
+                     focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        >
+          <option value="" disabled>{placeholder}</option>
+          {options.map(o => (
+            <option key={o.value} value={o.value} className="text-black">
+              {o.label}
+            </option>
+          ))}
+        </select>
+        {/* caret icon */}
+        <svg
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+          fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </div>
   );
 }
@@ -187,7 +214,10 @@ function StrengthBar({ level }) {
   const colors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-400', 'bg-green-500'];
   return (
     <div className="h-1 w-full bg-gray-700/40 rounded overflow-hidden">
-      <div className={`h-full ${colors[level-1] || 'bg-red-500'} transition-all`} style={{ width: `${(level/4)*100}%` }} />
+      <div
+        className={`h-full ${colors[level - 1] || 'bg-red-500'} transition-all`}
+        style={{ width: `${(level / 4) * 100}%` }}
+      />
     </div>
   );
 }
@@ -203,10 +233,9 @@ function Alert({ type, children }) {
   );
 }
 
-/* Magnetic button using useRef */
+/* Magnetic button */
 function MagneticBtn({ children, className = '', ...rest }) {
   const ref = useRef(null);
-
   const onMove = e => {
     const el = ref.current;
     if (!el) return;
@@ -215,10 +244,7 @@ function MagneticBtn({ children, className = '', ...rest }) {
     const y = e.clientY - r.top - r.height / 2;
     el.style.transform = `translate(${x * 0.06}px, ${y * 0.06}px)`;
   };
-  const reset = () => {
-    if (ref.current) ref.current.style.transform = 'translate(0,0)';
-  };
-
+  const reset = () => { if (ref.current) ref.current.style.transform = 'translate(0,0)'; };
   return (
     <button
       ref={ref}

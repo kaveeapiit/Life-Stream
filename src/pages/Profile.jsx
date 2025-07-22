@@ -7,7 +7,7 @@ export default function Profile() {
   const [editData, setEditData] = useState({ name: '', bloodType: '' });
   const [newPassword, setNewPassword] = useState('');
   const [msg, setMsg] = useState('');
-  const [tab, setTab] = useState('profile'); // 'profile' | 'password'
+  const [tab, setTab] = useState('profile');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function Profile() {
       .finally(() => setLoading(false));
   }, [email]);
 
-  const showMsg = (m) => {
+  const showMsg = m => {
     setMsg(m);
     setTimeout(() => setMsg(''), 3000);
   };
@@ -64,7 +64,7 @@ export default function Profile() {
         )}
 
         <div className="max-w-3xl mx-auto">
-          {/* Header card */}
+          {/* Header */}
           <header className="mb-10 flex flex-col items-center text-center">
             <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-red-500/60 shadow-lg mb-4">
               <img
@@ -73,13 +73,11 @@ export default function Profile() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-red-400 drop-shadow">
+            <h1 className="text-4xl font-extrabold tracking-tight text-red-400 drop-shadow-sm">
               My Profile
             </h1>
             {user && (
-              <p className="text-sm text-gray-300 mt-2">
-                {user.email}
-              </p>
+              <p className="text-sm text-gray-300 mt-2">{user.email}</p>
             )}
           </header>
 
@@ -98,13 +96,15 @@ export default function Profile() {
               <Loader />
             ) : tab === 'profile' ? (
               <div className="space-y-6">
-                <FloatInput
+                <Field
                   label="Name"
+                  name="name"
                   value={editData.name}
                   onChange={e => setEditData({ ...editData, name: e.target.value })}
                 />
-                <FloatInput
+                <Field
                   label="Blood Type"
+                  name="bloodType"
                   value={editData.bloodType}
                   onChange={e => setEditData({ ...editData, bloodType: e.target.value })}
                 />
@@ -118,8 +118,9 @@ export default function Profile() {
               </div>
             ) : (
               <div className="space-y-6">
-                <FloatInput
+                <Field
                   label="New Password"
+                  name="password"
                   type="password"
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
@@ -144,7 +145,7 @@ export default function Profile() {
   );
 }
 
-/* ----------------- Components ----------------- */
+/* ---------- Components ---------- */
 function TabButton({ active, onClick, children }) {
   return (
     <button
@@ -157,23 +158,22 @@ function TabButton({ active, onClick, children }) {
   );
 }
 
-function FloatInput({ label, value, onChange, type = 'text' }) {
+function Field({ label, value, onChange, name, type = 'text' }) {
   return (
-    <div className="relative">
-      <input
-        type={type}
-        placeholder=" "
-        value={value}
-        onChange={onChange}
-        className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white placeholder-transparent
-                   focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
-      />
-      <label
-        className={`absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-all
-        ${value ? 'top-1 text-xs text-red-400' : ''}`}
-      >
+    <div>
+      <label htmlFor={name} className="block text-sm font-semibold text-white/70 mb-1">
         {label}
       </label>
+      <input
+        id={name}
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        className="w-full px-4 py-3 rounded-lg bg-gray-900/60 border border-gray-700 text-sm text-white
+                   focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        placeholder={label}
+      />
     </div>
   );
 }

@@ -36,7 +36,7 @@ export default function DonorApproval() {
     <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <HospitalSidebar />
 
-      <main className="flex-1 pl-64 p-8 md:p-12 overflow-hidden">
+      <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 overflow-hidden">
         {/* Title + Search */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h1 className="text-3xl font-extrabold tracking-tight">Donor Approvals</h1>
@@ -59,11 +59,11 @@ export default function DonorApproval() {
             <table className="w-full text-sm">
               <thead className="bg-white/10 sticky top-0 z-10">
                 <tr className="text-left text-gray-200">
-                  <th className="px-4 py-3 font-semibold">Name</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold">Blood</th>
-                  <th className="px-4 py-3 font-semibold">Location</th>
-                  <th className="px-4 py-3 font-semibold text-center">Action</th>
+                  <Th>Name</Th>
+                  <Th>Email</Th>
+                  <Th>Blood</Th>
+                  <Th>Location</Th>
+                  <Th className="text-center">Action</Th>
                 </tr>
               </thead>
               <tbody>
@@ -89,15 +89,15 @@ export default function DonorApproval() {
                     className="border-t border-white/5 hover:bg-white/5 transition-all duration-200 animate-fadeIn"
                     style={{ animationDelay: `${i * 40}ms` }}
                   >
-                    <td className="px-4 py-3">{d.name}</td>
-                    <td className="px-4 py-3">{d.email}</td>
-                    <td className="px-4 py-3">
+                    <Td>{d.name}</Td>
+                    <Td>{d.email}</Td>
+                    <Td>
                       <span className="inline-block px-2 py-0.5 rounded-full bg-red-600/30 text-red-300 text-xs font-semibold">
                         {d.blood_type}
                       </span>
-                    </td>
-                    <td className="px-4 py-3">{d.location}</td>
-                    <td className="px-4 py-3 text-center space-x-2">
+                    </Td>
+                    <Td>{d.location}</Td>
+                    <Td className="text-center space-x-2">
                       <button
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-green-600 hover:bg-green-500 text-white text-xs font-medium transition"
                         onClick={() => updateStatus(d.id, 'Approved')}
@@ -110,7 +110,7 @@ export default function DonorApproval() {
                       >
                         ❌ Decline
                       </button>
-                    </td>
+                    </Td>
                   </tr>
                 ))}
               </tbody>
@@ -123,8 +123,12 @@ export default function DonorApproval() {
             {!loading && filtered.length === 0 && (
               <p className="px-4 py-6 text-center text-gray-400">No pending donations.</p>
             )}
-            {filtered.map(d => (
-              <div key={d.id} className="p-4 space-y-2 animate-fadeIn">
+            {filtered.map((d, i) => (
+              <div
+                key={d.id}
+                className="p-4 space-y-2 animate-fadeIn"
+                style={{ animationDelay: `${i * 40}ms` }}
+              >
                 <div className="flex justify-between items-start">
                   <h3 className="font-semibold text-lg">{d.name}</h3>
                   <span className="px-2 py-0.5 rounded-full bg-red-600/30 text-red-300 text-xs font-semibold">
@@ -154,7 +158,7 @@ export default function DonorApproval() {
         </section>
       </main>
 
-      {/* tiny fade-in animation */}
+      {/* row fade-in */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(4px); }
@@ -164,4 +168,12 @@ export default function DonorApproval() {
       `}</style>
     </div>
   );
+}
+
+/* --- tiny helpers --- */
+function Th({ children, className = '' }) {
+  return <th className={`px-4 py-3 font-semibold ${className}`}>{children}</th>;
+}
+function Td({ children, className = '' }) {
+  return <td className={`px-4 py-3 ${className}`}>{children}</td>;
 }
