@@ -26,13 +26,25 @@ const BloodRequestModel = {
     return result.rows[0];
   },
 
-  // ✅ NEW METHOD: Get all requests by user email
+  // ✅ Get all requests made by a specific user
   getRequestsByEmail: async (email) => {
     const result = await db.query(
-      `SELECT * FROM blood_requests WHERE email = $1 ORDER BY created_at DESC`,
+      `SELECT * FROM blood_requests 
+       WHERE email = $1 
+       ORDER BY created_at DESC`,
       [email]
     );
     return result.rows;
+  },
+
+  // ✅ NEW: History (approved or declined)
+  getHistoryRequests: async () => {
+    const res = await db.query(
+      `SELECT * FROM blood_requests 
+       WHERE status IN ('approved','declined') 
+       ORDER BY created_at DESC`
+    );
+    return res.rows;
   }
 };
 

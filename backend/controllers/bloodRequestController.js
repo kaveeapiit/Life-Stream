@@ -20,7 +20,7 @@ export const getPendingRequests = async (req, res) => {
   }
 };
 
-// ✅ NEW: Update approval status
+// ✅ Update approval status
 export const updateApproval = async (req, res) => {
   try {
     const { id } = req.params;
@@ -38,7 +38,7 @@ export const updateApproval = async (req, res) => {
   }
 };
 
-// ✅ NEW: Get user-specific blood requests by email
+// ✅ User-specific requests (by email)
 export const getUserRequests = async (req, res) => {
   try {
     const { email } = req.query;
@@ -52,5 +52,16 @@ export const getUserRequests = async (req, res) => {
   } catch (err) {
     console.error('Error in getUserRequests:', err);
     res.status(500).json({ error: 'Failed to fetch user requests' });
+  }
+};
+
+// ✅ NEW: History (approved or declined)
+export const getHistoryRequests = async (req, res) => {
+  try {
+    const rows = await BloodRequestModel.getHistoryRequests();
+    res.status(200).json(rows);
+  } catch (err) {
+    console.error('Error in getHistoryRequests:', err);
+    res.status(500).json({ error: 'Failed to fetch history' });
   }
 };

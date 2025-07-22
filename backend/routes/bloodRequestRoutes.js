@@ -1,9 +1,11 @@
+// routes/bloodRequestRoutes.js
 import express from 'express';
 import {
   createBloodRequest,
   getPendingRequests,
-  updateApproval,     // ✅ NEW import
-  getUserRequests     // ✅ NEW import
+  updateApproval,
+  getUserRequests,
+  getHistoryRequests
 } from '../controllers/bloodRequestController.js';
 
 const router = express.Router();
@@ -11,13 +13,16 @@ const router = express.Router();
 // 🩸 Create a blood request
 router.post('/request', createBloodRequest);
 
-// 📝 Get all pending blood requests (for hospital/admin)
+// 📝 Get all pending blood requests (hospital/admin)
 router.get('/pending', getPendingRequests);
 
 // ✅ Approve or decline a blood request by ID
 router.put('/approve/:id', updateApproval);
 
-// 📋 Get requests by user email (for user history page)
-router.get('/user', getUserRequests); // Example: /api/blood-request/user?email=user@example.com
+// 📋 Get requests by user email (user’s own history)
+router.get('/user', getUserRequests); // /api/blood/user?email=user@example.com
+
+// 📚 Get approved/declined history (hospital/admin)
+router.get('/history', getHistoryRequests);
 
 export default router;
