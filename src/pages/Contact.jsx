@@ -6,115 +6,215 @@ import {
 
 export default function Contact() {
   const [contact, setContact] = useState(null);
+  const [sending, setSending] = useState(false);
+  const [form, setForm] = useState({
+    first: '', last: '', email: '', phone: '', subject: '', message: ''
+  });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/contact")
+    fetch('http://localhost:5000/api/contact')
       .then(res => res.json())
       .then(setContact)
-      .catch(err => console.error("Failed to fetch contact data", err));
+      .catch(() => setContact(false));
   }, []);
 
-  if (!contact) return <p className="text-center mt-16 text-lg font-semibold text-white">Loading contact info...</p>;
+  const onChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
-  return (
-    <div className="px-6 py-12 max-w-7xl mx-auto text-white bg-gray-900 animate-fade-in min-h-screen">
-      <h1 className="text-4xl font-extrabold flex items-center gap-2 mb-2 text-white">
-        📞 Contact Us
-      </h1>
-      <p className="text-lg text-white mb-10">
-        Reach out to our team for inquiries or support regarding the Life Stream blood management system.
-      </p>
+  const submit = async e => {
+    e.preventDefault();
+    setSending(true);
+    // TODO: POST to your backend
+    setTimeout(() => {
+      alert('Message sent!');
+      setSending(false);
+      setForm({ first: '', last: '', email: '', phone: '', subject: '', message: '' });
+    }, 800);
+  };
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Form */}
-        <div className="bg-gray-800 rounded-xl border border-gray-600 p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <h3 className="text-2xl font-bold mb-6 text-white">Send us a Message</h3>
-          <form className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <input
-                placeholder="First Name"
-                className="border border-gray-500 bg-gray-900 text-white placeholder-gray-400 p-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-              <input
-                placeholder="Last Name"
-                className="border border-gray-500 bg-gray-900 text-white placeholder-gray-400 p-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-            </div>
-            <input
-              type="email"
-              placeholder="Email Address"
-              className="w-full border border-gray-500 bg-gray-900 text-white placeholder-gray-400 p-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-            <input
-              placeholder="Phone Number"
-              className="w-full border border-gray-500 bg-gray-900 text-white placeholder-gray-400 p-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-            <input
-              placeholder="Subject"
-              className="w-full border border-gray-500 bg-gray-900 text-white placeholder-gray-400 p-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-            <textarea
-              placeholder="Message"
-              rows="4"
-              className="w-full border border-gray-500 bg-gray-900 text-white placeholder-gray-400 p-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            ></textarea>
-            <button
-              type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2"
-            >
-              <FaEnvelope /> Send Message
-            </button>
-          </form>
-        </div>
-
-        {/* Contact Info */}
-        <div className="flex flex-col gap-6">
-          <div className="bg-gray-800 rounded-xl border border-gray-600 p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <h3 className="text-2xl font-bold mb-4 text-white">Get in Touch</h3>
-            <p className="flex gap-2 items-start text-white mb-2">
-              <FaMapMarkerAlt className="mt-1 text-red-500" /> {contact.address}
-            </p>
-            {contact.phone.map((num, i) => (
-              <p key={i} className="flex items-center gap-2 text-white">
-                <FaPhoneAlt className="text-red-500" /> {num}
-              </p>
-            ))}
-            {contact.email.map((email, i) => (
-              <p key={i} className="flex items-center gap-2 text-white">
-                <FaEnvelope className="text-red-500" /> {email}
-              </p>
-            ))}
-            <div className="mt-4 text-sm text-gray-300">
-              {contact.hours.map((line, i) => <p key={i}>{line}</p>)}
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-r from-red-600 to-red-500 text-white p-6 rounded-xl shadow-md transition-transform hover:scale-105">
-            <h4 className="flex items-center gap-2 font-bold text-lg">
-              <FaExclamationTriangle /> Emergency Contact
-            </h4>
-            <p className="mt-2">{contact.emergency.note}</p>
-            {contact.emergency.phone.map((em, i) => <p key={i}>{em}</p>)}
-          </div>
-
-          <div className="flex gap-4 mt-2 text-2xl text-white">
-            {contact.socials.map((s, i) => (
-              <a
-                key={i}
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-red-400 transition-colors"
-              >
-                {s.platform === "facebook" && <FaFacebook />}
-                {s.platform === "twitter" && <FaTwitter />}
-                {s.platform === "instagram" && <FaInstagram />}
-                {s.platform === "linkedin" && <FaLinkedin />}
-              </a>
-            ))}
-          </div>
+  if (contact === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <div className="animate-pulse space-y-4 text-center">
+          <div className="h-6 w-56 bg-gray-700 rounded mx-auto" />
+          <div className="h-4 w-80 bg-gray-700 rounded mx-auto" />
         </div>
       </div>
+    );
+  }
+
+  if (contact === false) {
+    return (
+      <p className="text-center mt-24 text-red-400 text-lg">
+        Failed to load contact info.
+      </p>
+    );
+  }
+
+  return (
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-x-hidden">
+      {/* Glow blobs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="w-96 h-96 bg-red-600/30 blur-3xl rounded-full absolute -top-28 -left-28 animate-pulse" />
+        <div className="w-80 h-80 bg-red-500/20 blur-3xl rounded-full absolute bottom-0 right-0" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-6 py-16 md:py-24 animate-fadeIn">
+        <header className="mb-12 text-center md:text-left">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 flex items-center gap-2 justify-center md:justify-start">
+            📞 Contact Us
+          </h1>
+          <p className="text-gray-300 max-w-2xl mx-auto md:mx-0">
+            Reach out to our team for inquiries or support regarding the Life Stream blood management system.
+          </p>
+        </header>
+
+        <div className="grid md:grid-cols-2 gap-10">
+          {/* FORM */}
+          <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl animate-fadeInUp">
+            <h3 className="text-2xl font-bold mb-6">Send us a Message</h3>
+            <form className="space-y-6" onSubmit={submit}>
+              <div className="grid grid-cols-2 gap-4">
+                <FloatInput label="First Name" name="first" value={form.first} onChange={onChange} />
+                <FloatInput label="Last Name" name="last" value={form.last} onChange={onChange} />
+              </div>
+              <FloatInput type="email" label="Email Address" name="email" value={form.email} onChange={onChange} />
+              <FloatInput label="Phone Number" name="phone" value={form.phone} onChange={onChange} />
+              <FloatInput label="Subject" name="subject" value={form.subject} onChange={onChange} />
+              <FloatTextarea label="Message" name="message" value={form.message} onChange={onChange} />
+
+              <button
+                disabled={sending}
+                type="submit"
+                className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-60 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 shadow"
+              >
+                <FaEnvelope /> {sending ? 'Sending…' : 'Send Message'}
+              </button>
+            </form>
+          </section>
+
+          {/* INFO COLUMN */}
+          <section className="flex flex-col gap-6 animate-fadeInUp" style={{ animationDelay: '120ms' }}>
+            {/* Contact Info Card */}
+            <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl">
+              <h3 className="text-2xl font-bold mb-4">Get in Touch</h3>
+              <p className="flex gap-2 items-start mb-3 text-gray-200">
+                <FaMapMarkerAlt className="mt-1 text-red-500" /> {contact.address}
+              </p>
+
+              {contact.phone.map((num, i) => (
+                <p key={i} className="flex items-center gap-2 text-gray-200">
+                  <FaPhoneAlt className="text-red-500" /> {num}
+                </p>
+              ))}
+
+              {contact.email.map((em, i) => (
+                <p key={i} className="flex items-center gap-2 text-gray-200">
+                  <FaEnvelope className="text-red-500" /> {em}
+                </p>
+              ))}
+
+              <div className="mt-4 text-sm text-gray-400 space-y-1">
+                {contact.hours.map((line, i) => <p key={i}>{line}</p>)}
+              </div>
+            </div>
+
+            {/* Emergency */}
+            <div className="bg-gradient-to-r from-red-600 to-red-500 p-6 rounded-2xl shadow-xl hover:scale-[1.02] transition-transform">
+              <h4 className="flex items-center gap-2 font-bold text-lg">
+                <FaExclamationTriangle /> Emergency Contact
+              </h4>
+              <p className="mt-2 text-sm">{contact.emergency.note}</p>
+              <div className="mt-2 space-y-1 text-base">
+                {contact.emergency.phone.map((em, i) => <p key={i}>{em}</p>)}
+              </div>
+            </div>
+
+            {/* Socials */}
+            <div className="flex gap-4 text-2xl mt-2">
+              {contact.socials.map((s, i) => (
+                <a
+                  key={i}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-red-400 transition-colors"
+                >
+                  {s.platform === 'facebook' && <FaFacebook />}
+                  {s.platform === 'twitter' && <FaTwitter />}
+                  {s.platform === 'instagram' && <FaInstagram />}
+                  {s.platform === 'linkedin' && <FaLinkedin />}
+                </a>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {/* MAP (optional) */}
+        {contact.mapEmbed && (
+          <div className="mt-16 rounded-2xl overflow-hidden border border-white/10 shadow-xl animate-fadeInUp" style={{ animationDelay: '240ms' }}>
+            <iframe
+              title="map"
+              src={contact.mapEmbed}
+              className="w-full h-80 md:h-96"
+              loading="lazy"
+              style={{ border: 0 }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Animations */}
+      <style>{`
+        @keyframes fadeIn { from {opacity:0; transform:translateY(6px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes fadeInUp { from {opacity:0; transform:translateY(14px);} to {opacity:1; transform:translateY(0);} }
+        .animate-fadeIn { animation: fadeIn .45s ease forwards; }
+        .animate-fadeInUp { animation: fadeInUp .5s ease forwards; }
+      `}</style>
+    </div>
+  );
+}
+
+/* ---------- Floating label inputs ---------- */
+function FloatInput({ label, name, value, onChange, type = 'text' }) {
+  return (
+    <div className="relative">
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder=" "
+        className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        required
+      />
+      <label
+        className={`absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none transition-all
+        ${value ? 'top-1 text-xs text-red-400' : ''}`}
+      >
+        {label}
+      </label>
+    </div>
+  );
+}
+
+function FloatTextarea({ label, name, value, onChange }) {
+  return (
+    <div className="relative">
+      <textarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder=" "
+        rows="4"
+        className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        required
+      />
+      <label
+        className={`absolute left-4 top-4 text-gray-400 text-sm pointer-events-none transition-all
+        ${value ? 'top-1 text-xs text-red-400' : ''}`}
+      >
+        {label}
+      </label>
     </div>
   );
 }

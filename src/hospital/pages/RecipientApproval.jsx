@@ -3,79 +3,137 @@ import HospitalSidebar from '../components/HospitalSidebar';
 
 export default function RecipientApproval() {
   const [recipients, setRecipients] = useState([]);
+  const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('http://localhost:5000/api/recipient/pending')
       .then(res => res.json())
-      .then(data => setRecipients(data));
+      .then(data => setRecipients(data))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleApproval = async (id, approve) => {
-    const res = await fetch(`http://localhost:5000/api/recipient/approve/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ approved: approve }),
-    });
-
-    const updated = await res.json();
-    setRecipients(prev =>
-      prev.map(r => (r.id === updated.id ? updated : r))
-    );
+    try {
+      const res = await fetch(`http://localhost:5000/api/recipient/approve/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approved: approve }),
+      });
+      const updated = await res.json();
+      setRecipients(prev => prev.filter(r => r.id !== updated.id));
+    } catch (e) {
+      alert('Failed to update');
+    }
   };
 
+  const filtered = recipients.filter(r =>
+    [r.name, r.email, r.blood_type, r.location].join(' ').toLowerCase().includes(q.toLowerCase())
+  );
+
   return (
-    <div className="flex font-sans text-black">
+    <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <HospitalSidebar />
 
-      <div className="flex-1 px-8 py-10 bg-gray-100 min-h-screen">
-        <h1 className="text-4xl font-bold text-red-700 mb-10 text-left">Recipient Approval</h1>
+      <main className="flex-1 pl-64 p-8 md:p-12 space-y-10 overflow-x-hidden">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+            Recipient Approval
+          </h1>
 
-        {recipients.length === 0 ? (
-          <p className="text-left text-gray-500 text-lg">No pending requests at the moment.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {recipients.map(rec => (
+          <div className="relative w-full sm:w-80">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+            <input
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              placeholder="Search recipients…"
+              className="w-full pl-9 pr-3 py-2 rounded-lg bg-gray-800/60 border border-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/60 transition"
+            />
+          </div>
+        </div>
+
+        {/* Cards container */}
+        <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl shadow-2xl p-6 md:p-8 min-h-[50vh]">
+          {loading && (
+            <p className="text-center text-gray-400 py-10">Loading…</p>
+          )}
+
+          {!loading && filtered.length === 0 && (
+            <p className="text-center text-gray-400 py-10">No pending requests.</p>
+          )}
+
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((rec, i) => (
               <div
                 key={rec.id}
-                className="bg-red-50 border border-red-300 rounded-lg p-6 shadow-md hover:shadow-lg transition duration-300"
+                className="relative rounded-xl bg-gray-900/60 border border-white/10 p-6 shadow-lg hover:shadow-xl transition-all animate-fadeIn"
+                style={{ animationDelay: `${i * 40}ms` }}
               >
-                <p className="mb-1"><span className="font-bold">Name:</span> {rec.name}</p>
-                <p className="mb-1"><span className="font-bold">Email:</span> {rec.email}</p>
-                <p className="mb-1"><span className="font-bold">Blood Type:</span> {rec.blood_type}</p>
-                <p className="mb-1"><span className="font-bold">Location:</span> {rec.location}</p>
-                <p className="mb-1 flex items-center gap-1">
-                  <span className="font-bold">Urgent:</span>
-                  {rec.urgency ? (
-                    <span className="text-green-600 font-semibold">✅ Yes</span>
-                  ) : (
-                    <span className="text-gray-500">No</span>
-                  )}
-                </p>
-                <p className="mb-1"><span className="font-bold">Date:</span> {rec.date || new Date().toLocaleDateString()}</p>
-                <p className="mb-3 flex items-center gap-1">
-                  <span className="font-bold">Status:</span>
-                  <span className="text-red-600 font-semibold">❌ Not Approved</span>
-                </p>
+                {/* Blood tag */}
+                <span className="absolute -top-3 -right-3 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                  {rec.blood_type}
+                </span>
 
-                <div className="flex gap-3 mt-4 justify-center">
+                <InfoRow label="Name" value={rec.name} />
+                <InfoRow label="Email" value={rec.email} />
+                <InfoRow label="Location" value={rec.location} />
+                <InfoRow
+                  label="Urgent"
+                  value={
+                    rec.urgency
+                      ? <span className="text-green-400 font-semibold">✅ Yes</span>
+                      : <span className="text-gray-400">No</span>
+                  }
+                />
+                <InfoRow
+                  label="Date"
+                  value={rec.date ? new Date(rec.date).toLocaleDateString() : new Date().toLocaleDateString()}
+                />
+                <InfoRow
+                  label="Status"
+                  value={<span className="text-yellow-300 font-semibold">⏳ Pending</span>}
+                />
+
+                {/* Actions */}
+                <div className="flex gap-3 mt-6">
                   <button
                     onClick={() => handleApproval(rec.id, true)}
-                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 shadow"
+                    className="flex-1 px-4 py-2 rounded-md bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition"
                   >
-                    Approve
+                    ✅ Approve
                   </button>
                   <button
                     onClick={() => handleApproval(rec.id, false)}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 shadow"
+                    className="flex-1 px-4 py-2 rounded-md bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition"
                   >
-                    Decline
+                    ❌ Decline
                   </button>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </section>
+      </main>
+
+      {/* tiny fade-in animation */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn .3s ease forwards; }
+      `}</style>
     </div>
+  );
+}
+
+/* Small helper component */
+function InfoRow({ label, value }) {
+  return (
+    <p className="mb-2 text-sm">
+      <span className="font-semibold text-gray-300">{label}:</span>{' '}
+      <span className="text-gray-200">{value}</span>
+    </p>
   );
 }

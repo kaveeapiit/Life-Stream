@@ -3,49 +3,92 @@ import { useNavigate } from 'react-router-dom';
 
 export default function HospitalLogin() {
   const [form, setForm] = useState({ username: '', password: '' });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:5000/api/hospital/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.message);
-      navigate('/hospital/dashboard');
-    } else {
-      alert(data.error);
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:5000/api/hospital/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        navigate('/hospital/dashboard');
+      } else {
+        alert(data.error || 'Login failed');
+      }
+    } catch (err) {
+      alert('Server error');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-red-50">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-red-600">Hospital Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+      {/* Glow blob */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="w-96 h-96 bg-red-600/30 rounded-full blur-3xl absolute -top-24 -left-24 animate-pulse" />
+        <div className="w-80 h-80 bg-red-400/20 rounded-full blur-3xl absolute bottom-0 right-0" />
+      </div>
+
+      {/* Card */}
+      <div className="relative w-full max-w-md backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl animate-fadeIn">
+        <h2 className="text-3xl font-extrabold text-center mb-2">Hospital Login</h2>
+        <p className="text-center text-gray-300 mb-8 text-sm">Access your approval panel</p>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <Input
             type="text"
             placeholder="Username"
-            required
-            className="w-full px-4 py-2 border rounded text-black text-base"
+            value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
-          <input
+          <Input
             type="password"
             placeholder="Password"
-            required
-            className="w-full px-4 py-2 border rounded text-black text-base"
+            value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
-          <button className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
-            Login
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-lg bg-red-600 hover:bg-red-500 disabled:opacity-60 disabled:cursor-not-allowed transition font-semibold tracking-wide shadow"
+          >
+            {loading ? 'Logging in…' : 'Login'}
           </button>
         </form>
       </div>
+
+      {/* tiny animation */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn .35s ease forwards; }
+      `}</style>
+    </div>
+  );
+}
+
+/* Reusable input */
+function Input({ type, placeholder, value, onChange }) {
+  return (
+    <div className="relative">
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        required
+        className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+      />
     </div>
   );
 }

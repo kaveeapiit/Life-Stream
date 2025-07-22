@@ -4,6 +4,9 @@ import Sidebar from '../components/Sidebar';
 export default function PendingRequests() {
   const [pending, setPending] = useState([]);
   const [history, setHistory] = useState([]);
+  const [tab, setTab] = useState('pending');
+  const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
@@ -14,59 +17,158 @@ export default function PendingRequests() {
         setPending(p);
         setHistory(h);
       })
-      .catch(err => console.error('Error:', err));
+      .catch(err => console.error('Error:', err))
+      .finally(() => setLoading(false));
   }, []);
 
-  const renderCard = (req, i, section) => (
-    <div
-      key={i}
-      className={`p-5 rounded-xl shadow-md border-2 text-black transition hover:scale-[1.01] ${
-        req.urgency ? 'bg-red-50 border-red-300' : 'bg-white border-gray-200'
-      }`}
-    >
-      <p><strong>Name:</strong> {req.name}</p>
-      <p><strong>Email:</strong> {req.email}</p>
-      <p><strong>Blood Type:</strong> {req.blood_type}</p>
-      <p><strong>Location:</strong> {req.location}</p>
-      <p><strong>Urgent:</strong> {req.urgency ? '✅ Yes' : 'No'}</p>
-      <p><strong>Date:</strong> {new Date(req.created_at).toLocaleString()}</p>
-      <p>
-        <strong>Status:</strong>{' '}
-        {section === 'pending'
-          ? '⏳ Pending'
-          : req.status === 'approved'
-          ? '✅ Approved'
-          : '❌ Declined'}
-      </p>
-    </div>
+  const list = tab === 'pending' ? pending : history;
+  const filtered = list.filter(r =>
+    [r.name, r.email, r.blood_type, r.location, r.status]
+      .join(' ')
+      .toLowerCase()
+      .includes(q.toLowerCase())
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-50 text-black">
+    <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <Sidebar />
 
-      <div className="flex-1 p-6 ml-64">
-        <h1 className="text-3xl font-bold text-red-700 text-center mb-10">Pending Blood Requests</h1>
+      <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 overflow-x-hidden">
+        {/* Header */}
+        <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+            Blood Requests
+          </h1>
 
-        {/* Pending */}
-        {pending.length === 0 ? (
-          <p className="text-center text-gray-500 mb-12">No pending requests.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-16">
-            {pending.map((r, i) => renderCard(r, i, 'pending'))}
+          {/* Search */}
+          <div className="relative w-full md:w-80">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+            <input
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              placeholder="Search requests…"
+              className="w-full pl-9 pr-3 py-2 rounded-lg bg-gray-800/60 border border-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/60 transition"
+            />
           </div>
-        )}
+        </div>
 
-        {/* History */}
-        <h2 className="text-2xl font-bold text-gray-700 mb-6">📜 History (Approved / Declined)</h2>
-        {history.length === 0 ? (
-          <p className="text-center text-gray-500">No history yet.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {history.map((r, i) => renderCard(r, i, 'history'))}
-          </div>
-        )}
-      </div>
+        {/* Tabs */}
+        <div className="mb-8 flex gap-3">
+          <TabButton active={tab === 'pending'} onClick={() => setTab('pending')}>
+            ⏳ Pending ({pending.length})
+          </TabButton>
+          <TabButton active={tab === 'history'} onClick={() => setTab('history')}>
+            📜 History ({history.length})
+          </TabButton>
+        </div>
+
+        {/* Content */}
+        <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl min-h-[50vh]">
+          {loading ? (
+            <SkeletonGrid />
+          ) : filtered.length === 0 ? (
+            <p className="text-center text-gray-400 py-16">
+              {tab === 'pending' ? 'No pending requests.' : 'No history yet.'}
+            </p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {filtered.map((req, i) => (
+                <RequestCard key={req.id || i} req={req} section={tab} delay={i * 40} />
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
+
+      {/* Animations */}
+      <style>{`
+        @keyframes fadeIn { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform: translateY(0);} }
+        .animate-fadeIn { animation: fadeIn .35s ease forwards; }
+      `}</style>
+    </div>
+  );
+}
+
+/* ---------- Components ---------- */
+
+function TabButton({ active, children, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-4 py-2 rounded-lg text-sm font-semibold transition
+        ${active
+          ? 'bg-red-600 text-white shadow'
+          : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/60'}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function RequestCard({ req, section, delay = 0 }) {
+  const statusBadge = () => {
+    if (section === 'pending') return <Badge color="yellow">⏳ Pending</Badge>;
+    if (req.status === 'approved') return <Badge color="green">✅ Approved</Badge>;
+    return <Badge color="red">❌ Declined</Badge>;
+  };
+
+  return (
+    <div
+      className={`relative rounded-xl bg-gray-900/60 border border-white/10 p-6 shadow-lg hover:shadow-xl transition-all animate-fadeIn`}
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      {/* urgency tag */}
+      {req.urgency && (
+        <span className="absolute -top-3 -right-3 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+          URGENT
+        </span>
+      )}
+
+      <InfoRow label="Name" value={req.name} />
+      <InfoRow label="Email" value={req.email} />
+      <InfoRow label="Blood" value={req.blood_type} />
+      <InfoRow label="Location" value={req.location} />
+      <InfoRow label="Date" value={new Date(req.created_at).toLocaleString()} />
+      <InfoRow label="Status" value={statusBadge()} />
+    </div>
+  );
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <p className="mb-2 text-sm">
+      <span className="font-semibold text-gray-300">{label}:</span>{' '}
+      <span className="text-gray-200">{value}</span>
+    </p>
+  );
+}
+
+function Badge({ color, children }) {
+  const colors = {
+    red: 'bg-red-600/30 text-red-300',
+    green: 'bg-green-600/30 text-green-300',
+    yellow: 'bg-yellow-500/30 text-yellow-200',
+  };
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${colors[color]}`}>
+      {children}
+    </span>
+  );
+}
+
+function SkeletonGrid() {
+  return (
+    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="rounded-xl bg-gray-800/40 border border-white/5 p-6 animate-pulse space-y-3">
+          <div className="h-4 w-3/4 bg-gray-700/60 rounded" />
+          <div className="h-4 w-2/3 bg-gray-700/60 rounded" />
+          <div className="h-4 w-1/2 bg-gray-700/60 rounded" />
+          <div className="h-4 w-1/3 bg-gray-700/60 rounded" />
+          <div className="h-4 w-2/5 bg-gray-700/60 rounded" />
+          <div className="h-4 w-1/4 bg-gray-700/60 rounded" />
+        </div>
+      ))}
     </div>
   );
 }
