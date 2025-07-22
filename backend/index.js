@@ -10,8 +10,9 @@ import contactRoutes from './routes/contactRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import donationRoutes from './routes/donationRoutes.js';
 import hospitalRoutes from './routes/hospitalRoutes.js';
-import recipientRoutes from './routes/recipientRoutes.js'; // ✅ NEW
+import recipientRoutes from './routes/recipientRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import bloodRequestRoutes from './routes/bloodRequestRoutes.js'; // ✅ NEW
 
 const app = express();
 
@@ -28,8 +29,9 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/donation', donationRoutes);
 app.use('/api/hospital', hospitalRoutes);
-app.use('/api/recipient', recipientRoutes); // ✅ Added here
+app.use('/api/recipient', recipientRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/blood', bloodRequestRoutes); // ✅ NEW
 
 // ✅ Start server
 const PORT = 5000;

@@ -11,7 +11,7 @@ export default function Sidebar() {
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => setIsVisible(true), 100); // slight delay for animation
+    const timeout = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -35,6 +35,12 @@ export default function Sidebar() {
             onClick={() => navigate('/profile')}
           >
             👤 My Profile
+          </li>
+          <li
+            className="cursor-pointer hover:bg-red-800 rounded-md px-3 py-2 transition-all duration-200"
+            onClick={() => navigate('/pending-requests')}
+          >
+            🩸 Recipient
           </li>
         </ul>
       </div>
