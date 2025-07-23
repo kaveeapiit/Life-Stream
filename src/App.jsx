@@ -18,6 +18,7 @@ import AdminDashboard from './admin/pages/AdminDashboard';
 import HospitalLogin from './hospital/pages/HospitalLogin';
 import HospitalDashboard from './hospital/pages/HospitalDashboard';
 import DonorApproval from './hospital/pages/DonorApproval';
+import Users from './admin/pages/Users';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -71,6 +72,7 @@ function AppWrapper() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/pending-requests" element={<PendingRequests />} />
         <Route path="/hospital/recipient-approval" element={<RecipientApproval />} />
+        <Route path="/admin/users" element={<Users />} />
 
         <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/user" element={<UserDashboard />} />

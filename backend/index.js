@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 
-// ✅ API route imports
 import landingRoutes from './routes/landingRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import aboutRoutes from './routes/aboutRoutes.js';
@@ -12,15 +11,18 @@ import donationRoutes from './routes/donationRoutes.js';
 import hospitalRoutes from './routes/hospitalRoutes.js';
 import recipientRoutes from './routes/recipientRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import bloodRequestRoutes from './routes/bloodRequestRoutes.js'; // ✅ NEW
+import bloodRequestRoutes from './routes/bloodRequestRoutes.js';
 
 const app = express();
 
-// ✅ Middleware
-app.use(cors());
+// *** IMPORTANT: CORS WITH CREDENTIALS ***
+app.use(cors({
+  origin: 'http://localhost:5173', // your Vite dev URL
+  credentials: true
+}));
 app.use(express.json());
 
-// ✅ Register API Routes
+// routes
 app.use('/api/landing', landingRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/about', aboutRoutes);
@@ -31,8 +33,7 @@ app.use('/api/donation', donationRoutes);
 app.use('/api/hospital', hospitalRoutes);
 app.use('/api/recipient', recipientRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/blood', bloodRequestRoutes); // ✅ NEW
+app.use('/api/blood', bloodRequestRoutes);
 
-// ✅ Start server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
