@@ -1,5 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { Shield, Users, Droplet, Activity, FileText, Settings, LogOut } from "lucide-react";
+import {
+  Shield,
+  Users,
+  Droplet,
+  Activity,
+  FileText,
+  LogOut,
+  ShieldPlus,   // 👈 new icon
+} from "lucide-react";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -9,7 +17,7 @@ export default function AdminDashboard() {
     { to: "/admin/donations", label: "Donations", icon: Droplet },
     { to: "/admin/requests", label: "Blood Requests", icon: Activity },
     { to: "/admin/reports", label: "Reports", icon: FileText },
-    { to: "/admin/settings", label: "Settings", icon: Settings },
+    { to: "/admin/hospitals", label: "Hospitals", icon: ShieldPlus }, // 👈 changed
   ];
 
   return (

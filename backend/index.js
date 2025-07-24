@@ -12,6 +12,7 @@ import hospitalRoutes from './routes/hospitalRoutes.js';
 import recipientRoutes from './routes/recipientRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import bloodRequestRoutes from './routes/bloodRequestRoutes.js';
+import adminHospitalRoutes from './routes/adminHospitalRoutes.js';
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/hospital', hospitalRoutes);
 app.use('/api/recipient', recipientRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/blood', bloodRequestRoutes);
+app.use('/api/admin/hospitals', adminHospitalRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

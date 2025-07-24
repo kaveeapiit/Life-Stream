@@ -19,6 +19,7 @@ import HospitalLogin from './hospital/pages/HospitalLogin';
 import HospitalDashboard from './hospital/pages/HospitalDashboard';
 import DonorApproval from './hospital/pages/DonorApproval';
 import Users from './admin/pages/Users';
+import Hospitals from './admin/pages/Hospitals.jsx';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -79,6 +80,7 @@ function AppWrapper() {
 
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/hospitals" element={<Hospitals />} />
 
         <Route path="/hospital/login" element={<HospitalLogin />} />
         <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
