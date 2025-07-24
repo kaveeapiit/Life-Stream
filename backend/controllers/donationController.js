@@ -2,7 +2,8 @@ import {
   insertDonation,
   fetchDonationsByEmail,
   getPendingDonations,
-  updateDonationStatus
+  updateDonationStatus,
+  getPendingDonationsForHospital
 } from '../models/donationModel.js';
 
 // ✅ 1. Handle donation submission (public/user)
@@ -43,7 +44,7 @@ export const getUserDonations = async (req, res) => {
   }
 };
 
-// ✅ 3. Fetch all pending donations (for hospital/admin)
+// ✅ 3. Fetch all pending donations (admin use only)
 export const fetchPendingDonations = async (req, res) => {
   try {
     const donations = await getPendingDonations();
@@ -69,5 +70,22 @@ export const approveOrDeclineDonation = async (req, res) => {
   } catch (err) {
     console.error('Error updating donation status:', err.message);
     res.status(500).json({ error: 'Failed to update donation status' });
+  }
+};
+
+// ✅ 5. Hospital-only: Fetch pending donations filtered by their own hospital/location
+export const fetchPendingDonationsForHospital = async (req, res) => {
+  const { hospital } = req.session;
+
+  if (!hospital || !hospital.username) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const donations = await getPendingDonationsForHospital(hospital.username);
+    res.status(200).json(donations);
+  } catch (err) {
+    console.error('Error fetching hospital donations:', err.message);
+    res.status(500).json({ error: 'Failed to fetch donations' });
   }
 };

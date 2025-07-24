@@ -27,7 +27,7 @@ export const fetchDonationsByEmail = async (email) => {
   return result.rows;
 };
 
-// ✅ Get all pending donations (for admin/hospital view)
+// ✅ Get all pending donations (for admin view)
 export const getPendingDonations = async () => {
   const result = await pool.query(
     'SELECT * FROM donations WHERE status = $1 ORDER BY created_at DESC',
@@ -43,4 +43,16 @@ export const updateDonationStatus = async (id, status) => {
     [status, id]
   );
   return result.rows[0];
+};
+
+// ✅ Get pending donations for a specific hospital based on username/location
+export const getPendingDonationsForHospital = async (hospitalUsername) => {
+  const query = `
+    SELECT * FROM donations
+    WHERE status = 'Pending' AND LOWER(location) LIKE LOWER($1)
+    ORDER BY created_at DESC
+  `;
+  const keyword = `%${hospitalUsername}%`; // e.g., "Kandy" matches "Kandy General Hospital"
+  const result = await pool.query(query, [keyword]);
+  return result.rows;
 };

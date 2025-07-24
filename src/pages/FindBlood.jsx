@@ -1,6 +1,3 @@
-// FindBlood.jsx  (includes BOTH selects: DarkSelect + FancyDropdown)
-// Pick ONE and comment the other where indicated.
-
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
@@ -64,9 +61,18 @@ export default function FindBlood() {
 
   const bloodOptions = ['A+','A-','B+','B-','AB+','AB-','O+','O-'];
 
+  const locationOptions = [
+    'Colombo National Blood Bank',
+    'Kandy General Hospital',
+    'Galle Teaching Hospital',
+    'Jaffna Hospital',
+    'Kurunegala Hospital',
+    'Badulla Hospital',
+    'Anuradhapura Hospital'
+  ];
+
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-hidden">
-      {/* blobs */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="w-96 h-96 bg-red-600/25 blur-3xl rounded-full absolute -top-24 -left-24 animate-pulse" />
         <div className="w-80 h-80 bg-red-500/20 blur-3xl rounded-full absolute bottom-0 right-0" />
@@ -96,9 +102,7 @@ export default function FindBlood() {
           <UnderInput label="Full Name" name="name" value={form.name} readOnly />
           <UnderInput label="Email Address" name="email" type="email" value={form.email} readOnly />
 
-          {/* ---- CHOOSE ONE OF THESE TWO ---- */}
-
-          {/* 1) Dark native-like select */}
+          {/* Blood Type Dropdown */}
           <DarkSelect
             label="Blood Type"
             name="blood_type"
@@ -110,25 +114,19 @@ export default function FindBlood() {
             required
           />
 
-          {/* 2) Custom dropdown (comment out DarkSelect above if you use this) */}
-          {/* <FancyDropdown
-            label="Blood Type"
-            value={form.blood_type}
-            onChange={val => setForm({ ...form, blood_type: val })}
-            placeholder="Select Blood Type"
-            disabled={!isLoggedIn}
-            options={bloodOptions.map(bt => ({ value: bt, label: bt }))}
-          /> */}
-
-          <UnderInput
-            label="Location"
+          {/* Nearest Blood Bank Dropdown */}
+          <DarkSelect
+            label="Nearest Blood Bank"
             name="location"
             value={form.location}
             onChange={handleChange}
+            placeholder="Select Location"
+            options={locationOptions}
             disabled={!isLoggedIn}
+            required
           />
 
-          {/* Urgency toggle */}
+          {/* Urgency Toggle */}
           <label className="flex items-center gap-3 select-none">
             <input
               type="checkbox"
@@ -176,7 +174,7 @@ export default function FindBlood() {
       </div>
 
       <style>{`
-        @keyframes fadeIn { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform: translateY(0);} }
+        @keyframes fadeIn { from {opacity:0; transform: translateY(6px);} to {opacity:1; transform:translateY(0);} }
         .animate-fadeIn { animation: fadeIn .45s ease forwards; }
         @keyframes loadingBar { 0%{transform:translateX(-100%);} 100%{transform:translateX(100%);} }
         .animate-loadingBar { animation: loadingBar 1.2s linear infinite; }
@@ -185,15 +183,12 @@ export default function FindBlood() {
   );
 }
 
-/* ---------- Underline inputs ---------- */
-const baseInput =
-  "w-full bg-transparent text-white/90 text-base font-medium py-3 focus:outline-none";
-const underline =
-  "border-b border-white/20 focus:border-red-500 transition-colors duration-200";
-const labelCls =
-  "block text-sm font-semibold text-white/70 mb-1";
+/* ---------- Underline Input Field ---------- */
+const baseInput = "w-full bg-transparent text-white/90 text-base font-medium py-3 focus:outline-none";
+const underline = "border-b border-white/20 focus:border-red-500 transition-colors duration-200";
+const labelCls = "block text-sm font-semibold text-white/70 mb-1";
 
-function UnderInput({ label, name, value, onChange, type="text", readOnly=false, disabled=false, required }) {
+function UnderInput({ label, name, value, onChange, type = "text", readOnly = false, disabled = false, required }) {
   return (
     <div className="relative">
       <label htmlFor={name} className={labelCls}>{label}</label>
@@ -207,14 +202,14 @@ function UnderInput({ label, name, value, onChange, type="text", readOnly=false,
         disabled={disabled}
         required={required}
         placeholder={label}
-        className={`${baseInput} ${underline} ${disabled||readOnly ? "opacity-60 cursor-not-allowed":""}`}
+        className={`${baseInput} ${underline} ${disabled || readOnly ? "opacity-60 cursor-not-allowed" : ""}`}
       />
     </div>
   );
 }
 
-/* ---------- Dark native-like select ---------- */
-function DarkSelect({ label, name, value, onChange, options, placeholder, disabled=false, required=false }) {
+/* ---------- DarkSelect (Styled Dropdown) ---------- */
+function DarkSelect({ label, name, value, onChange, options, placeholder, disabled = false, required = false }) {
   return (
     <div className="relative">
       <label htmlFor={name} className={labelCls}>{label}</label>
@@ -236,7 +231,7 @@ function DarkSelect({ label, name, value, onChange, options, placeholder, disabl
         ))}
       </select>
 
-      {/* caret */}
+      {/* caret icon */}
       <svg
         className="pointer-events-none absolute right-0 top-[38px] w-4 h-4 text-white/60"
         fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
@@ -244,109 +239,10 @@ function DarkSelect({ label, name, value, onChange, options, placeholder, disabl
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
       </svg>
 
-      {/* darken option list */}
       <style>{`
         select option { background-color:#111827; color:#ffffff; }
         select::-ms-expand { display:none; }
         select { -webkit-appearance:none; -moz-appearance:none; appearance:none; background-image:none!important; }
-      `}</style>
-    </div>
-  );
-}
-
-/* ---------- Fancy custom dropdown ---------- */
-function FancyDropdown({ label, value, onChange, options, placeholder = 'Select…', disabled=false }) {
-  const [open, setOpen] = useState(false);
-  const [activeIdx, setActiveIdx] = useState(-1);
-  const btnRef = useRef(null);
-  const listRef = useRef(null);
-
-  const selected = options.find(o => o.value === value);
-
-  useEffect(() => {
-    const handler = e => {
-      if (!open) return;
-      if (
-        btnRef.current && !btnRef.current.contains(e.target) &&
-        listRef.current && !listRef.current.contains(e.target)
-      ) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  const onKeyDown = e => {
-    if (disabled) return;
-    if (!open) {
-      if (['ArrowDown','Enter',' '].includes(e.key)) {
-        e.preventDefault(); setOpen(true); setActiveIdx(0);
-      }
-      return;
-    }
-    if (e.key === 'Escape') setOpen(false);
-    else if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(i => (i + 1) % options.length); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx(i => (i - 1 + options.length) % options.length); }
-    else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (activeIdx >= 0) { onChange(options[activeIdx].value); setOpen(false); }
-    }
-  };
-
-  return (
-    <div className="relative">
-      <label className={labelCls}>{label}</label>
-
-      <button
-        ref={btnRef}
-        type="button"
-        disabled={disabled}
-        onClick={() => !disabled && setOpen(o => !o)}
-        onKeyDown={onKeyDown}
-        className={`w-full bg-transparent text-white/90 text-base font-medium py-3 pl-0 pr-9
-                    ${underline} outline-none flex items-center justify-between
-                    ${disabled && 'opacity-60 cursor-not-allowed'}`}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        <span className={selected ? '' : 'text-white/40'}>
-          {selected ? selected.label : placeholder}
-        </span>
-        <ChevronDown className={`w-4 h-4 text-white/60 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-
-      {open && !disabled && (
-        <ul
-          ref={listRef}
-          role="listbox"
-          tabIndex={-1}
-          onKeyDown={onKeyDown}
-          className="absolute z-50 mt-2 w-full max-h-60 overflow-auto rounded-lg bg-gray-800/95 backdrop-blur
-                     border border-gray-700 shadow-xl focus:outline-none animate-dropdown"
-        >
-          {options.map((o, idx) => {
-            const isActive = idx === activeIdx;
-            const isSelected = o.value === value;
-            return (
-              <li
-                key={o.value}
-                role="option"
-                aria-selected={isSelected}
-                className={`px-4 py-2 text-sm cursor-pointer
-                  ${isSelected ? 'bg-red-600/30 text-red-200' : isActive ? 'bg-white/10 text-white' : 'text-white/90'}
-                  hover:bg-white/10`}
-                onMouseEnter={() => setActiveIdx(idx)}
-                onClick={() => { onChange(o.value); setOpen(false); }}
-              >
-                {o.label}
-              </li>
-            );
-          })}
-        </ul>
-      )}
-
-      <style>{`
-        @keyframes ddin {from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-        .animate-dropdown{animation:ddin .15s ease-out forwards}
       `}</style>
     </div>
   );

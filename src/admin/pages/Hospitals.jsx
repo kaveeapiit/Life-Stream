@@ -39,7 +39,10 @@ export default function Hospitals() {
 
   const openCreate = () => {
     setEditingId(null);
+
+    // 👇 You can test with 'Colombo', but leave it blank in production
     setForm({ username: '', password: '' });
+
     setShowPwd(false);
     setShowModal(true);
   };
@@ -268,7 +271,6 @@ export default function Hospitals() {
   );
 }
 
-/* ---------- small helpers ---------- */
 function Th({ children, className = '' }) {
   return <th className={`px-4 py-3 text-xs font-semibold ${className}`}>{children}</th>;
 }

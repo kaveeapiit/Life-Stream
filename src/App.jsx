@@ -35,6 +35,8 @@ function AppWrapper() {
     '/hospital/dashboard',
     '/hospital/donor-approval',
     '/hospital/recipient-approval',
+    '/admin/hospitals',
+    '/admin/users',
   ];
 
   const hideFooterPaths = [
@@ -46,6 +48,8 @@ function AppWrapper() {
     '/profile',
     '/UserDashboard',
     '/hospital/recipient-approval',
+    '/admin/users',
+    '/admin/hospitals',
   ];
 
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);

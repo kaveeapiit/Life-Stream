@@ -13,8 +13,10 @@ export default function HospitalLogin() {
       const res = await fetch('http://localhost:5000/api/hospital/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // ✅ Send session cookie
         body: JSON.stringify(form),
       });
+
       const data = await res.json();
       if (res.ok) {
         navigate('/hospital/dashboard');

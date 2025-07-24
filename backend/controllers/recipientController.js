@@ -11,10 +11,16 @@ export const fetchApprovedDonations = async (req, res) => {
   }
 };
 
-// ✅ Get all pending recipient requests
+// ✅ Get all pending recipient requests (Filtered by hospital session)
 export const getPendingRecipients = async (req, res) => {
+  const { hospital } = req.session;
+
+  if (!hospital || !hospital.username) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
-    const recipients = await RecipientModel.getPendingRequests();
+    const recipients = await RecipientModel.getPendingRequestsForHospital(hospital.username);
     res.status(200).json(recipients);
   } catch (err) {
     console.error('Error fetching recipient requests:', err);

@@ -7,9 +7,14 @@ export default function RecipientApproval() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/recipient/pending')
+    fetch('http://localhost:5000/api/recipient/pending', {
+      credentials: 'include'
+    })
       .then(res => res.json())
-      .then(data => setRecipients(data))
+      .then(data => {
+        if (Array.isArray(data)) setRecipients(data);
+        else setRecipients([]);
+      })
       .catch(err => console.error('Failed to fetch recipients', err))
       .finally(() => setLoading(false));
   }, []);
@@ -20,6 +25,7 @@ export default function RecipientApproval() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ approved: approve }),
+        credentials: 'include'
       });
       const updated = await res.json();
       setRecipients(prev => prev.filter(r => r.id !== updated.id));

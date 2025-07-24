@@ -7,9 +7,18 @@ export default function DonorApproval() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/donation/pending')
+    fetch('http://localhost:5000/api/hospital/donations/pending', {
+      credentials: 'include' // ✅ Send session cookie to backend
+    })
       .then(res => res.json())
-      .then(data => setDonations(data))
+      .then(data => {
+        console.log(data); // ✅ Debugging: check server response
+        if (Array.isArray(data)) {
+          setDonations(data);
+        } else {
+          setDonations([]);
+        }
+      })
       .catch(err => console.error('Failed to fetch pending donations', err))
       .finally(() => setLoading(false));
   }, []);
@@ -158,7 +167,6 @@ export default function DonorApproval() {
         </section>
       </main>
 
-      {/* row fade-in */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(4px); }
@@ -170,10 +178,10 @@ export default function DonorApproval() {
   );
 }
 
-/* --- tiny helpers --- */
 function Th({ children, className = '' }) {
   return <th className={`px-4 py-3 font-semibold ${className}`}>{children}</th>;
 }
+
 function Td({ children, className = '' }) {
   return <td className={`px-4 py-3 ${className}`}>{children}</td>;
 }
