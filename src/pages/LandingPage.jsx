@@ -7,7 +7,7 @@ export default function LandingPage() {
   const [statValues, setStatValues] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/landing')
+    fetch('http://localhost:5050/api/landing')
       .then(res => res.json())
       .then(d => {
         setData(d);

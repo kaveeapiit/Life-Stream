@@ -10,8 +10,8 @@ export default function PendingRequests() {
 
   useEffect(() => {
     Promise.all([
-      fetch('http://localhost:5000/api/blood/pending').then(r => r.json()),
-      fetch('http://localhost:5000/api/blood/history').then(r => r.json())
+      fetch('http://localhost:5050/api/blood/pending').then(r => r.json()),
+      fetch('http://localhost:5050/api/blood/history').then(r => r.json())
     ])
       .then(([p, h]) => {
         setPending(p);

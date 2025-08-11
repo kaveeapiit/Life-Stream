@@ -132,8 +132,7 @@ node backend/scripts/hash-hospital-password.js
 
 ```sh
 cd backend
-npm start
-# or
+
 node index.js
 ```
 
@@ -144,7 +143,7 @@ The backend runs on [http://localhost:5000](http://localhost:5000).
 ### 7. Running the Frontend
 
 ```sh
-npm run dev
+npm run client
 ```
 
 The frontend runs on [http://localhost:5173](http://localhost:5173) (default Vite port).

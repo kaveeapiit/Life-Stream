@@ -12,7 +12,7 @@ export default function Contact() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/contact')
+    fetch('http://localhost:5050/api/contact')
       .then(res => res.json())
       .then(setContact)
       .catch(() => setContact(false));

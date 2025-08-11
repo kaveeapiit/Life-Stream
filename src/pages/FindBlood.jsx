@@ -38,7 +38,7 @@ export default function FindBlood() {
     setMsg(null);
 
     try {
-      const res = await fetch('http://localhost:5000/api/blood/request', {
+      const res = await fetch('http://localhost:5050/api/blood/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
