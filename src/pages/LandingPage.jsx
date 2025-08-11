@@ -7,7 +7,10 @@ export default function LandingPage() {
   const [statValues, setStatValues] = useState([]);
 
   useEffect(() => {
-    fetch('https://life-stream-production-2f47.up.railway.app/api/landing')
+    // Fetch data from the backend API URL based on environment variables
+    const API_URL = process.env.REACT_APP_API_URL;  // This will be set in .env.local
+
+    fetch(`${API_URL}/landing`)
       .then(res => res.json())
       .then(d => {
         setData(d);
@@ -15,6 +18,7 @@ export default function LandingPage() {
       })
       .catch(() => setData(false));
   }, []);
+
 
   // simple count-up animation
   useEffect(() => {
