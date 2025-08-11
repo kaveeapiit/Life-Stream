@@ -21,7 +21,7 @@ const app = express();
 // ✅ Enable CORS with credentials
 app.use(
   cors({
-    origin: "http://localhost:5173", // Vite frontend
+    origin: "https://life-stream-flame.vercel.app", // Vercel frontend
     credentials: true,
   })
 );
