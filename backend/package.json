@@ -20,16 +20,11 @@
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "jsonwebtoken": "^9.0.2",
-    "lucide-react": "^0.532.0",
     "pg": "^8.16.3",
     "react-router-dom": "^7.6.3",
-    "tailwindcss": "^4.1.11",
-    "dotenv": "^16.4.5"
+    "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }
