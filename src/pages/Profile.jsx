@@ -11,7 +11,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5050/api/user/profile/${email}`)
+    fetch(`http://life-stream-production-2f47.up.railway.app/api/user/profile/${email}`)
       .then(res => res.json())
       .then(data => {
         setUser(data);
@@ -26,7 +26,7 @@ export default function Profile() {
   };
 
   const handleUpdate = async () => {
-    const res = await fetch('http://localhost:5050/api/user/profile', {
+    const res = await fetch('http://life-stream-production-2f47.up.railway.app/api/user/profile', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...editData, email }),

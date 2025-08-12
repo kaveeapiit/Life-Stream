@@ -12,7 +12,7 @@ export default function Contact() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:5050/api/contact')
+    fetch('http://life-stream-production-2f47.up.railway.app/api/contact')
       .then(res => res.json())
       .then(setContact)
       .catch(() => setContact(false));

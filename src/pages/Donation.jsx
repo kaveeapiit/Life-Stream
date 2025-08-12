@@ -30,7 +30,7 @@ export default function Donation() {
     setStatus({ type: '', message: '' });
 
     try {
-      const res = await fetch('http://localhost:5050/api/donation', {
+      const res = await fetch('http://life-stream-production-2f47.up.railway.app/api/donation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
