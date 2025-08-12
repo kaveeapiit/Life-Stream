@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import HospitalSidebar from '../components/HospitalSidebar';
+import { FaSearch, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 export default function DonorApproval() {
   const [donations, setDonations] = useState([]);
@@ -51,7 +52,7 @@ export default function DonorApproval() {
           <h1 className="text-3xl font-extrabold tracking-tight">Donor Approvals</h1>
 
           <div className="relative w-full sm:w-80">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
             <input
               value={q}
               onChange={e => setQ(e.target.value)}
@@ -111,13 +112,13 @@ export default function DonorApproval() {
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-green-600 hover:bg-green-500 text-white text-xs font-medium transition"
                         onClick={() => updateStatus(d.id, 'Approved')}
                       >
-                        ✅ Approve
+                        <FaCheckCircle /> Approve
                       </button>
                       <button
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition"
                         onClick={() => updateStatus(d.id, 'Declined')}
                       >
-                        ❌ Decline
+                        <FaTimesCircle /> Decline
                       </button>
                     </Td>
                   </tr>
@@ -152,13 +153,13 @@ export default function DonorApproval() {
                     className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-md bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition"
                     onClick={() => updateStatus(d.id, 'Approved')}
                   >
-                    ✅ Approve
+                    <FaCheckCircle /> Approve
                   </button>
                   <button
                     className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 rounded-md bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition"
                     onClick={() => updateStatus(d.id, 'Declined')}
                   >
-                    ❌ Decline
+                    <FaTimesCircle /> Decline
                   </button>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import HospitalSidebar from '../components/HospitalSidebar';
 import { useEffect, useState } from 'react';
+import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog } from 'react-icons/fa';
 
 export default function HospitalDashboard() {
   // Example: fetch stats later
@@ -25,7 +26,7 @@ export default function HospitalDashboard() {
         {/* Hero */}
         <section className="space-y-2 animate-fadeIn">
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-            Welcome to the <span className="text-red-400">Hospital Dashboard</span> 🏥
+            Welcome to the <span className="text-red-400">Hospital Dashboard</span> <FaHospital className="inline text-red-400" />
           </h1>
           <p className="text-gray-300 max-w-2xl">
             Manage donor & recipient approvals, track requests, and keep things moving smoothly.
@@ -44,10 +45,10 @@ export default function HospitalDashboard() {
         <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl shadow-2xl p-8 animate-fadeIn" style={{ animationDelay: '120ms' }}>
           <h2 className="text-2xl font-semibold mb-4">Quick Actions</h2>
           <div className="flex flex-wrap gap-4">
-            <DashButton to="/hospital/donor-approval" label="Review Donors" emoji="🩸" />
-            <DashButton to="/hospital/recipient-approval" label="Review Recipients" emoji="🧪" />
-            <DashButton to="/hospital/reports" label="View Reports" emoji="📊" />
-            <DashButton to="/hospital/settings" label="Settings" emoji="⚙️" />
+            <DashButton to="/hospital/donor-approval" label="Review Donors" icon={<FaTint />} />
+            <DashButton to="/hospital/recipient-approval" label="Review Recipients" icon={<FaFlask />} />
+            <DashButton to="/hospital/reports" label="View Reports" icon={<FaChartBar />} />
+            <DashButton to="/hospital/settings" label="Settings" icon={<FaCog />} />
           </div>
         </section>
       </main>
@@ -75,14 +76,14 @@ function StatCard({ label, value, accent }) {
   );
 }
 
-function DashButton({ to, label, emoji }) {
+function DashButton({ to, label, icon }) {
   return (
     <a
       href={to}
       className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gray-800/60 border border-gray-700 text-sm font-medium 
                  hover:bg-gray-700 hover:border-gray-600 transition animate-fadeIn"
     >
-      <span className="text-lg">{emoji}</span> {label}
+      <span className="text-lg text-red-400">{icon}</span> {label}
     </a>
   );
 }

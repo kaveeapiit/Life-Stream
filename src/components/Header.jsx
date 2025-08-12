@@ -1,6 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import { FaChevronDown } from 'react-icons/fa';
+import { 
+  FaChevronDown, 
+  FaHome, 
+  FaTint, 
+  FaSearch, 
+  FaInfoCircle, 
+  FaPhone,
+  FaUser,
+  FaLock
+} from 'react-icons/fa';
 import manIcon from '../assets/man.png';
 
 export default function Header() {
@@ -78,7 +87,7 @@ export default function Header() {
       onClick={() => handleNavigation(to)}
       className="flex items-center space-x-3 px-6 py-4 text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer border-b border-gray-100 last:border-b-0"
     >
-      {icon && <span className="text-xl">{icon}</span>}
+      {icon && <span className="text-xl text-red-500">{icon}</span>}
       <span className="font-medium text-lg">{children}</span>
     </div>
   );
@@ -224,11 +233,11 @@ export default function Header() {
 
         {/* Mobile Navigation Links */}
         <nav className="py-4">
-          <MobileLinkItem to="/" icon="🏠">Home</MobileLinkItem>
-          <MobileLinkItem to="/donate" icon="🩸">Donate</MobileLinkItem>
-          <MobileLinkItem to="/find-blood" icon="🔍">Find Blood</MobileLinkItem>
-          <MobileLinkItem to="/about" icon="ℹ️">About</MobileLinkItem>
-          <MobileLinkItem to="/contact" icon="📞">Contact</MobileLinkItem>
+          <MobileLinkItem to="/" icon={<FaHome />}>Home</MobileLinkItem>
+          <MobileLinkItem to="/donate" icon={<FaTint />}>Donate</MobileLinkItem>
+          <MobileLinkItem to="/find-blood" icon={<FaSearch />}>Find Blood</MobileLinkItem>
+          <MobileLinkItem to="/about" icon={<FaInfoCircle />}>About</MobileLinkItem>
+          <MobileLinkItem to="/contact" icon={<FaPhone />}>Contact</MobileLinkItem>
         </nav>
 
         {/* Mobile User Section */}

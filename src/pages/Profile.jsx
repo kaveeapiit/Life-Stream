@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FaUser, FaLock } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar';
 
 export default function Profile() {
@@ -84,12 +85,20 @@ export default function Profile() {
           {/* Tabs */}
           <div className="flex gap-2 sm:gap-3 mb-6 sm:mb-8 justify-center">
             <TabButton active={tab === 'profile'} onClick={() => setTab('profile')}>
-              <span className="hidden sm:inline">👤 Profile</span>
-              <span className="sm:hidden">👤</span>
+              <span className="hidden sm:inline flex items-center gap-2">
+                <FaUser /> Profile
+              </span>
+              <span className="sm:hidden">
+                <FaUser />
+              </span>
             </TabButton>
             <TabButton active={tab === 'password'} onClick={() => setTab('password')}>
-              <span className="hidden sm:inline">🔒 Password</span>
-              <span className="sm:hidden">🔒</span>
+              <span className="hidden sm:inline flex items-center gap-2">
+                <FaLock /> Password
+              </span>
+              <span className="sm:hidden">
+                <FaLock />
+              </span>
             </TabButton>
           </div>
 
@@ -129,9 +138,9 @@ export default function Profile() {
                 />
                 <button
                   onClick={handlePasswordChange}
-                  className="w-full bg-yellow-500 hover:bg-yellow-400 text-white font-semibold py-3 rounded-lg shadow-lg shadow-yellow-600/30 transition"
+                  className="w-full bg-yellow-500 hover:bg-yellow-400 text-white font-semibold py-3 rounded-lg shadow-lg shadow-yellow-600/30 transition flex items-center justify-center gap-2"
                 >
-                  🔒 Change Password
+                  <FaLock /> Change Password
                 </button>
               </div>
             )}
