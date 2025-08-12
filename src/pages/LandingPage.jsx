@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
-import favicon from '../assets/favicon.png'; // adjust path relative to this file
+import favicon from '../assets/favicon.png';
+import Footer from './Footer';  // Import Footer component
+
 
 export default function LandingPage() {
   const [data, setData] = useState(null);
@@ -149,8 +151,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer placeholder */}
-      {/* <Footer footer={data.footer} /> */}
+      <Footer footer={data.footer} /> {/* Render Footer component with footer data */}
 
       {/* Animations & extras */}
       <style>{`
