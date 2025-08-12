@@ -17,7 +17,7 @@ export default function UserDashboard() {
       return;
     }
 
-    fetch(`http://life-stream-production-2f47.up.railway.app/api/donation/user/${email}`)
+    fetch(`http://localhost:5050/api/donation/user/${email}`)
       .then(res => res.json())
       .then(setDonations)
       .catch(err => console.error('Donation fetch error:', err))

@@ -4,7 +4,7 @@ export default function About() {
   const [about, setAbout] = useState(null);
 
   useEffect(() => {
-    fetch('http://life-stream-production-2f47.up.railway.app/api/about')
+    fetch('http://localhost:5050/api/about')
       .then(res => res.json())
       .then(setAbout)
       .catch(() => setAbout(false));
