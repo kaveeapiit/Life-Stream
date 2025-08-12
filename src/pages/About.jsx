@@ -32,16 +32,16 @@ export default function About() {
   return (
     <div className="text-white font-sans bg-gray-900 min-h-screen overflow-x-hidden">
       {/* HERO */}
-      <section className="relative overflow-hidden text-center py-24 px-6">
+      <section className="relative overflow-hidden text-center py-16 sm:py-20 lg:py-24 px-4 sm:px-6">
         <div className="absolute inset-0 bg-gradient-to-br from-red-700/40 via-red-900/30 to-black" />
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-red-600/30 blur-3xl rounded-full" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-red-400/20 blur-3xl rounded-full" />
+        <div className="absolute -top-16 -left-16 sm:-top-24 sm:-left-24 w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-red-600/30 blur-3xl rounded-full" />
+        <div className="absolute bottom-0 right-0 w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 bg-red-400/20 blur-3xl rounded-full" />
 
         <div className="relative max-w-3xl mx-auto animate-fadeIn">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-5 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-5 leading-tight">
             Welcome to <span className="text-red-400">Life Stream</span>
           </h1>
-          <p className="text-lg md:text-xl opacity-90 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl opacity-90 leading-relaxed max-w-2xl mx-auto">
             Empowering healthcare through efficient blood management. Connecting donors,
             recipients, and medical facilities to save lives across Sri Lanka.
           </p>

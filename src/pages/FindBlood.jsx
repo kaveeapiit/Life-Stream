@@ -72,23 +72,23 @@ export default function FindBlood() {
   ];
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-hidden px-4 sm:px-6 lg:px-8">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="w-96 h-96 bg-red-600/25 blur-3xl rounded-full absolute -top-24 -left-24 animate-pulse" />
-        <div className="w-80 h-80 bg-red-500/20 blur-3xl rounded-full absolute bottom-0 right-0" />
+        <div className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-red-600/25 blur-3xl rounded-full absolute -top-16 -left-16 sm:-top-24 sm:-left-24 animate-pulse" />
+        <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 bg-red-500/20 blur-3xl rounded-full absolute bottom-0 right-0" />
       </div>
 
-      <div className="relative w-full max-w-xl backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-10 shadow-2xl animate-fadeIn">
-        <header className="text-center mb-10">
-          <h1 className="text-4xl font-extrabold tracking-tight">
+      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-xl backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl animate-fadeIn my-8">
+        <header className="text-center mb-8 sm:mb-10">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
             Request <span className="text-red-400">Blood</span>
           </h1>
-          <p className="text-gray-300 mt-2 text-sm">Fill the form below to notify nearby hospitals.</p>
+          <p className="text-gray-300 mt-2 text-sm sm:text-base">Fill the form below to notify nearby hospitals.</p>
         </header>
 
         {msg && (
           <div
-            className={`mb-6 px-4 py-3 rounded-lg text-sm font-medium ${
+            className={`mb-4 sm:mb-6 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm font-medium ${
               msg.type === 'success'
                 ? 'bg-green-500/20 text-green-300 border border-green-500/30'
                 : 'bg-red-500/20 text-red-300 border border-red-500/30'
