@@ -11,6 +11,8 @@ import {
   FaLock
 } from 'react-icons/fa';
 import manIcon from '../assets/man.png';
+import bloodLogo from '../assets/bloodlogo.png';
+
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -102,7 +104,7 @@ export default function Header() {
             onClick={() => handleNavigation('/')}
             className="flex items-center space-x-2 text-red-600 font-extrabold text-2xl tracking-tight cursor-pointer"
           >
-            <img src="/favicon.png" alt="logo" className="w-7 h-7" />
+            <img src={bloodLogo} alt="logo" className="w-7 h-7" />
             <span>Life Stream</span>
           </div>
 
