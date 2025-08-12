@@ -55,43 +55,45 @@ export default function Profile() {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <Sidebar />
 
-      <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 overflow-x-hidden relative">
+      <main className="flex-1 ml-0 md:ml-64 p-4 sm:p-6 lg:p-8 xl:p-12 overflow-x-hidden relative">
         {/* toast */}
         {msg && (
-          <div className="fixed top-6 right-6 z-50 px-4 py-2 rounded-md bg-green-500/20 border border-green-400/30 text-green-200 text-sm shadow animate-fadeIn">
+          <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 px-3 sm:px-4 py-2 rounded-md bg-green-500/20 border border-green-400/30 text-green-200 text-sm shadow animate-fadeIn max-w-xs">
             {msg}
           </div>
         )}
 
         <div className="max-w-3xl mx-auto">
           {/* Header */}
-          <header className="mb-10 flex flex-col items-center text-center">
-            <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-red-500/60 shadow-lg mb-4">
+          <header className="mb-8 sm:mb-10 flex flex-col items-center text-center">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-4 border-red-500/60 shadow-lg mb-4">
               <img
                 src={`https://ui-avatars.com/api/?name=${encodeURIComponent(editData.name || 'User')}&background=ef4444&color=fff`}
                 alt="avatar"
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-red-400 drop-shadow-sm">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-red-400 drop-shadow-sm">
               My Profile
             </h1>
             {user && (
-              <p className="text-sm text-gray-300 mt-2">{user.email}</p>
+              <p className="text-sm text-gray-300 mt-2 break-all sm:break-normal">{user.email}</p>
             )}
           </header>
 
           {/* Tabs */}
-          <div className="flex gap-3 mb-8 justify-center">
+          <div className="flex gap-2 sm:gap-3 mb-6 sm:mb-8 justify-center">
             <TabButton active={tab === 'profile'} onClick={() => setTab('profile')}>
-              👤 Profile
+              <span className="hidden sm:inline">👤 Profile</span>
+              <span className="sm:hidden">👤</span>
             </TabButton>
             <TabButton active={tab === 'password'} onClick={() => setTab('password')}>
-              🔒 Password
+              <span className="hidden sm:inline">🔒 Password</span>
+              <span className="sm:hidden">🔒</span>
             </TabButton>
           </div>
 
-          <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl min-h-[320px] animate-fadeIn">
+          <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl min-h-[280px] sm:min-h-[320px] animate-fadeIn">
             {loading ? (
               <Loader />
             ) : tab === 'profile' ? (

@@ -54,26 +54,26 @@ export default function Contact() {
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-x-hidden">
       {/* Glow blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="w-96 h-96 bg-red-600/30 blur-3xl rounded-full absolute -top-28 -left-28 animate-pulse" />
-        <div className="w-80 h-80 bg-red-500/20 blur-3xl rounded-full absolute bottom-0 right-0" />
+        <div className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-red-600/30 blur-3xl rounded-full absolute -top-16 -left-16 sm:-top-28 sm:-left-28 animate-pulse" />
+        <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 bg-red-500/20 blur-3xl rounded-full absolute bottom-0 right-0" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-16 md:py-24 animate-fadeIn">
-        <header className="mb-12 text-center md:text-left">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 flex items-center gap-2 justify-center md:justify-start">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-24 animate-fadeIn">
+        <header className="mb-8 sm:mb-12 text-center md:text-left">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 flex items-center gap-2 justify-center md:justify-start">
             📞 Contact Us
           </h1>
-          <p className="text-gray-300 max-w-2xl mx-auto md:mx-0">
+          <p className="text-gray-300 max-w-2xl mx-auto md:mx-0 text-sm sm:text-base">
             Reach out to our team for inquiries or support regarding the Life Stream blood management system.
           </p>
         </header>
 
-        <div className="grid md:grid-cols-2 gap-10">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {/* FORM */}
-          <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl animate-fadeInUp">
-            <h3 className="text-2xl font-bold mb-6">Send us a Message</h3>
-            <form className="space-y-6" onSubmit={submit}>
-              <div className="grid grid-cols-2 gap-4">
+          <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl animate-fadeInUp">
+            <h3 className="text-xl sm:text-2xl font-bold mb-6">Send us a Message</h3>
+            <form className="space-y-4 sm:space-y-6" onSubmit={submit}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FloatInput label="First Name" name="first" value={form.first} onChange={onChange} />
                 <FloatInput label="Last Name" name="last" value={form.last} onChange={onChange} />
               </div>
@@ -85,7 +85,7 @@ export default function Contact() {
               <button
                 disabled={sending}
                 type="submit"
-                className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-60 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 shadow"
+                className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-60 disabled:cursor-not-allowed text-white px-6 py-3 sm:py-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 shadow text-sm sm:text-base touch-manipulation"
               >
                 <FaEnvelope /> {sending ? 'Sending…' : 'Send Message'}
               </button>
@@ -93,10 +93,10 @@ export default function Contact() {
           </section>
 
           {/* INFO COLUMN */}
-          <section className="flex flex-col gap-6 animate-fadeInUp" style={{ animationDelay: '120ms' }}>
+          <section className="flex flex-col gap-4 sm:gap-6 animate-fadeInUp" style={{ animationDelay: '120ms' }}>
             {/* Contact Info Card */}
-            <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl">
-              <h3 className="text-2xl font-bold mb-4">Get in Touch</h3>
+            <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
+              <h3 className="text-xl sm:text-2xl font-bold mb-4">Get in Touch</h3>
               <p className="flex gap-2 items-start mb-3 text-gray-200">
                 <FaMapMarkerAlt className="mt-1 text-red-500" /> {contact.address}
               </p>

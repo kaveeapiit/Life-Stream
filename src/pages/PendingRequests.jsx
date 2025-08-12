@@ -33,45 +33,47 @@ export default function PendingRequests() {
     <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <Sidebar />
 
-      <main className="flex-1 ml-0 md:ml-64 p-8 md:p-12 overflow-x-hidden">
+      <main className="flex-1 ml-0 md:ml-64 p-4 sm:p-6 lg:p-8 xl:p-12 overflow-x-hidden">
         {/* Header */}
-        <div className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+        <div className="mb-8 sm:mb-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
             Blood Requests
           </h1>
 
           {/* Search */}
-          <div className="relative w-full md:w-80">
+          <div className="relative w-full lg:w-80">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
             <input
               value={q}
               onChange={e => setQ(e.target.value)}
               placeholder="Search requests…"
-              className="w-full pl-9 pr-3 py-2 rounded-lg bg-gray-800/60 border border-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/60 transition"
+              className="w-full pl-9 pr-3 py-2 sm:py-2.5 rounded-lg bg-gray-800/60 border border-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/60 transition touch-manipulation"
             />
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="mb-8 flex gap-3">
+        <div className="mb-6 sm:mb-8 flex gap-2 sm:gap-3 overflow-x-auto">
           <TabButton active={tab === 'pending'} onClick={() => setTab('pending')}>
-            ⏳ Pending ({pending.length})
+            <span className="hidden sm:inline">⏳ Pending ({pending.length})</span>
+            <span className="sm:hidden">⏳ {pending.length}</span>
           </TabButton>
           <TabButton active={tab === 'history'} onClick={() => setTab('history')}>
-            📜 History ({history.length})
+            <span className="hidden sm:inline">📜 History ({history.length})</span>
+            <span className="sm:hidden">📜 {history.length}</span>
           </TabButton>
         </div>
 
         {/* Content */}
-        <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl min-h-[50vh]">
+        <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl min-h-[50vh]">
           {loading ? (
             <SkeletonGrid />
           ) : filtered.length === 0 ? (
-            <p className="text-center text-gray-400 py-16">
+            <p className="text-center text-gray-400 py-12 sm:py-16 text-sm sm:text-base">
               {tab === 'pending' ? 'No pending requests.' : 'No history yet.'}
             </p>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {filtered.map((req, i) => (
                 <RequestCard key={req.id || i} req={req} section={tab} delay={i * 40} />
               ))}
