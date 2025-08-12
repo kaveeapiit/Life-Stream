@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import HospitalSidebar from '../components/HospitalSidebar';
+import { FaSearch, FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa';
 
 export default function RecipientApproval() {
   const [recipients, setRecipients] = useState([]);
@@ -53,7 +54,7 @@ export default function RecipientApproval() {
           </h1>
 
           <div className="relative w-full sm:w-80">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
             <input
               value={q}
               onChange={e => setQ(e.target.value)}
@@ -92,7 +93,7 @@ export default function RecipientApproval() {
                   label="Urgent"
                   value={
                     rec.urgency
-                      ? <span className="text-green-400 font-semibold">✅ Yes</span>
+                      ? <span className="text-green-400 font-semibold"><FaCheckCircle className="inline mr-1" /> Yes</span>
                       : <span className="text-gray-400">No</span>
                   }
                 />
@@ -102,7 +103,7 @@ export default function RecipientApproval() {
                 />
                 <InfoRow
                   label="Status"
-                  value={<span className="text-yellow-300 font-semibold">⏳ Pending</span>}
+                  value={<span className="text-yellow-300 font-semibold"><FaClock className="inline mr-1" /> Pending</span>}
                 />
 
                 {/* Actions */}
@@ -111,13 +112,13 @@ export default function RecipientApproval() {
                     onClick={() => handleApproval(rec.id, true)}
                     className="flex-1 px-4 py-2 rounded-md bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition"
                   >
-                    ✅ Approve
+                    <FaCheckCircle className="inline mr-1" /> Approve
                   </button>
                   <button
                     onClick={() => handleApproval(rec.id, false)}
                     className="flex-1 px-4 py-2 rounded-md bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition"
                   >
-                    ❌ Decline
+                    <FaTimesCircle className="inline mr-1" /> Decline
                   </button>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
+import { FaCheckCircle } from 'react-icons/fa';
 
 export default function FindBlood() {
   const [form, setForm] = useState({
@@ -45,7 +46,7 @@ export default function FindBlood() {
       });
 
       if (res.ok) {
-        setMsg({ type: 'success', text: '✅ Request submitted!' });
+        setMsg({ type: 'success', text: 'Request submitted successfully!' });
         setForm(f => ({ ...f, blood_type: '', location: '', urgency: false }));
         navigate('/pending-requests');
       } else {

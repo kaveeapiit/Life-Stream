@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FaSearch, FaClock, FaHistory, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar';
 
 export default function PendingRequests() {
@@ -42,7 +43,7 @@ export default function PendingRequests() {
 
           {/* Search */}
           <div className="relative w-full lg:w-80">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
             <input
               value={q}
               onChange={e => setQ(e.target.value)}
@@ -55,12 +56,12 @@ export default function PendingRequests() {
         {/* Tabs */}
         <div className="mb-6 sm:mb-8 flex gap-2 sm:gap-3 overflow-x-auto">
           <TabButton active={tab === 'pending'} onClick={() => setTab('pending')}>
-            <span className="hidden sm:inline">⏳ Pending ({pending.length})</span>
-            <span className="sm:hidden">⏳ {pending.length}</span>
+            <span className="hidden sm:inline"><FaClock className="inline mr-2" /> Pending ({pending.length})</span>
+            <span className="sm:hidden"><FaClock className="inline mr-1" /> {pending.length}</span>
           </TabButton>
           <TabButton active={tab === 'history'} onClick={() => setTab('history')}>
-            <span className="hidden sm:inline">📜 History ({history.length})</span>
-            <span className="sm:hidden">📜 {history.length}</span>
+            <span className="hidden sm:inline"><FaHistory className="inline mr-2" /> History ({history.length})</span>
+            <span className="sm:hidden"><FaHistory className="inline mr-1" /> {history.length}</span>
           </TabButton>
         </div>
 
@@ -109,9 +110,9 @@ function TabButton({ active, children, onClick }) {
 
 function RequestCard({ req, section, delay = 0 }) {
   const statusBadge = () => {
-    if (section === 'pending') return <Badge color="yellow">⏳ Pending</Badge>;
-    if (req.status === 'approved') return <Badge color="green">✅ Approved</Badge>;
-    return <Badge color="red">❌ Declined</Badge>;
+    if (section === 'pending') return <Badge color="yellow"><FaClock className="inline mr-1" /> Pending</Badge>;
+    if (req.status === 'approved') return <Badge color="green"><FaCheckCircle className="inline mr-1" /> Approved</Badge>;
+    return <Badge color="red"><FaTimesCircle className="inline mr-1" /> Declined</Badge>;
   };
 
   return (

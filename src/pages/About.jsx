@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 
 export default function About() {
   const [about, setAbout] = useState(null);
@@ -96,13 +97,13 @@ export default function About() {
         {/* LOCATION */}
         <div className="grid md:grid-cols-2 gap-10 items-center backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl p-8 animate-fadeInUp">
           <div className="space-y-2">
-            <h3 className="font-bold text-2xl mb-4">📍 Our Location</h3>
+            <h3 className="font-bold text-2xl mb-4"><FaMapMarkerAlt className="inline mr-2 text-red-500" /> Our Location</h3>
             <p className="text-lg font-semibold mb-1">{about.location.city}</p>
             <p className="text-base text-gray-200 mb-4 leading-relaxed">
               {about.location.description}
             </p>
-            <p className="text-sm text-gray-300 mb-1">📞 {about.location.phone}</p>
-            <p className="text-sm text-gray-300">✉️ {about.location.email}</p>
+            <p className="text-sm text-gray-300 mb-1"><FaPhone className="inline mr-2" /> {about.location.phone}</p>
+            <p className="text-sm text-gray-300"><FaEnvelope className="inline mr-2" /> {about.location.email}</p>
           </div>
           <img
             src={about.location.image}

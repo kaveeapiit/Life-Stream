@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
   FaFacebook, FaTwitter, FaInstagram, FaLinkedin,
-  FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaExclamationTriangle
+  FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaExclamationTriangle,
+  FaPhone
 } from 'react-icons/fa';
 
 export default function Contact() {
@@ -60,8 +61,8 @@ export default function Contact() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-24 animate-fadeIn">
         <header className="mb-8 sm:mb-12 text-center md:text-left">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 flex items-center gap-2 justify-center md:justify-start">
-            📞 Contact Us
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 flex items-center gap-3 justify-center md:justify-start">
+            <FaPhone className="text-red-500" /> Contact Us
           </h1>
           <p className="text-gray-300 max-w-2xl mx-auto md:mx-0 text-sm sm:text-base">
             Reach out to our team for inquiries or support regarding the Life Stream blood management system.
