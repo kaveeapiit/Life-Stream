@@ -1,6 +1,15 @@
 import { FaTint } from 'react-icons/fa';
 
 export default function Footer({ footer }) {
+  // Check if footer data is available, else show loading state
+  if (footer === null || footer === undefined) {
+    return (
+      <footer className="bg-gray-900 text-white text-center py-6">
+        <p className="text-sm sm:text-base">Loading footer info...</p>
+      </footer>
+    );
+  }
+
   return (
     <footer className="bg-gray-900 text-white px-4 sm:px-6 lg:px-10 py-8 sm:py-10 lg:py-12">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-sm">
