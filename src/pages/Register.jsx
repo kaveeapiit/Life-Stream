@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
 import { FaEnvelope, FaLock, FaUser, FaUserPlus, FaSignInAlt, FaTint, FaEye, FaEyeSlash } from 'react-icons/fa';
+import bloodLogo from '../assets/blooddrop.svg';
+
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', bloodType: '' });
@@ -51,7 +53,7 @@ export default function Register() {
         {/* Logo */}
         <div className="mb-6 text-center">
           <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3">
-            <img src="/favicon.png" alt="Life Stream Logo" className="w-full h-full" />
+            <img src={bloodLogo} alt="Life Stream Logo" className="w-full h-full" />
           </div>
           <h1 className="text-red-400 text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-wide">LIFE STREAM</h1>
           <p className="text-xs sm:text-sm text-gray-300 mt-1">Blood Donation Management</p>
