@@ -11,7 +11,7 @@ import {
   FaLock
 } from 'react-icons/fa';
 import manIcon from '../assets/man.png';
-import bloodLogo from '../assets/bloodlogo.png';
+import bloodLogo from '../assets/blooddrop.svg';
 
 
 export default function Header() {
