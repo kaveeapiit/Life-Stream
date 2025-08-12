@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import favicon from '../assets/favicon.png';
-import Footer from './Footer';  // Import Footer component
+import Footer from '../components/Footer';  // Import Footer component
 
 
 export default function LandingPage() {
