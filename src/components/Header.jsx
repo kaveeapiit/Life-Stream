@@ -102,12 +102,11 @@ export default function Header() {
           {/* Logo */}
           <div
             onClick={() => handleNavigation('/')}
-            className="flex items-center space-x-2 text-red-600 font-extrabold text-2xl tracking-tight cursor-pointer"
+            className="flex items-center space-x-2 text-red-600 font-extrabold text-xl tracking-tight cursor-pointer"
           >
-            <img src={bloodLogo} alt="logo" className="w-7 h-7" />
-            <span>Life Stream</span>
+            <img src={bloodLogo} alt="logo" className="w-12 h-12" /> {/* Increased size */}
+            <span className="text-2xl">Life Stream</span> {/* Adjusted font size */}
           </div>
-
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-6 text-sm font-semibold">
             <LinkItem to="/">Home</LinkItem>
