@@ -149,30 +149,6 @@ export default function Register() {
     </div>
   );
 }
-          >
-            <FaUserPlus /> {loading ? 'Registering…' : 'Register'}
-          </MagneticBtn>
-
-          <a
-            href="/login"
-            className="w-full flex items-center justify-center gap-2 border border-red-500 text-red-300 py-3 rounded-lg hover:bg-red-500/10 transition font-semibold"
-          >
-            <FaSignInAlt /> Login
-          </a>
-        </form>
-
-        <p className="text-[10px] text-gray-400 mt-6 text-center">
-          Need help? <a href="mailto:support@bloodlink.com" className="text-red-300 underline">support@bloodlink.com</a>
-        </p>
-      </div>
-
-      <style>{`
-        @keyframes fadeIn { from {opacity:0; transform: translateY(8px);} to {opacity:1; transform: translateY(0);} }
-        .animate-fadeIn { animation: fadeIn .4s ease forwards; }
-      `}</style>
-    </div>
-  );
-}
 
 /* ---------- Reusable components ---------- */
 
@@ -246,13 +222,13 @@ function StrengthBar({ level }) {
   );
 }
 
-function Alert({ type, children }) {
+function Alert({ type }) {
   const cls = type === 'error'
     ? 'bg-red-500/20 border-red-500/40 text-red-200'
     : 'bg-green-500/20 border-green-500/40 text-green-200';
   return (
     <div className={`mb-4 px-4 py-2 rounded-md border text-sm ${cls}`}>
-      {children}
+      
     </div>
   );
 }
