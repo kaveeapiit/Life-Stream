@@ -1,6 +1,7 @@
 import { FaTint } from 'react-icons/fa';
 
 export default function Footer({ footer }) {
+  // Only show loading footer if 'footer' is null or undefined
   if (!footer) {
     return (
       <footer className="bg-gray-900 text-white text-center py-6">
@@ -13,7 +14,9 @@ export default function Footer({ footer }) {
     <footer className="bg-gray-900 text-white px-4 sm:px-6 lg:px-10 py-8 sm:py-10 lg:py-12">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-sm">
         <div className="sm:col-span-2 lg:col-span-1">
-          <h4 className="font-bold mb-3 text-base"><FaTint className="inline mr-2 text-red-500" /> Life Stream</h4>
+          <h4 className="font-bold mb-3 text-base">
+            <FaTint className="inline mr-2 text-red-500" /> Life Stream
+          </h4>
           <p className="text-gray-400 leading-relaxed">
             Connecting donors with those in need. Every donation saves lives.
           </p>

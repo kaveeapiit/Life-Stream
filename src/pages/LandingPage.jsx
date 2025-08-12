@@ -151,7 +151,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <Footer footer={data.footer} /> {/* Render Footer component with footer data */}
+      <Footer footer={data.footer} />
 
       {/* Animations & extras */}
       <style>{`
