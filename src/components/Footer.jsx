@@ -5,7 +5,7 @@ export default function Footer({ footer }) {
   if (footer === null || footer === undefined) {
     return (
       <footer className="bg-gray-900 text-white text-center py-6">
-        <p className="text-sm sm:text-base">Loading footer info...</p>
+        <p className="text-sm sm:text-base"> </p>
       </footer>
     );
   }
