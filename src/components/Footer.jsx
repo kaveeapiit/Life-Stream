@@ -1,8 +1,8 @@
 import { FaTint } from 'react-icons/fa';
 
 export default function Footer({ footer }) {
-  // Only show loading footer if 'footer' is null or undefined
-  if (!footer) {
+  // Check if footer data is available, else show loading state
+  if (footer === null || footer === undefined) {
     return (
       <footer className="bg-gray-900 text-white text-center py-6">
         <p className="text-sm sm:text-base">Loading footer info...</p>
