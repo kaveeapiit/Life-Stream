@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import favicon from '../assets/favicon.png';
-import Footer from '../components/Footer';  // Import Footer component
 import API_BASE_URL from '../config/api.js';
 
 
@@ -151,8 +150,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      <Footer footer={data.footer} />
 
       {/* Animations & extras */}
       <style>{`
