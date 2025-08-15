@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
+import API_BASE_URL from '../config/api.js';
 
 export default function Donation() {
   const [form, setForm] = useState({
@@ -30,7 +31,7 @@ export default function Donation() {
     setStatus({ type: '', message: '' });
 
     try {
-      const res = await fetch('http://localhost:5050/api/donation', {
+      const res = await fetch(`${API_BASE_URL}/api/donation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)

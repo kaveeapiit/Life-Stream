@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FaSearch, FaClock, FaHistory, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar';
+import API_BASE_URL from '../config/api.js';
 
 export default function PendingRequests() {
   const [pending, setPending] = useState([]);
@@ -11,8 +12,8 @@ export default function PendingRequests() {
 
   useEffect(() => {
     Promise.all([
-      fetch('http://localhost:5050/api/blood/pending').then(r => r.json()),
-      fetch('http://localhost:5050/api/blood/history').then(r => r.json())
+      fetch(`${API_BASE_URL}/api/blood/pending`).then(r => r.json()),
+      fetch(`${API_BASE_URL}/api/blood/history`).then(r => r.json())
     ])
       .then(([p, h]) => {
         setPending(p);

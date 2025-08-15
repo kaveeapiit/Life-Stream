@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaSignInAlt, FaUserPlus, FaEye, FaEyeSlash } from 'react-icons/fa';
 import bloodLogo from '../assets/blooddrop.svg';
+import API_BASE_URL from '../config/api.js';
 
 
 export default function Login() {
@@ -16,7 +17,7 @@ export default function Login() {
     setErr('');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5050/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

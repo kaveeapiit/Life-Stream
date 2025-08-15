@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import API_BASE_URL from '../config/api.js';
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function UserDashboard() {
       return;
     }
 
-    fetch(`http://localhost:5050/api/donation/user/${email}`)
+    fetch(`${API_BASE_URL}/api/donation/user/${email}`)
       .then(res => res.json())
       .then(setDonations)
       .catch(err => console.error('Donation fetch error:', err))

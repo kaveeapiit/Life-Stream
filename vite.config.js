@@ -1,11 +1,12 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    tailwindcss(),
-    react()
-  ],
-})
+  plugins: [tailwindcss(), react()],
+  define: {
+    // Ensure environment variables are available in production
+    __APP_ENV__: JSON.stringify(process.env.NODE_ENV),
+  },
+});

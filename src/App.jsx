@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import API_BASE_URL from './config/api.js';
 
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
@@ -56,7 +57,7 @@ function AppWrapper() {
   const shouldHideFooter = hideFooterPaths.includes(location.pathname);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/footer')
+    fetch(`${API_BASE_URL}/api/footer`)
       .then((res) => res.json())
       .then((data) => setFooterData(data))
       .catch((err) => console.error('Footer fetch failed:', err));

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar';
+import API_BASE_URL from '../config/api.js';
 
 export default function Profile() {
   const email = localStorage.getItem('email');
@@ -12,7 +13,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5050/api/user/profile/${email}`)
+    fetch(`${API_BASE_URL}/api/user/profile/${email}`)
       .then(res => res.json())
       .then(data => {
         setUser(data);
@@ -27,7 +28,7 @@ export default function Profile() {
   };
 
   const handleUpdate = async () => {
-    const res = await fetch('http://localhost:5050/api/user/profile', {
+    const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...editData, email }),
@@ -42,7 +43,7 @@ export default function Profile() {
   };
 
   const handlePasswordChange = async () => {
-    const res = await fetch('http://localhost:5000/api/user/profile/password', {
+    const res = await fetch(`${API_BASE_URL}/api/user/profile/password`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, newPassword }),

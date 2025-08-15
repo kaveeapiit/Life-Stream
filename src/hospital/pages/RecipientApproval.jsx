@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import HospitalSidebar from '../components/HospitalSidebar';
 import { FaSearch, FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa';
+import API_BASE_URL from '../../config/api.js';
 
 export default function RecipientApproval() {
   const [recipients, setRecipients] = useState([]);
@@ -8,7 +9,7 @@ export default function RecipientApproval() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/recipient/pending', {
+    fetch(`${API_BASE_URL}/api/recipient/pending`, {
       credentials: 'include'
     })
       .then(res => res.json())
@@ -22,7 +23,7 @@ export default function RecipientApproval() {
 
   const handleApproval = async (id, approve) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/recipient/approve/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/recipient/approve/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ approved: approve }),
@@ -31,6 +32,7 @@ export default function RecipientApproval() {
       const updated = await res.json();
       setRecipients(prev => prev.filter(r => r.id !== updated.id));
     } catch (e) {
+      console.error('Failed to update:', e);
       alert('Failed to update');
     }
   };

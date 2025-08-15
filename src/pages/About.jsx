@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
+import API_BASE_URL from '../config/api.js';
 
 export default function About() {
   const [about, setAbout] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5050/api/about')
+    fetch(`${API_BASE_URL}/api/about`)
       .then(res => res.json())
       .then(setAbout)
       .catch(() => setAbout(false));

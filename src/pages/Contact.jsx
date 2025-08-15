@@ -4,6 +4,7 @@ import {
   FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaExclamationTriangle,
   FaPhone
 } from 'react-icons/fa';
+import API_BASE_URL from '../config/api.js';
 
 export default function Contact() {
   const [contact, setContact] = useState(null);
@@ -13,7 +14,7 @@ export default function Contact() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:5050/api/contact')
+    fetch(`${API_BASE_URL}/api/contact`)
       .then(res => res.json())
       .then(setContact)
       .catch(() => setContact(false));

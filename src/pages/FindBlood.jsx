@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { FaCheckCircle } from 'react-icons/fa';
+import API_BASE_URL from '../config/api.js';
 
 export default function FindBlood() {
   const [form, setForm] = useState({
@@ -39,7 +40,7 @@ export default function FindBlood() {
     setMsg(null);
 
     try {
-      const res = await fetch('http://localhost:5050/api/blood/request', {
+      const res = await fetch(`${API_BASE_URL}/api/blood/request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

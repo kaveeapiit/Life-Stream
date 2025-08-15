@@ -1,6 +1,10 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 // ✅ Route imports
 import landingRoutes from "./routes/landingRoutes.js";
@@ -21,7 +25,7 @@ const app = express();
 // ✅ Enable CORS with credentials
 app.use(
   cors({
-    origin: "https://life-stream-flame.vercel.app", // Vercel frontend
+    origin: process.env.FRONTEND_URL || "http://localhost:5173", // Use environment variable or default to local
     credentials: true,
   })
 );

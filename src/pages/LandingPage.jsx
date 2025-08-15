@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import favicon from '../assets/favicon.png';
 import Footer from '../components/Footer';  // Import Footer component
+import API_BASE_URL from '../config/api.js';
 
 
 export default function LandingPage() {
@@ -9,7 +10,7 @@ export default function LandingPage() {
   const [statValues, setStatValues] = useState([]);
 
   useEffect(() => {
-    fetch('https://life-stream-production-2f47.up.railway.app/api/landing')
+    fetch(`${API_BASE_URL}/api/landing`)
       .then(res => res.json())
       .then(d => {
         setData(d);

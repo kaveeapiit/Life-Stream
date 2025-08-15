@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import HospitalSidebar from '../components/HospitalSidebar';
 import { FaSearch, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import API_BASE_URL from '../../config/api.js';
 
 export default function DonorApproval() {
   const [donations, setDonations] = useState([]);
@@ -8,7 +9,7 @@ export default function DonorApproval() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/hospital/donations/pending', {
+    fetch(`${API_BASE_URL}/api/hospital/donations/pending`, {
       credentials: 'include' // ✅ Send session cookie to backend
     })
       .then(res => res.json())
@@ -26,7 +27,7 @@ export default function DonorApproval() {
 
   const updateStatus = async (id, status) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/donation/update/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/donation/update/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
@@ -34,6 +35,7 @@ export default function DonorApproval() {
       const updated = await res.json();
       setDonations(prev => prev.filter(d => d.id !== updated.id));
     } catch (err) {
+      console.error('Error updating status:', err);
       alert('Error updating status');
     }
   };
