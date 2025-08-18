@@ -1,6 +1,6 @@
 import HospitalSidebar from '../components/HospitalSidebar';
 import { useEffect, useState } from 'react';
-import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog } from 'react-icons/fa';
+import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog, FaUsers } from 'react-icons/fa';
 
 export default function HospitalDashboard() {
   // Example: fetch stats later
@@ -47,6 +47,7 @@ export default function HospitalDashboard() {
           <div className="flex flex-wrap gap-4">
             <DashButton to="/hospital/donor-approval" label="Review Donors" icon={<FaTint />} />
             <DashButton to="/hospital/recipient-approval" label="Review Recipients" icon={<FaFlask />} />
+            <DashButton to="/hospital/available-donors" label="Available Donors" icon={<FaUsers />} />
             <DashButton to="/hospital/reports" label="View Reports" icon={<FaChartBar />} />
             <DashButton to="/hospital/settings" label="Settings" icon={<FaCog />} />
           </div>

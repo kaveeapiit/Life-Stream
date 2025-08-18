@@ -19,6 +19,7 @@ import AdminDashboard from './admin/pages/AdminDashboard';
 import HospitalLogin from './hospital/pages/HospitalLogin';
 import HospitalDashboard from './hospital/pages/HospitalDashboard';
 import DonorApproval from './hospital/pages/DonorApproval';
+import AvailableDonors from './hospital/pages/AvailableDonors';
 import Users from './admin/pages/Users';
 import Hospitals from './admin/pages/Hospitals.jsx';
 
@@ -36,6 +37,7 @@ function AppWrapper() {
     '/hospital/dashboard',
     '/hospital/donor-approval',
     '/hospital/recipient-approval',
+    '/hospital/available-donors',
     '/admin/hospitals',
     '/admin/users',
   ];
@@ -46,6 +48,7 @@ function AppWrapper() {
     '/hospital/login',
     '/hospital/dashboard',
     '/hospital/donor-approval',
+    '/hospital/available-donors',
     '/profile',
     '/UserDashboard',
     '/hospital/recipient-approval',
@@ -90,6 +93,7 @@ function AppWrapper() {
         <Route path="/hospital/login" element={<HospitalLogin />} />
         <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
         <Route path="/hospital/donor-approval" element={<DonorApproval />} />
+        <Route path="/hospital/available-donors" element={<AvailableDonors />} />
       </Routes>
 
       {!shouldHideFooter && <Footer footer={footerData} />}
