@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import HospitalSidebar from '../components/HospitalSidebar';
+import AuthDebug from '../components/AuthDebug';
 import { FaSearch, FaUser, FaEnvelope, FaTint, FaCalendarAlt } from 'react-icons/fa';
 import API_BASE_URL from '../../config/api.js';
 
@@ -24,13 +25,20 @@ export default function AvailableDonors() {
         ...(bloodTypeFilter !== 'all' && { bloodType: bloodTypeFilter })
       });
 
+      console.log('Fetching donors with params:', params.toString());
       const res = await fetch(`${API_BASE_URL}/api/hospital/donors/available?${params}`, {
         credentials: 'include'
       });
 
-      if (!res.ok) throw new Error('Failed to fetch donors');
+      console.log('Response status:', res.status);
+      if (!res.ok) {
+        const errorData = await res.text();
+        console.error('Error response:', errorData);
+        throw new Error(`Failed to fetch donors: ${res.status}`);
+      }
       
       const data = await res.json();
+      console.log('Donors data received:', data);
       setDonors(data.donors);
       setCurrentPage(data.page);
       setTotalPages(data.totalPages);
@@ -95,6 +103,7 @@ export default function AvailableDonors() {
             View registered users who could potentially donate blood for planning purposes.
             Total: {total} registered donors
           </p>
+          <AuthDebug />
         </div>
 
         {/* Filters */}

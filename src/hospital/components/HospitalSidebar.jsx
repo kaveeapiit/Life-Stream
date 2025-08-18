@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Droplet, FlaskConical, Users, LogOut, Menu } from 'lucide-react';
+import { LayoutDashboard, Droplet, FlaskConical, Users, LogOut, Menu, Package, Plus } from 'lucide-react';
 
 export default function HospitalSidebar() {
   const navigate = useNavigate();
@@ -73,6 +73,8 @@ export default function HospitalSidebar() {
             <Item to="/hospital/donor-approval" icon={Droplet} label="Donor Approval" />
             <Item to="/hospital/recipient-approval" icon={FlaskConical} label="Recipient Approval" />
             <Item to="/hospital/available-donors" icon={Users} label="Available Donors" />
+            <Item to="/hospital/collect-donation" icon={Plus} label="Collect Donation" />
+            <Item to="/hospital/blood-inventory" icon={Package} label="Blood Inventory" />
           </ul>
         </div>
 

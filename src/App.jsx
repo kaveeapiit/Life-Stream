@@ -20,6 +20,8 @@ import HospitalLogin from './hospital/pages/HospitalLogin';
 import HospitalDashboard from './hospital/pages/HospitalDashboard';
 import DonorApproval from './hospital/pages/DonorApproval';
 import AvailableDonors from './hospital/pages/AvailableDonors';
+import BloodInventory from './hospital/pages/BloodInventory';
+import CollectDonation from './hospital/pages/CollectDonation';
 import Users from './admin/pages/Users';
 import Hospitals from './admin/pages/Hospitals.jsx';
 
@@ -38,6 +40,8 @@ function AppWrapper() {
     '/hospital/donor-approval',
     '/hospital/recipient-approval',
     '/hospital/available-donors',
+    '/hospital/blood-inventory',
+    '/hospital/collect-donation',
     '/admin/hospitals',
     '/admin/users',
   ];
@@ -48,12 +52,14 @@ function AppWrapper() {
     '/hospital/login',
     '/hospital/dashboard',
     '/hospital/donor-approval',
+    '/hospital/recipient-approval',
     '/hospital/available-donors',
+    '/hospital/blood-inventory',
+    '/hospital/collect-donation',
+    '/admin/hospitals',
+    '/admin/users',
     '/profile',
     '/UserDashboard',
-    '/hospital/recipient-approval',
-    '/admin/users',
-    '/admin/hospitals',
   ];
 
   const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
@@ -94,6 +100,8 @@ function AppWrapper() {
         <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
         <Route path="/hospital/donor-approval" element={<DonorApproval />} />
         <Route path="/hospital/available-donors" element={<AvailableDonors />} />
+        <Route path="/hospital/blood-inventory" element={<BloodInventory />} />
+        <Route path="/hospital/collect-donation" element={<CollectDonation />} />
       </Routes>
 
       {!shouldHideFooter && <Footer footer={footerData} />}

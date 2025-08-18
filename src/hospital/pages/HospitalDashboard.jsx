@@ -1,6 +1,7 @@
 import HospitalSidebar from '../components/HospitalSidebar';
 import { useEffect, useState } from 'react';
-import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog, FaUsers } from 'react-icons/fa';
+import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog, FaUsers, FaWarehouse } from 'react-icons/fa';
+import API_BASE_URL from '../../config/api.js';
 
 export default function HospitalDashboard() {
   // Example: fetch stats later
@@ -9,12 +10,58 @@ export default function HospitalDashboard() {
     pendingRecipients: 5,
     approvedToday: 9,
     declinedToday: 2,
+    totalInventoryUnits: 0,
+    expiringUnits: 0
   });
 
   // optional fade-in mount
   const [mounted, setMounted] = useState(false);
+  
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 60);
+    
+    // Fetch dashboard statistics
+    const fetchDashboardStats = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/hospital/dashboard/stats`, {
+          credentials: 'include'
+        });
+        if (res.ok) {
+          const dashboardStats = await res.json();
+          setStats(prev => ({
+            ...prev,
+            ...dashboardStats
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching dashboard stats:', err);
+      }
+    };
+    
+    // Fetch inventory summary for dashboard
+    const fetchInventorySummary = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/hospital/inventory/summary`, {
+          credentials: 'include'
+        });
+        if (res.ok) {
+          const summary = await res.json();
+          const totalUnits = summary.reduce((sum, item) => sum + parseInt(item.available_units), 0);
+          const expiringUnits = summary.reduce((sum, item) => sum + parseInt(item.expiring_soon || 0), 0);
+          
+          setStats(prev => ({
+            ...prev,
+            totalInventoryUnits: totalUnits,
+            expiringUnits: expiringUnits
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching inventory summary:', err);
+      }
+    };
+
+    fetchDashboardStats();
+    fetchInventorySummary();
     return () => clearTimeout(t);
   }, []);
 
@@ -34,11 +81,13 @@ export default function HospitalDashboard() {
         </section>
 
         {/* Quick Stats */}
-        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-6">
           <StatCard label="Pending Donors" value={stats.pendingDonors} accent="from-red-500 to-red-700" />
           <StatCard label="Pending Recipients" value={stats.pendingRecipients} accent="from-amber-500 to-amber-700" />
           <StatCard label="Approved Today" value={stats.approvedToday} accent="from-green-500 to-green-700" />
           <StatCard label="Declined Today" value={stats.declinedToday} accent="from-gray-500 to-gray-700" />
+          <StatCard label="Blood Units Available" value={stats.totalInventoryUnits} accent="from-blue-500 to-blue-700" />
+          <StatCard label="Expiring Soon" value={stats.expiringUnits} accent="from-orange-500 to-orange-700" />
         </section>
 
         {/* Actions */}
@@ -48,6 +97,7 @@ export default function HospitalDashboard() {
             <DashButton to="/hospital/donor-approval" label="Review Donors" icon={<FaTint />} />
             <DashButton to="/hospital/recipient-approval" label="Review Recipients" icon={<FaFlask />} />
             <DashButton to="/hospital/available-donors" label="Available Donors" icon={<FaUsers />} />
+            <DashButton to="/hospital/blood-inventory" label="Blood Inventory" icon={<FaWarehouse />} />
             <DashButton to="/hospital/reports" label="View Reports" icon={<FaChartBar />} />
             <DashButton to="/hospital/settings" label="Settings" icon={<FaCog />} />
           </div>

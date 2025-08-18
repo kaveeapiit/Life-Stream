@@ -6,6 +6,7 @@ import {
   getPendingDonationsForHospital,
 } from "../models/donationModel.js";
 import { getAvailableDonors } from "../models/UserModel.js";
+import pool from "../config/db.js";
 
 // ✅ 1. Handle donation submission (public/user)
 export const submitDonation = async (req, res) => {
@@ -119,5 +120,54 @@ export const fetchAvailableDonors = async (req, res) => {
   } catch (err) {
     console.error("Error fetching available donors:", err.message);
     res.status(500).json({ error: "Failed to fetch available donors" });
+  }
+};
+
+// ✅ 7. Hospital dashboard statistics
+export const getHospitalDashboardStats = async (req, res) => {
+  const { hospital } = req.session;
+
+  if (!hospital || !hospital.username) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    // Get today's date for filtering
+    const today = new Date().toISOString().split("T")[0];
+
+    // Query for various stats
+    const statsQueries = await Promise.all([
+      // Pending donations for this hospital
+      pool.query(
+        "SELECT COUNT(*) FROM donations WHERE status = $1 AND location = $2",
+        ["Pending", hospital.location || hospital.username]
+      ),
+      // Pending recipients for this hospital
+      pool.query("SELECT COUNT(*) FROM recipients WHERE status = $1", [
+        "Pending",
+      ]),
+      // Approved donations today
+      pool.query(
+        "SELECT COUNT(*) FROM donations WHERE status = $1 AND DATE(updated_at) = $2",
+        ["Approved", today]
+      ),
+      // Declined donations today
+      pool.query(
+        "SELECT COUNT(*) FROM donations WHERE status = $1 AND DATE(updated_at) = $2",
+        ["Declined", today]
+      ),
+    ]);
+
+    const stats = {
+      pendingDonors: parseInt(statsQueries[0].rows[0].count),
+      pendingRecipients: parseInt(statsQueries[1].rows[0].count),
+      approvedToday: parseInt(statsQueries[2].rows[0].count),
+      declinedToday: parseInt(statsQueries[3].rows[0].count),
+    };
+
+    res.status(200).json(stats);
+  } catch (err) {
+    console.error("Error fetching dashboard stats:", err.message);
+    res.status(500).json({ error: "Failed to fetch dashboard statistics" });
   }
 };
