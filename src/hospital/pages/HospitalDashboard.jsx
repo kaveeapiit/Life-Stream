@@ -1,6 +1,6 @@
 import HospitalSidebar from '../components/HospitalSidebar';
 import { useEffect, useState } from 'react';
-import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog, FaUsers, FaWarehouse } from 'react-icons/fa';
+import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog, FaUsers, FaWarehouse, FaHeartbeat } from 'react-icons/fa';
 import API_BASE_URL from '../../config/api.js';
 
 export default function HospitalDashboard() {
@@ -11,7 +11,11 @@ export default function HospitalDashboard() {
     approvedToday: 9,
     declinedToday: 2,
     totalInventoryUnits: 0,
-    expiringUnits: 0
+    expiringUnits: 0,
+    pendingRequests: 0,
+    approvedRequests: 0,
+    fulfilledRequests: 0,
+    urgentPending: 0
   });
 
   // optional fade-in mount
@@ -60,8 +64,30 @@ export default function HospitalDashboard() {
       }
     };
 
+    // Fetch blood request statistics
+    const fetchBloodRequestStats = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/hospital/blood-requests/stats`, {
+          credentials: 'include'
+        });
+        if (res.ok) {
+          const requestStats = await res.json();
+          setStats(prev => ({
+            ...prev,
+            pendingRequests: parseInt(requestStats.pending_requests || 0),
+            approvedRequests: parseInt(requestStats.approved_requests || 0),
+            fulfilledRequests: parseInt(requestStats.fulfilled_requests || 0),
+            urgentPending: parseInt(requestStats.urgent_pending || 0)
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching blood request stats:', err);
+      }
+    };
+
     fetchDashboardStats();
     fetchInventorySummary();
+    fetchBloodRequestStats();
     return () => clearTimeout(t);
   }, []);
 
@@ -81,13 +107,15 @@ export default function HospitalDashboard() {
         </section>
 
         {/* Quick Stats */}
-        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-6">
+        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
           <StatCard label="Pending Donors" value={stats.pendingDonors} accent="from-red-500 to-red-700" />
           <StatCard label="Pending Recipients" value={stats.pendingRecipients} accent="from-amber-500 to-amber-700" />
           <StatCard label="Approved Today" value={stats.approvedToday} accent="from-green-500 to-green-700" />
           <StatCard label="Declined Today" value={stats.declinedToday} accent="from-gray-500 to-gray-700" />
           <StatCard label="Blood Units Available" value={stats.totalInventoryUnits} accent="from-blue-500 to-blue-700" />
           <StatCard label="Expiring Soon" value={stats.expiringUnits} accent="from-orange-500 to-orange-700" />
+          <StatCard label="Pending Blood Requests" value={stats.pendingRequests} accent="from-purple-500 to-purple-700" />
+          <StatCard label="Urgent Requests" value={stats.urgentPending} accent="from-red-600 to-red-800" />
         </section>
 
         {/* Actions */}
@@ -98,6 +126,7 @@ export default function HospitalDashboard() {
             <DashButton to="/hospital/recipient-approval" label="Review Recipients" icon={<FaFlask />} />
             <DashButton to="/hospital/available-donors" label="Available Donors" icon={<FaUsers />} />
             <DashButton to="/hospital/blood-inventory" label="Blood Inventory" icon={<FaWarehouse />} />
+            <DashButton to="/hospital/blood-requests" label="Blood Requests" icon={<FaHeartbeat />} />
             <DashButton to="/hospital/reports" label="View Reports" icon={<FaChartBar />} />
             <DashButton to="/hospital/settings" label="Settings" icon={<FaCog />} />
           </div>

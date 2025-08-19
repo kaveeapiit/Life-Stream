@@ -68,14 +68,15 @@ export default function HospitalSidebar() {
       >
         <div>
           <h2 className="text-2xl font-extrabold mb-10 tracking-wide animate-fadeIn">Hospital Panel</h2>
-          <ul className="space-y-3 text-sm font-medium">
-            <Item to="/hospital/dashboard" icon={LayoutDashboard} label="Dashboard" />
-            <Item to="/hospital/donor-approval" icon={Droplet} label="Donor Approval" />
-            <Item to="/hospital/recipient-approval" icon={FlaskConical} label="Recipient Approval" />
-            <Item to="/hospital/available-donors" icon={Users} label="Available Donors" />
-            <Item to="/hospital/collect-donation" icon={Plus} label="Collect Donation" />
-            <Item to="/hospital/blood-inventory" icon={Package} label="Blood Inventory" />
-          </ul>
+                  <ul className="space-y-2 text-sm">
+          <Item to="/hospital/dashboard" icon={LayoutDashboard} label="Dashboard" />
+          <Item to="/hospital/donor-approval" icon={Droplet} label="Donor Approval" />
+          <Item to="/hospital/recipient-approval" icon={FlaskConical} label="Recipient Approval" />
+          <Item to="/hospital/available-donors" icon={Users} label="Available Donors" />
+          <Item to="/hospital/blood-inventory" icon={Package} label="Blood Inventory" />
+          <Item to="/hospital/collect-donation" icon={Plus} label="Collect Donation" />
+          <Item to="/hospital/blood-requests" icon={Droplet} label="Blood Requests" />
+        </ul>
         </div>
 
         <button

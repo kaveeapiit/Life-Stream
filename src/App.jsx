@@ -22,6 +22,7 @@ import DonorApproval from './hospital/pages/DonorApproval';
 import AvailableDonors from './hospital/pages/AvailableDonors';
 import BloodInventory from './hospital/pages/BloodInventory';
 import CollectDonation from './hospital/pages/CollectDonation';
+import BloodRequests from './hospital/pages/BloodRequests';
 import Users from './admin/pages/Users';
 import Hospitals from './admin/pages/Hospitals.jsx';
 
@@ -42,6 +43,7 @@ function AppWrapper() {
     '/hospital/available-donors',
     '/hospital/blood-inventory',
     '/hospital/collect-donation',
+    '/hospital/blood-requests',
     '/admin/hospitals',
     '/admin/users',
   ];
@@ -56,6 +58,7 @@ function AppWrapper() {
     '/hospital/available-donors',
     '/hospital/blood-inventory',
     '/hospital/collect-donation',
+    '/hospital/blood-requests',
     '/admin/hospitals',
     '/admin/users',
     '/profile',
@@ -102,6 +105,7 @@ function AppWrapper() {
         <Route path="/hospital/available-donors" element={<AvailableDonors />} />
         <Route path="/hospital/blood-inventory" element={<BloodInventory />} />
         <Route path="/hospital/collect-donation" element={<CollectDonation />} />
+        <Route path="/hospital/blood-requests" element={<BloodRequests />} />
       </Routes>
 
       {!shouldHideFooter && <Footer footer={footerData} />}
