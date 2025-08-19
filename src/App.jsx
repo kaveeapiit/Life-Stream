@@ -25,6 +25,7 @@ import LocationBasedDonorMatching from './hospital/pages/LocationBasedDonorMatch
 import BloodInventory from './hospital/pages/BloodInventory';
 import CollectDonation from './hospital/pages/CollectDonation';
 import BloodRequests from './hospital/pages/BloodRequests';
+import HospitalToHospitalRequests from './hospital/pages/HospitalToHospitalRequests';
 import Users from './admin/pages/Users';
 import Hospitals from './admin/pages/Hospitals.jsx';
 
@@ -112,6 +113,7 @@ function AppWrapper() {
         <Route path="/hospital/blood-inventory" element={<BloodInventory />} />
         <Route path="/hospital/collect-donation" element={<CollectDonation />} />
         <Route path="/hospital/blood-requests" element={<BloodRequests />} />
+        <Route path="/hospital/hospital-requests" element={<HospitalToHospitalRequests />} />
       </Routes>
 
       {!shouldHideFooter && <Footer footer={footerData} />}
