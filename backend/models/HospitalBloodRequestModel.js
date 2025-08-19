@@ -43,7 +43,7 @@ const HospitalBloodRequestModel = {
     const { blood_type, urgency_level, page = 1, limit = 20 } = filters;
 
     let query = `
-      SELECT hbr.*, hu.name as requesting_hospital_name
+      SELECT hbr.*, hu.username as requesting_hospital_name
       FROM hospital_blood_requests hbr
       LEFT JOIN hospital_users hu ON hbr.requesting_hospital = hu.username
       WHERE hbr.requesting_hospital != $1 
@@ -124,7 +124,7 @@ const HospitalBloodRequestModel = {
     const { status, page = 1, limit = 20 } = filters;
 
     let query = `
-      SELECT hbr.*, hu.name as responding_hospital_name
+      SELECT hbr.*, hu.username as responding_hospital_name
       FROM hospital_blood_requests hbr
       LEFT JOIN hospital_users hu ON hbr.responding_hospital = hu.username
       WHERE hbr.requesting_hospital = $1
@@ -220,8 +220,8 @@ const HospitalBloodRequestModel = {
   getRequestById: async (requestId) => {
     const result = await db.query(
       `SELECT hbr.*, 
-              req_hu.name as requesting_hospital_name,
-              res_hu.name as responding_hospital_name
+              req_hu.username as requesting_hospital_name,
+              res_hu.username as responding_hospital_name
        FROM hospital_blood_requests hbr
        LEFT JOIN hospital_users req_hu ON hbr.requesting_hospital = req_hu.username
        LEFT JOIN hospital_users res_hu ON hbr.responding_hospital = res_hu.username
@@ -250,7 +250,7 @@ const HospitalBloodRequestModel = {
   // Get urgent requests (critical/high priority)
   getUrgentRequests: async (hospital_username) => {
     const result = await db.query(
-      `SELECT hbr.*, hu.name as requesting_hospital_name
+      `SELECT hbr.*, hu.username as requesting_hospital_name
        FROM hospital_blood_requests hbr
        LEFT JOIN hospital_users hu ON hbr.requesting_hospital = hu.username
        WHERE hbr.requesting_hospital != $1 
