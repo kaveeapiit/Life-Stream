@@ -21,14 +21,14 @@ Sprint 2 focused on implementing a comprehensive Hospital Dashboard System for t
 
 ### Key Achievements
 
-- ✅ **Hospital Authentication System** - Secure session-based authentication
-- ✅ **Blood Inventory Management** - Real-time tracking with expiry alerts
-- ✅ **Donor/Recipient Approval System** - Streamlined approval workflow
-- ✅ **Blood Request Management** - Comprehensive request handling system
-- ✅ **Hospital-to-Hospital Collaboration** - Inter-hospital blood sharing platform
-- ✅ **Location-Based Donor Matching** - Geographic proximity-based matching
-- ✅ **Dashboard Analytics** - Real-time statistics and insights
-- ✅ **Responsive UI/UX** - Mobile-first design with modern aesthetics
+- **Hospital Authentication System** - Secure session-based authentication
+- **Blood Inventory Management** - Real-time tracking with expiry alerts
+- **Donor/Recipient Approval System** - Streamlined approval workflow
+- **Blood Request Management** - Comprehensive request handling system
+- **Hospital-to-Hospital Collaboration** - Inter-hospital blood sharing platform
+- **Location-Based Donor Matching** - Geographic proximity-based matching
+- **Dashboard Analytics** - Real-time statistics and insights
+- **Responsive UI/UX** - Mobile-first design with modern aesthetics
 
 ---
 
