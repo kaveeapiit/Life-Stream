@@ -20,6 +20,8 @@ import HospitalLogin from './hospital/pages/HospitalLogin';
 import HospitalDashboard from './hospital/pages/HospitalDashboard';
 import DonorApproval from './hospital/pages/DonorApproval';
 import AvailableDonors from './hospital/pages/AvailableDonors';
+import DonorRequestMatching from './hospital/pages/DonorRequestMatching';
+import LocationBasedDonorMatching from './hospital/pages/LocationBasedDonorMatching';
 import BloodInventory from './hospital/pages/BloodInventory';
 import CollectDonation from './hospital/pages/CollectDonation';
 import BloodRequests from './hospital/pages/BloodRequests';
@@ -41,6 +43,7 @@ function AppWrapper() {
     '/hospital/donor-approval',
     '/hospital/recipient-approval',
     '/hospital/available-donors',
+    '/hospital/donor-matching',
     '/hospital/blood-inventory',
     '/hospital/collect-donation',
     '/hospital/blood-requests',
@@ -56,6 +59,7 @@ function AppWrapper() {
     '/hospital/donor-approval',
     '/hospital/recipient-approval',
     '/hospital/available-donors',
+    '/hospital/donor-matching',
     '/hospital/blood-inventory',
     '/hospital/collect-donation',
     '/hospital/blood-requests',
@@ -103,6 +107,8 @@ function AppWrapper() {
         <Route path="/hospital/dashboard" element={<HospitalDashboard />} />
         <Route path="/hospital/donor-approval" element={<DonorApproval />} />
         <Route path="/hospital/available-donors" element={<AvailableDonors />} />
+        <Route path="/hospital/donor-matching" element={<DonorRequestMatching />} />
+        <Route path="/hospital/location-matching" element={<LocationBasedDonorMatching />} />
         <Route path="/hospital/blood-inventory" element={<BloodInventory />} />
         <Route path="/hospital/collect-donation" element={<CollectDonation />} />
         <Route path="/hospital/blood-requests" element={<BloodRequests />} />

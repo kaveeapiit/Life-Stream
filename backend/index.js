@@ -21,6 +21,7 @@ import bloodRequestRoutes from "./routes/bloodRequestRoutes.js";
 import adminHospitalRoutes from "./routes/adminHospitalRoutes.js";
 import bloodInventoryRoutes from "./routes/bloodInventoryRoutes.js";
 import hospitalBloodRequestRoutes from "./routes/hospitalBloodRequestRoutes.js";
+import donorRequestMatchingRoutes from "./routes/donorRequestMatchingRoutes.js";
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.use("/api/donation", donationRoutes);
 app.use("/api/hospital", hospitalRoutes);
 app.use("/api/hospital", bloodInventoryRoutes);
 app.use("/api/hospital", hospitalBloodRequestRoutes);
+app.use("/api/hospital", donorRequestMatchingRoutes);
 app.use("/api/recipient", recipientRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/blood", bloodRequestRoutes);

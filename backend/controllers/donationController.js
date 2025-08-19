@@ -138,34 +138,31 @@ export const getHospitalDashboardStats = async (req, res) => {
     // Query for various stats
     const statsQueries = await Promise.all([
       // Pending donations for this hospital
-      pool.query(
-        "SELECT COUNT(*) FROM donations WHERE status = $1 AND location = $2",
-        ["Pending", hospital.location || hospital.username]
-      ),
-      // Pending recipients for this hospital
-      pool.query("SELECT COUNT(*) FROM recipients WHERE status = $1", [
+      pool.query("SELECT COUNT(*) FROM donations WHERE status = $1", [
         "Pending",
+      ]),
+      // Pending blood requests (recipients)
+      pool.query("SELECT COUNT(*) FROM blood_requests WHERE status = $1", [
+        "pending",
       ]),
       // Approved donations today
       pool.query(
-        "SELECT COUNT(*) FROM donations WHERE status = $1 AND DATE(updated_at) = $2",
+        "SELECT COUNT(*) FROM donations WHERE status = $1 AND DATE(created_at) = $2",
         ["Approved", today]
       ),
       // Declined donations today
       pool.query(
-        "SELECT COUNT(*) FROM donations WHERE status = $1 AND DATE(updated_at) = $2",
+        "SELECT COUNT(*) FROM donations WHERE status = $1 AND DATE(created_at) = $2",
         ["Declined", today]
       ),
     ]);
 
-    const stats = {
-      pendingDonors: parseInt(statsQueries[0].rows[0].count),
+    return res.json({
+      pendingDonations: parseInt(statsQueries[0].rows[0].count),
       pendingRecipients: parseInt(statsQueries[1].rows[0].count),
-      approvedToday: parseInt(statsQueries[2].rows[0].count),
-      declinedToday: parseInt(statsQueries[3].rows[0].count),
-    };
-
-    res.status(200).json(stats);
+      todayApproved: parseInt(statsQueries[2].rows[0].count),
+      todayDeclined: parseInt(statsQueries[3].rows[0].count),
+    });
   } catch (err) {
     console.error("Error fetching dashboard stats:", err.message);
     res.status(500).json({ error: "Failed to fetch dashboard statistics" });

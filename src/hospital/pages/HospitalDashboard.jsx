@@ -1,6 +1,6 @@
 import HospitalSidebar from '../components/HospitalSidebar';
 import { useEffect, useState } from 'react';
-import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog, FaUsers, FaWarehouse, FaHeartbeat } from 'react-icons/fa';
+import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog, FaUsers, FaWarehouse, FaHeartbeat, FaHeart } from 'react-icons/fa';
 import API_BASE_URL from '../../config/api.js';
 
 export default function HospitalDashboard() {
@@ -125,6 +125,7 @@ export default function HospitalDashboard() {
             <DashButton to="/hospital/donor-approval" label="Review Donors" icon={<FaTint />} />
             <DashButton to="/hospital/recipient-approval" label="Review Recipients" icon={<FaFlask />} />
             <DashButton to="/hospital/available-donors" label="Available Donors" icon={<FaUsers />} />
+            <DashButton to="/hospital/donor-matching" label="Donor Matching" icon={<FaHeart />} />
             <DashButton to="/hospital/blood-inventory" label="Blood Inventory" icon={<FaWarehouse />} />
             <DashButton to="/hospital/blood-requests" label="Blood Requests" icon={<FaHeartbeat />} />
             <DashButton to="/hospital/reports" label="View Reports" icon={<FaChartBar />} />
