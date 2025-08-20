@@ -12,7 +12,6 @@ import UserDashboard from './pages/UserDashboard';
 import FindBlood from './pages/FindBlood';
 import Profile from './pages/Profile';
 import PendingRequests from './pages/PendingRequests';
-import RecipientApproval from './hospital/pages/RecipientApproval';
 
 import AdminLogin from './admin/pages/AdminLogin';
 import AdminDashboard from './admin/pages/AdminDashboard';
@@ -94,7 +93,6 @@ function AppWrapper() {
         <Route path="/find-blood" element={<FindBlood />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/pending-requests" element={<PendingRequests />} />
-        <Route path="/hospital/recipient-approval" element={<RecipientApproval />} />
         <Route path="/admin/users" element={<Users />} />
 
         <Route path="/userdashboard" element={<UserDashboard />} />

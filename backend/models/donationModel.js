@@ -1,7 +1,13 @@
-import pool from '../config/db.js';
+import pool from "../config/db.js";
 
 // ✅ Insert new donation with status = 'Pending'
-export const insertDonation = async ({ userId, name, email, bloodType, location }) => {
+export const insertDonation = async ({
+  userId,
+  name,
+  email,
+  bloodType,
+  location,
+}) => {
   const query = `
     INSERT INTO donations (user_id, name, email, blood_type, location, status)
     VALUES ($1, $2, $3, $4, $5, $6)
@@ -12,7 +18,7 @@ export const insertDonation = async ({ userId, name, email, bloodType, location 
     email,
     bloodType,
     location,
-    'Pending'
+    "Pending",
   ]);
 };
 
@@ -30,8 +36,8 @@ export const fetchDonationsByEmail = async (email) => {
 // ✅ Get all pending donations (for admin view)
 export const getPendingDonations = async () => {
   const result = await pool.query(
-    'SELECT * FROM donations WHERE status = $1 ORDER BY created_at DESC',
-    ['Pending']
+    "SELECT * FROM donations WHERE status = $1 ORDER BY created_at DESC",
+    ["Pending"]
   );
   return result.rows;
 };
@@ -39,7 +45,7 @@ export const getPendingDonations = async () => {
 // ✅ Update donation status to Approved or Declined
 export const updateDonationStatus = async (id, status) => {
   const result = await pool.query(
-    'UPDATE donations SET status = $1 WHERE id = $2 RETURNING *',
+    "UPDATE donations SET status = $1 WHERE id = $2 RETURNING *",
     [status, id]
   );
   return result.rows[0];
@@ -53,6 +59,38 @@ export const getPendingDonationsForHospital = async (hospitalUsername) => {
     ORDER BY created_at DESC
   `;
   const keyword = `%${hospitalUsername}%`; // e.g., "Kandy" matches "Kandy General Hospital"
+  const result = await pool.query(query, [keyword]);
+  return result.rows;
+};
+
+// ✅ Get all donations for hospital management (both pending and historical)
+export const getAllDonationsForHospital = async (hospitalUsername) => {
+  const query = `
+    SELECT * FROM donations
+    WHERE LOWER(location) LIKE LOWER($1) OR location IS NULL OR location = ''
+    ORDER BY 
+      CASE 
+        WHEN status = 'Pending' THEN 1
+        WHEN status = 'Approved' THEN 2
+        WHEN status = 'Declined' THEN 3
+        ELSE 4
+      END,
+      created_at DESC
+  `;
+  const keyword = `%${hospitalUsername}%`;
+  const result = await pool.query(query, [keyword]);
+  return result.rows;
+};
+
+// ✅ Get donation history (approved/declined/collected donations)
+export const getDonationHistoryForHospital = async (hospitalUsername) => {
+  const query = `
+    SELECT * FROM donations
+    WHERE (LOWER(location) LIKE LOWER($1) OR location IS NULL OR location = '')
+    AND status IN ('Approved', 'Declined', 'Collected')
+    ORDER BY created_at DESC
+  `;
+  const keyword = `%${hospitalUsername}%`;
   const result = await pool.query(query, [keyword]);
   return result.rows;
 };

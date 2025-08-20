@@ -2,6 +2,8 @@ import express from "express";
 import { hospitalLogin } from "../controllers/hospitalAuthController.js";
 import {
   fetchPendingDonationsForHospital,
+  fetchAllDonationsForHospital,
+  fetchDonationHistoryForHospital,
   fetchAvailableDonors,
   getHospitalDashboardStats,
 } from "../controllers/donationController.js";
@@ -18,6 +20,12 @@ router.get(
   hospitalAuth,
   fetchPendingDonationsForHospital
 );
+
+// ✅ Protected: Get All Donations for Hospital Management
+router.get("/donations/all", hospitalAuth, fetchAllDonationsForHospital);
+
+// ✅ Protected: Get Donation History for Hospital
+router.get("/donations/history", hospitalAuth, fetchDonationHistoryForHospital);
 
 // ✅ Protected: Get Available Donors for Blood Donation Planning
 router.get("/donors/available", hospitalAuth, fetchAvailableDonors);

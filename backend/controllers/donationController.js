@@ -4,6 +4,8 @@ import {
   getPendingDonations,
   updateDonationStatus,
   getPendingDonationsForHospital,
+  getAllDonationsForHospital,
+  getDonationHistoryForHospital,
 } from "../models/donationModel.js";
 import { getAvailableDonors } from "../models/UserModel.js";
 import pool from "../config/db.js";
@@ -89,6 +91,40 @@ export const fetchPendingDonationsForHospital = async (req, res) => {
   } catch (err) {
     console.error("Error fetching hospital donations:", err.message);
     res.status(500).json({ error: "Failed to fetch donations" });
+  }
+};
+
+// ✅ 5b. Hospital-only: Fetch all donations for hospital management
+export const fetchAllDonationsForHospital = async (req, res) => {
+  const { hospital } = req.session;
+
+  if (!hospital || !hospital.username) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const donations = await getAllDonationsForHospital(hospital.username);
+    res.status(200).json(donations);
+  } catch (err) {
+    console.error("Error fetching all hospital donations:", err.message);
+    res.status(500).json({ error: "Failed to fetch donations" });
+  }
+};
+
+// ✅ 5c. Hospital-only: Fetch donation history for hospital
+export const fetchDonationHistoryForHospital = async (req, res) => {
+  const { hospital } = req.session;
+
+  if (!hospital || !hospital.username) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const donations = await getDonationHistoryForHospital(hospital.username);
+    res.status(200).json(donations);
+  } catch (err) {
+    console.error("Error fetching donation history:", err.message);
+    res.status(500).json({ error: "Failed to fetch donation history" });
   }
 };
 

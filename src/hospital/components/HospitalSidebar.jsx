@@ -70,8 +70,7 @@ export default function HospitalSidebar() {
           <h2 className="text-2xl font-extrabold mb-10 tracking-wide animate-fadeIn">Hospital Panel</h2>
                   <ul className="space-y-2 text-sm">
           <Item to="/hospital/dashboard" icon={LayoutDashboard} label="Dashboard" />
-          <Item to="/hospital/donor-approval" icon={Droplet} label="Donor Approval" />
-          <Item to="/hospital/recipient-approval" icon={FlaskConical} label="Recipient Approval" />
+          <Item to="/hospital/donor-approval" icon={Droplet} label="Donor Management" />
           <Item to="/hospital/available-donors" icon={Users} label="Available Donors" />
           <Item to="/hospital/donor-matching" icon={Heart} label="Donor Matching" />
           <Item to="/hospital/location-matching" icon={MapPin} label="Location Matching" />
