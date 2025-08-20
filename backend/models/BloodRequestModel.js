@@ -162,6 +162,45 @@ const BloodRequestModel = {
     const result = await db.query(statsQuery);
     return result.rows[0];
   },
+
+  // 🔧 ADMIN: Get all blood requests for admin management
+  getAllRequestsForAdmin: async () => {
+    const result = await db.query(
+      `SELECT *, 
+        CASE 
+          WHEN urgency = true THEN 'High'
+          ELSE 'Normal'
+        END as urgency_level,
+        EXTRACT(EPOCH FROM (NOW() - created_at))/3600 as hours_ago
+       FROM blood_requests 
+       ORDER BY 
+         CASE 
+           WHEN status = 'pending' THEN 1
+           WHEN status = 'approved' THEN 2
+           WHEN status = 'declined' THEN 3
+           ELSE 4
+         END,
+         urgency DESC,
+         created_at DESC`
+    );
+    return result.rows;
+  },
+
+  // 🔧 ADMIN: Get blood request history for admin
+  getRequestHistoryForAdmin: async () => {
+    const result = await db.query(
+      `SELECT *, 
+        CASE 
+          WHEN urgency = true THEN 'High'
+          ELSE 'Normal'
+        END as urgency_level,
+        EXTRACT(EPOCH FROM (NOW() - created_at))/3600 as hours_ago
+       FROM blood_requests 
+       WHERE status IN ('approved', 'declined', 'fulfilled')
+       ORDER BY created_at DESC`
+    );
+    return result.rows;
+  },
 };
 
 export default BloodRequestModel;

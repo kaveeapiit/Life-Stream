@@ -94,3 +94,31 @@ export const getDonationHistoryForHospital = async (hospitalUsername) => {
   const result = await pool.query(query, [keyword]);
   return result.rows;
 };
+
+// ✅ ADMIN: Get all donations for admin management
+export const getAllDonationsForAdmin = async () => {
+  const query = `
+    SELECT * FROM donations
+    ORDER BY 
+      CASE 
+        WHEN status = 'Pending' THEN 1
+        WHEN status = 'Approved' THEN 2
+        WHEN status = 'Declined' THEN 3
+        ELSE 4
+      END,
+      created_at DESC
+  `;
+  const result = await pool.query(query);
+  return result.rows;
+};
+
+// ✅ ADMIN: Get donation history (approved/declined/collected donations)
+export const getDonationHistoryForAdmin = async () => {
+  const query = `
+    SELECT * FROM donations
+    WHERE status IN ('Approved', 'Declined', 'Collected')
+    ORDER BY created_at DESC
+  `;
+  const result = await pool.query(query);
+  return result.rows;
+};

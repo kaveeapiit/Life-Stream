@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import AdminSidebar from "../components/AdminSidebar";
 import {
   Shield,
   Users,
@@ -21,7 +22,10 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white overflow-hidden">
+    <div className="min-h-screen flex bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white">
+      <AdminSidebar />
+      
+      <div className="flex-1 ml-0 md:ml-64 relative overflow-hidden">
       {/* Blobs */}
       <div className="absolute inset-0 pointer-events-none -z-10">
         <div className="w-96 h-96 bg-red-600/25 blur-3xl rounded-full absolute -top-24 -left-24 animate-pulse" />
@@ -89,6 +93,7 @@ export default function AdminDashboard() {
         @keyframes fadeIn { from {opacity:0; transform: translateY(8px);} to {opacity:1; transform: translateY(0);} }
         .animate-fadeIn { animation: fadeIn .4s ease forwards; }
       `}</style>
+      </div>
     </div>
   );
 }

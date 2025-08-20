@@ -27,6 +27,8 @@ import BloodRequests from './hospital/pages/BloodRequests';
 import HospitalToHospitalRequests from './hospital/pages/HospitalToHospitalRequests';
 import Users from './admin/pages/Users';
 import Hospitals from './admin/pages/Hospitals.jsx';
+import AdminDonations from './admin/pages/AdminDonations';
+import AdminBloodRequests from './admin/pages/AdminBloodRequests';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -49,6 +51,8 @@ function AppWrapper() {
     '/hospital/blood-requests',
     '/admin/hospitals',
     '/admin/users',
+    '/admin/donations',
+    '/admin/requests',
   ];
 
   const hideFooterPaths = [
@@ -101,6 +105,8 @@ function AppWrapper() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/hospitals" element={<Hospitals />} />
+        <Route path="/admin/donations" element={<AdminDonations />} />
+        <Route path="/admin/requests" element={<AdminBloodRequests />} />
 
         <Route path="/hospital/login" element={<HospitalLogin />} />
         <Route path="/hospital/dashboard" element={<HospitalDashboard />} />

@@ -6,6 +6,8 @@ import {
   getPendingDonationsForHospital,
   getAllDonationsForHospital,
   getDonationHistoryForHospital,
+  getAllDonationsForAdmin,
+  getDonationHistoryForAdmin,
 } from "../models/donationModel.js";
 import { getAvailableDonors } from "../models/UserModel.js";
 import pool from "../config/db.js";
@@ -202,5 +204,27 @@ export const getHospitalDashboardStats = async (req, res) => {
   } catch (err) {
     console.error("Error fetching dashboard stats:", err.message);
     res.status(500).json({ error: "Failed to fetch dashboard statistics" });
+  }
+};
+
+// ✅ ADMIN: Fetch all donations for admin management
+export const fetchAllDonationsForAdmin = async (req, res) => {
+  try {
+    const donations = await getAllDonationsForAdmin();
+    res.status(200).json(donations);
+  } catch (err) {
+    console.error("Error fetching all donations for admin:", err.message);
+    res.status(500).json({ error: "Failed to fetch donations" });
+  }
+};
+
+// ✅ ADMIN: Fetch donation history for admin
+export const fetchDonationHistoryForAdmin = async (req, res) => {
+  try {
+    const donations = await getDonationHistoryForAdmin();
+    res.status(200).json(donations);
+  } catch (err) {
+    console.error("Error fetching donation history for admin:", err.message);
+    res.status(500).json({ error: "Failed to fetch donation history" });
   }
 };

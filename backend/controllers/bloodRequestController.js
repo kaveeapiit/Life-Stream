@@ -1,12 +1,12 @@
-import BloodRequestModel from '../models/BloodRequestModel.js';
+import BloodRequestModel from "../models/BloodRequestModel.js";
 
 export const createBloodRequest = async (req, res) => {
   try {
     const request = await BloodRequestModel.createRequest(req.body);
     res.status(201).json(request);
   } catch (err) {
-    console.error('Error in createBloodRequest:', err);
-    res.status(500).json({ error: 'Failed to create request' });
+    console.error("Error in createBloodRequest:", err);
+    res.status(500).json({ error: "Failed to create request" });
   }
 };
 
@@ -15,8 +15,8 @@ export const getPendingRequests = async (req, res) => {
     const requests = await BloodRequestModel.getPendingRequests();
     res.status(200).json(requests);
   } catch (err) {
-    console.error('Error in getPendingRequests:', err);
-    res.status(500).json({ error: 'Failed to fetch requests' });
+    console.error("Error in getPendingRequests:", err);
+    res.status(500).json({ error: "Failed to fetch requests" });
   }
 };
 
@@ -26,15 +26,15 @@ export const updateApproval = async (req, res) => {
     const { id } = req.params;
     const { approved } = req.body;
 
-    if (typeof approved !== 'boolean') {
-      return res.status(400).json({ error: 'Approved must be true or false' });
+    if (typeof approved !== "boolean") {
+      return res.status(400).json({ error: "Approved must be true or false" });
     }
 
     const updated = await BloodRequestModel.updateApprovalStatus(id, approved);
     res.status(200).json(updated);
   } catch (err) {
-    console.error('Error updating approval:', err);
-    res.status(500).json({ error: 'Failed to update approval status' });
+    console.error("Error updating approval:", err);
+    res.status(500).json({ error: "Failed to update approval status" });
   }
 };
 
@@ -44,14 +44,14 @@ export const getUserRequests = async (req, res) => {
     const { email } = req.query;
 
     if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+      return res.status(400).json({ error: "Email is required" });
     }
 
     const requests = await BloodRequestModel.getRequestsByEmail(email);
     res.status(200).json(requests);
   } catch (err) {
-    console.error('Error in getUserRequests:', err);
-    res.status(500).json({ error: 'Failed to fetch user requests' });
+    console.error("Error in getUserRequests:", err);
+    res.status(500).json({ error: "Failed to fetch user requests" });
   }
 };
 
@@ -61,7 +61,29 @@ export const getHistoryRequests = async (req, res) => {
     const rows = await BloodRequestModel.getHistoryRequests();
     res.status(200).json(rows);
   } catch (err) {
-    console.error('Error in getHistoryRequests:', err);
-    res.status(500).json({ error: 'Failed to fetch history' });
+    console.error("Error in getHistoryRequests:", err);
+    res.status(500).json({ error: "Failed to fetch history" });
+  }
+};
+
+// ✅ ADMIN: Get all blood requests for admin management
+export const getAllRequestsForAdmin = async (req, res) => {
+  try {
+    const requests = await BloodRequestModel.getAllRequestsForAdmin();
+    res.status(200).json(requests);
+  } catch (err) {
+    console.error("Error in getAllRequestsForAdmin:", err);
+    res.status(500).json({ error: "Failed to fetch blood requests" });
+  }
+};
+
+// ✅ ADMIN: Get blood request history for admin
+export const getRequestHistoryForAdmin = async (req, res) => {
+  try {
+    const requests = await BloodRequestModel.getRequestHistoryForAdmin();
+    res.status(200).json(requests);
+  } catch (err) {
+    console.error("Error in getRequestHistoryForAdmin:", err);
+    res.status(500).json({ error: "Failed to fetch blood request history" });
   }
 };
