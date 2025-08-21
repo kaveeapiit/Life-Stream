@@ -26,7 +26,7 @@ The project follows a **Model-View-Controller (MVC)** pattern with a clear separ
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │   Frontend      │    │     Backend      │    │    Database     │
-│   (React.js)    │◄──►│   (Express.js)   │◄──►│    (MySQL)      │
+│   (React.js)    │◄──►│   (Express.js)   │◄──►│    (PSQL)      │
 │   Views/Pages   │    │   Controllers    │    │     Tables      │
 │   Components    │    │   Models         │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
