@@ -10,9 +10,8 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon backend/index.js",
-    "client": "vite --logLevel warn",
+    "client": "vite",
     "build": "vite build",
-    "build:azure": "VITE_API_BASE_URL=https://life-stream-backend.azurewebsites.net vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

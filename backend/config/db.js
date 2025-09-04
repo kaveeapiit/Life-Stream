@@ -4,7 +4,7 @@ dotenv.config();
 import pkg from "pg";
 const { Pool } = pkg;
 
-// Database configuration - handles local, Railway, and Azure environments
+// Database configuration - handles both local and production environments
 export const pool = new Pool({
   // If DATABASE_URL is provided (production), use it
   connectionString: process.env.DATABASE_URL,
@@ -14,13 +14,12 @@ export const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  // SSL configuration for different environments
-  ssl:
-    process.env.DATABASE_URL || process.env.NODE_ENV === "production"
-      ? {
-          rejectUnauthorized: false, // Required for cloud PostgreSQL services (Railway, Azure)
-        }
-      : false,
+  // Only use SSL in production (when DATABASE_URL is provided)
+  ssl: process.env.DATABASE_URL
+    ? {
+        rejectUnauthorized: false, // Required for Railway's PostgreSQL service
+      }
+    : false,
 });
 
 export default pool;

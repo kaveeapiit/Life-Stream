@@ -21,5 +21,5 @@ echo ""
 
 echo "Configuration Summary:"
 echo "- For LOCAL development: Use .env.local with VITE_API_BASE_URL=http://localhost:5050"
-echo "- For AZURE production: Use Azure Static Web Apps config with VITE_API_BASE_URL=https://life-stream-backend.azurewebsites.net"
+echo "- For PRODUCTION (Vercel): Use .env.production with VITE_API_BASE_URL=https://life-stream-production-2f47.up.railway.app"
 echo "- Backend will automatically use FRONTEND_URL from environment for CORS"

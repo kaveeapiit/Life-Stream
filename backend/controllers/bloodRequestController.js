@@ -40,24 +40,14 @@ export const getPendingRequests = async (req, res) => {
   }
 };
 
-// ✅ Update approval status with inventory management
+// ✅ Update approval status
 export const updateApproval = async (req, res) => {
   try {
     const { id } = req.params;
-    const { approved, assignedBloodUnitId } = req.body;
+    const { approved } = req.body;
 
     if (typeof approved !== "boolean") {
       return res.status(400).json({ error: "Approved must be true or false" });
-    }
-
-    // If approving and a blood unit is assigned, update inventory
-    if (approved && assignedBloodUnitId) {
-      // Mark the blood unit as used/reserved
-      await BloodInventoryModel.updateBloodUnitStatus(
-        assignedBloodUnitId,
-        "Used",
-        new Date()
-      );
     }
 
     const updated = await BloodRequestModel.updateApprovalStatus(id, approved);
@@ -65,42 +55,6 @@ export const updateApproval = async (req, res) => {
   } catch (err) {
     console.error("Error updating approval:", err);
     res.status(500).json({ error: "Failed to update approval status" });
-  }
-};
-
-// ✅ NEW: Fulfill blood request with specific blood unit
-export const fulfillBloodRequest = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { bloodUnitIds, notes } = req.body;
-
-    if (
-      !bloodUnitIds ||
-      !Array.isArray(bloodUnitIds) ||
-      bloodUnitIds.length === 0
-    ) {
-      return res.status(400).json({ error: "Blood unit IDs are required" });
-    }
-
-    // Fulfill the request with inventory management
-    const result = await BloodRequestModel.fulfillBloodRequest(
-      id,
-      bloodUnitIds,
-      notes
-    );
-
-    if (result.success) {
-      res.status(200).json({
-        message: "Blood request fulfilled successfully",
-        request: result.request,
-        bloodUnits: result.bloodUnits,
-      });
-    } else {
-      res.status(400).json({ error: result.error });
-    }
-  } catch (err) {
-    console.error("Error fulfilling blood request:", err);
-    res.status(500).json({ error: "Failed to fulfill blood request" });
   }
 };
 
@@ -154,11 +108,11 @@ export const getRequestHistoryForAdmin = async (req, res) => {
   }
 };
 
-// NEW: Fulfill a blood request with enhanced inventory management
-export const fulfillBloodRequestEnhanced = async (req, res) => {
+// NEW: Fulfill a blood request
+export const fulfillBloodRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    const { bloodUnitIds, notes } = req.body;
+    const { bloodUnitIds } = req.body;
 
     if (
       !bloodUnitIds ||
@@ -168,24 +122,18 @@ export const fulfillBloodRequestEnhanced = async (req, res) => {
       return res.status(400).json({ error: "Blood unit IDs are required" });
     }
 
-    // Fulfill the request with inventory management
     const result = await BloodRequestModel.fulfillBloodRequest(
       id,
-      bloodUnitIds,
-      notes
+      bloodUnitIds
     );
 
     if (result.success) {
-      res.status(200).json({
-        message: "Blood request fulfilled successfully",
-        request: result.request,
-        bloodUnits: result.bloodUnits,
-      });
+      res.status(200).json(result);
     } else {
       res.status(400).json({ error: result.error });
     }
   } catch (err) {
-    console.error("Error fulfilling blood request:", err);
+    console.error("Error in fulfillBloodRequest:", err);
     res.status(500).json({ error: "Failed to fulfill blood request" });
   }
 };

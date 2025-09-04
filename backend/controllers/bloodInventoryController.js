@@ -155,40 +155,23 @@ export const getInventoryAlerts = async (req, res) => {
   }
 
   try {
-    // Get low stock alerts
-    const lowStockAlerts = await BloodInventoryModel.getLowStockAlerts(
-      hospital.id,
-      5
-    );
+    const { minThreshold = 5, expiringDays = 7 } = req.query;
 
-    // Get expiring units alerts
-    const expiringAlerts = await BloodInventoryModel.getExpiringUnitsAlerts(
-      hospital.id,
-      7
-    );
+    const [lowStockAlerts, expiringUnits] = await Promise.all([
+      BloodInventoryModel.getLowStockAlerts(
+        hospital.id,
+        parseInt(minThreshold)
+      ),
+      BloodInventoryModel.getExpiringUnitsAlerts(
+        hospital.id,
+        parseInt(expiringDays)
+      ),
+    ]);
 
-    // Format alerts
-    const alerts = [
-      ...lowStockAlerts.map((alert) => ({
-        type: "Low Stock",
-        message: `Only ${alert.available_units} units of ${alert.blood_type} blood available`,
-        blood_type: alert.blood_type,
-        severity: "warning",
-        count: alert.available_units,
-      })),
-      ...expiringAlerts.map((unit) => ({
-        type: "Expiring Soon",
-        message: `${unit.blood_type} blood unit #${
-          unit.id
-        } expires on ${new Date(unit.expiry_date).toLocaleDateString()}`,
-        blood_type: unit.blood_type,
-        severity: "urgent",
-        unit_id: unit.id,
-        expiry_date: unit.expiry_date,
-      })),
-    ];
-
-    res.status(200).json(alerts);
+    res.status(200).json({
+      lowStock: lowStockAlerts,
+      expiringUnits: expiringUnits,
+    });
   } catch (err) {
     console.error("Error fetching inventory alerts:", err.message);
     res.status(500).json({ error: "Failed to fetch inventory alerts" });
@@ -262,37 +245,51 @@ export const findAvailableBloodUnits = async (req, res) => {
   }
 };
 
-// Debug endpoint to check session and inventory
+// DEBUG: Get all inventory data for debugging
 export const debugInventory = async (req, res) => {
   try {
-    console.log("🔍 Debug endpoint called");
-    console.log("Session data:", req.session);
-    console.log("Hospital from session:", req.session?.hospital);
+    const { hospital } = req.session;
 
-    // Get all inventory data (without hospital filter for debugging)
+    console.log("=== DEBUG INVENTORY ===");
+    console.log("Session hospital:", hospital);
+
+    // Get all inventory regardless of hospital for debugging
     const allInventory = await pool.query(
-      "SELECT COUNT(*) FROM blood_inventory"
+      "SELECT * FROM blood_inventory ORDER BY hospital_id, blood_type"
+    );
+    const hospitalCount = await pool.query(
+      "SELECT COUNT(DISTINCT hospital_id) as count FROM blood_inventory"
     );
 
-    // If hospital session exists, get their specific inventory
-    let hospitalInventory = [];
-    if (req.session?.hospital?.id) {
-      const result = await pool.query(
-        "SELECT COUNT(*) FROM blood_inventory WHERE hospital_id = $1",
-        [req.session.hospital.id]
-      );
-      hospitalInventory = result.rows;
-    }
+    console.log(`Total inventory items: ${allInventory.rows.length}`);
+    console.log(`Hospitals with inventory: ${hospitalCount.rows[0].count}`);
 
-    res.status(200).json({
-      sessionExists: !!req.session,
-      hospitalInSession: req.session?.hospital || null,
-      totalInventoryInDB: allInventory.rows[0].count,
-      hospitalSpecificCount: hospitalInventory[0]?.count || 0,
-      timestamp: new Date().toISOString(),
-    });
+    if (hospital && hospital.id) {
+      const hospitalInventory = await pool.query(
+        "SELECT * FROM blood_inventory WHERE hospital_id = $1",
+        [hospital.id]
+      );
+      console.log(
+        `Inventory for hospital ${hospital.id}: ${hospitalInventory.rows.length} items`
+      );
+
+      res.json({
+        session: hospital,
+        totalInventory: allInventory.rows.length,
+        hospitalInventory: hospitalInventory.rows.length,
+        hospitalInventoryItems: hospitalInventory.rows,
+        allHospitalsWithInventory: hospitalCount.rows[0].count,
+      });
+    } else {
+      res.json({
+        session: hospital,
+        totalInventory: allInventory.rows.length,
+        hospitalInventory: 0,
+        error: "No hospital session",
+      });
+    }
   } catch (err) {
-    console.error("Debug endpoint error:", err);
+    console.error("Error in debug inventory:", err.message);
     res.status(500).json({ error: err.message });
   }
 };
