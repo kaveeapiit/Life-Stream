@@ -14,6 +14,9 @@ import hospitalAuth from "../middleware/hospitalAuth.js";
 
 const router = express.Router();
 
+// Debug endpoint (no auth required for testing)
+router.get("/debug", debugInventory);
+
 // Get hospital blood inventory with filters
 router.get("/inventory", hospitalAuth, getHospitalInventory);
 

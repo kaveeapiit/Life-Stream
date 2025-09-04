@@ -29,23 +29,54 @@ This project is configured to work in both local development and production envi
    SESSION_SECRET=your-secret-key
    ```
 
-### Production Environment
+# Environment Configuration
 
-#### Frontend (Vercel)
+This project is configured to work in local development and Azure production environments using environment variables.
 
-Set environment variables in Vercel dashboard:
+## Setup Instructions
 
-- `VITE_API_BASE_URL=https://life-stream-production-2f47.up.railway.app`
+### Local Development
 
-#### Backend (Railway)
+1. **Frontend Environment** (`.env.local`):
 
-Set environment variables in Railway dashboard:
+   ```env
+   VITE_API_BASE_URL=http://localhost:5050
+   ```
 
-- `DATABASE_URL=your_railway_postgres_url`
-- `FRONTEND_URL=https://life-stream-flame.vercel.app`
+2. **Backend Environment** (`.env`):
+
+   ```env
+   # Database
+   DB_USER=postgres
+   DB_HOST=localhost
+   DB_NAME=life-stream
+   DB_PASSWORD=your_password
+   DB_PORT=5432
+
+   # Server
+   PORT=5050
+   NODE_ENV=development
+   FRONTEND_URL=http://localhost:5173
+   SESSION_SECRET=your-secret-key
+   ```
+
+### Azure Production Environment
+
+#### Frontend (Azure Static Web Apps)
+
+Set environment variables in Azure Static Web Apps Configuration:
+
+- `VITE_API_BASE_URL=https://life-stream-backend.azurewebsites.net`
+
+#### Backend (Azure App Service)
+
+Set environment variables in Azure App Service Configuration:
+
+- `DATABASE_URL=postgresql://username:password@server.postgres.database.azure.com:5432/life-stream?sslmode=require`
+- `FRONTEND_URL=https://your-static-web-app.azurestaticapps.net`
 - `NODE_ENV=production`
 - `SESSION_SECRET=your-production-secret`
-- `PORT=5050` (or use Railway's PORT if different)
+- `PORT=8080` (Azure App Service default)
 
 ## Environment Files
 

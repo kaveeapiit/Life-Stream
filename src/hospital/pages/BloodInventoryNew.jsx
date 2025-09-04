@@ -11,7 +11,7 @@ import {
   FaHourglassHalf,
   FaSpinner,
   FaDownload,
-  FaSyncAlt,
+  FaRefresh,
   FaEye,
   FaEdit
 } from 'react-icons/fa';
@@ -276,7 +276,7 @@ export default function BloodInventory() {
                 }}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition flex items-center gap-2"
               >
-                <FaSyncAlt className="text-xs" />
+                <FaRefresh className="text-xs" />
                 Refresh
               </button>
               <button
