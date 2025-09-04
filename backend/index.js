@@ -40,11 +40,11 @@ app.use(express.json());
 // ✅ Session Middleware (important: must come BEFORE routes)
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "life-stream-secret-key", // Use environment variable for production
+    secret: process.env.SESSION_SECRET || "life-stream-secret-key",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Secure cookies for production with HTTPS
+      secure: false, // Not using HTTPS for local development
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     },

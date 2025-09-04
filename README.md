@@ -2,6 +2,8 @@
 
 Life Stream is a full-stack web application for managing blood donations, requests, and approvals across hospitals and users in Sri Lanka.
 
+**Note: This project is configured for local development only.**
+
 ## Features
 
 - User registration, login, and profile management
@@ -14,6 +16,10 @@ Life Stream is a full-stack web application for managing blood donations, reques
 - RESTful backend API with Express, PostgreSQL, and session-based authentication
 
 ---
+
+## Quick Start
+
+For detailed setup instructions, see [LOCAL_SETUP.md](LOCAL_SETUP.md).
 
 ## Getting Started
 

@@ -5,8 +5,4 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [tailwindcss(), react()],
-  define: {
-    // Ensure environment variables are available in production
-    __APP_ENV__: JSON.stringify(process.env.NODE_ENV),
-  },
 });

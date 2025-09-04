@@ -29,29 +29,10 @@ This project is configured to work in both local development and production envi
    SESSION_SECRET=your-secret-key
    ```
 
-### Production Environment
-
-#### Frontend (Vercel)
-
-Set environment variables in Vercel dashboard:
-
-- `VITE_API_BASE_URL=https://life-stream-production-2f47.up.railway.app`
-
-#### Backend (Railway)
-
-Set environment variables in Railway dashboard:
-
-- `DATABASE_URL=your_railway_postgres_url`
-- `FRONTEND_URL=https://life-stream-flame.vercel.app`
-- `NODE_ENV=production`
-- `SESSION_SECRET=your-production-secret`
-- `PORT=5050` (or use Railway's PORT if different)
-
 ## Environment Files
 
 - `.env` - Default environment variables (committed to git)
 - `.env.local` - Local development overrides (not committed)
-- `.env.production` - Production defaults (committed to git)
 
 ## API Configuration
 
@@ -59,7 +40,7 @@ All API calls in the frontend use the `API_BASE_URL` from `src/config/api.js`, w
 
 ## CORS Configuration
 
-The backend automatically configures CORS based on the `FRONTEND_URL` environment variable, allowing seamless switching between local and production environments.
+The backend automatically configures CORS based on the `FRONTEND_URL` environment variable.
 
 ## Testing Your Setup
 
