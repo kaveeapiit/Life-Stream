@@ -122,3 +122,61 @@ export const getDonationHistoryForAdmin = async () => {
   const result = await pool.query(query);
   return result.rows;
 };
+
+// Auto-convert approved donation to blood inventory
+export const autoConvertToInventory = async (
+  donationId,
+  hospitalId,
+  expiryDate
+) => {
+  try {
+    await pool.query("BEGIN");
+
+    // Get donation details
+    const donationResult = await pool.query(
+      "SELECT * FROM donations WHERE id = $1 AND status = $2",
+      [donationId, "Approved"]
+    );
+
+    if (donationResult.rows.length === 0) {
+      await pool.query("ROLLBACK");
+      return { success: false, error: "Approved donation not found" };
+    }
+
+    const donation = donationResult.rows[0];
+
+    // Create blood unit in inventory
+    const inventoryResult = await pool.query(
+      `INSERT INTO blood_inventory (donation_id, blood_type, donor_name, donor_email, hospital_id, expiry_date, status, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) RETURNING *`,
+      [
+        donation.id,
+        donation.blood_type,
+        donation.name,
+        donation.email,
+        hospitalId,
+        expiryDate,
+        "Available",
+      ]
+    );
+
+    // Update donation status to 'Collected'
+    await pool.query(
+      "UPDATE donations SET status = $1, updated_at = NOW() WHERE id = $2",
+      ["Collected", donationId]
+    );
+
+    await pool.query("COMMIT");
+
+    return {
+      success: true,
+      message: "Donation successfully converted to inventory",
+      bloodUnit: inventoryResult.rows[0],
+      donation: donation,
+    };
+  } catch (error) {
+    await pool.query("ROLLBACK");
+    console.error("Error in autoConvertToInventory:", error);
+    return { success: false, error: "Database error during conversion" };
+  }
+};

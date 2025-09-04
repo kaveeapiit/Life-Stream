@@ -154,6 +154,102 @@ const BloodInventoryModel = {
     );
     return result.rows[0];
   },
+
+  // Find available blood units for a request
+  findAvailableBloodUnits: async (
+    bloodType,
+    quantity = 1,
+    excludeHospitalId = null
+  ) => {
+    let query = `
+      SELECT * FROM blood_inventory 
+      WHERE blood_type = $1 
+      AND status = 'Available' 
+      AND expiry_date > CURRENT_DATE
+    `;
+    const params = [bloodType];
+    let paramIndex = 2;
+
+    if (excludeHospitalId) {
+      query += ` AND hospital_id != $${paramIndex}`;
+      params.push(excludeHospitalId);
+      paramIndex++;
+    }
+
+    query += ` ORDER BY expiry_date ASC LIMIT $${paramIndex}`;
+    params.push(quantity);
+
+    const result = await pool.query(query, params);
+    return result.rows;
+  },
+
+  // Reserve blood units for a request
+  reserveBloodUnits: async (unitIds, requestId) => {
+    const result = await pool.query(
+      `UPDATE blood_inventory 
+       SET status = 'Reserved', 
+           reserved_for_request_id = $1,
+           updated_at = NOW()
+       WHERE id = ANY($2) AND status = 'Available'
+       RETURNING *`,
+      [requestId, unitIds]
+    );
+    return result.rows;
+  },
+
+  // Fulfill blood units (mark as used)
+  fulfillBloodUnits: async (unitIds, requestId) => {
+    const result = await pool.query(
+      `UPDATE blood_inventory 
+       SET status = 'Used', 
+           used_date = NOW(),
+           fulfilled_request_id = $1,
+           updated_at = NOW()
+       WHERE id = ANY($2) AND (status = 'Reserved' OR status = 'Available')
+       RETURNING *`,
+      [requestId, unitIds]
+    );
+    return result.rows;
+  },
+
+  // Cancel reservation (return to available)
+  cancelReservation: async (requestId) => {
+    const result = await pool.query(
+      `UPDATE blood_inventory 
+       SET status = 'Available', 
+           reserved_for_request_id = NULL,
+           updated_at = NOW()
+       WHERE reserved_for_request_id = $1 AND status = 'Reserved'
+       RETURNING *`,
+      [requestId]
+    );
+    return result.rows;
+  },
+
+  // Get global blood availability (across all hospitals)
+  getGlobalBloodAvailability: async (bloodType = null) => {
+    let query = `
+      SELECT 
+        hospital_id,
+        blood_type,
+        COUNT(*) as available_units,
+        MIN(expiry_date) as earliest_expiry
+      FROM blood_inventory 
+      WHERE status = 'Available' 
+      AND expiry_date > CURRENT_DATE
+    `;
+    const params = [];
+
+    if (bloodType) {
+      query += ` AND blood_type = $1`;
+      params.push(bloodType);
+    }
+
+    query += ` GROUP BY hospital_id, blood_type ORDER BY blood_type, hospital_id`;
+
+    const result = await pool.query(query, params);
+    return result.rows;
+  },
 };
 
 export default BloodInventoryModel;

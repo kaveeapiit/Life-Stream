@@ -201,6 +201,171 @@ const BloodRequestModel = {
     );
     return result.rows;
   },
+
+  // Search for available blood units and auto-assign if possible
+  checkAndAutoFulfillRequest: async (requestId) => {
+    try {
+      // Get request details
+      const requestResult = await db.query(
+        "SELECT * FROM blood_requests WHERE id = $1",
+        [requestId]
+      );
+
+      if (requestResult.rows.length === 0) {
+        return { success: false, error: "Request not found" };
+      }
+
+      const request = requestResult.rows[0];
+
+      // Check if request is in pending status
+      if (request.status !== "pending") {
+        return { success: false, error: "Request is not in pending status" };
+      }
+
+      // Look for available blood units
+      const bloodUnitsResult = await db.query(
+        `SELECT * FROM blood_inventory 
+         WHERE blood_type = $1 
+         AND status = 'Available' 
+         AND expiry_date > CURRENT_DATE
+         ORDER BY expiry_date ASC 
+         LIMIT 1`,
+        [request.blood_type]
+      );
+
+      if (bloodUnitsResult.rows.length === 0) {
+        return { success: false, error: "No available blood units found" };
+      }
+
+      const bloodUnit = bloodUnitsResult.rows[0];
+
+      // Reserve the blood unit
+      await db.query(
+        `UPDATE blood_inventory 
+         SET status = 'Reserved', 
+             reserved_for_request_id = $1,
+             updated_at = NOW()
+         WHERE id = $2`,
+        [requestId, bloodUnit.id]
+      );
+
+      // Update request status to approved with auto-assignment info
+      await db.query(
+        `UPDATE blood_requests 
+         SET status = 'approved',
+             assigned_hospital = (SELECT 'hospital_' || hospital_id FROM blood_inventory WHERE id = $2),
+             hospital_notes = 'Auto-assigned - Blood unit available',
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $1`,
+        [requestId, bloodUnit.id]
+      );
+
+      return {
+        success: true,
+        message: "Request auto-approved and blood unit reserved",
+        bloodUnit: bloodUnit,
+      };
+    } catch (error) {
+      console.error("Error in checkAndAutoFulfillRequest:", error);
+      return {
+        success: false,
+        error: "Database error during auto-fulfillment",
+      };
+    }
+  },
+
+  // Fulfill a blood request with inventory management
+  fulfillBloodRequest: async (requestId, bloodUnitIds) => {
+    try {
+      // Start transaction
+      await db.query("BEGIN");
+
+      // Update blood units to used status
+      const bloodUnitsResult = await db.query(
+        `UPDATE blood_inventory 
+         SET status = 'Used',
+             used_date = NOW(),
+             fulfilled_request_id = $1,
+             updated_at = NOW()
+         WHERE id = ANY($2) AND (status = 'Reserved' OR status = 'Available')
+         RETURNING *`,
+        [requestId, bloodUnitIds]
+      );
+
+      if (bloodUnitsResult.rows.length === 0) {
+        await db.query("ROLLBACK");
+        return {
+          success: false,
+          error: "No valid blood units found to fulfill request",
+        };
+      }
+
+      // Update request status to fulfilled
+      const requestResult = await db.query(
+        `UPDATE blood_requests 
+         SET status = 'fulfilled',
+             fulfilled_at = CURRENT_TIMESTAMP,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $1
+         RETURNING *`,
+        [requestId]
+      );
+
+      if (requestResult.rows.length === 0) {
+        await db.query("ROLLBACK");
+        return { success: false, error: "Request not found" };
+      }
+
+      // Commit transaction
+      await db.query("COMMIT");
+
+      return {
+        success: true,
+        message: "Blood request fulfilled successfully",
+        request: requestResult.rows[0],
+        bloodUnits: bloodUnitsResult.rows,
+      };
+    } catch (error) {
+      await db.query("ROLLBACK");
+      console.error("Error fulfilling blood request:", error);
+      return { success: false, error: "Database error during fulfillment" };
+    }
+  },
+
+  // Cancel a blood request and release reserved units
+  cancelBloodRequest: async (requestId, reason = null) => {
+    try {
+      await db.query("BEGIN");
+
+      // Release any reserved blood units
+      await db.query(
+        `UPDATE blood_inventory 
+         SET status = 'Available',
+             reserved_for_request_id = NULL,
+             updated_at = NOW()
+         WHERE reserved_for_request_id = $1 AND status = 'Reserved'`,
+        [requestId]
+      );
+
+      // Update request status to cancelled
+      const result = await db.query(
+        `UPDATE blood_requests 
+         SET status = 'cancelled',
+             hospital_notes = $2,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $1
+         RETURNING *`,
+        [requestId, reason || "Request cancelled"]
+      );
+
+      await db.query("COMMIT");
+      return result.rows[0];
+    } catch (error) {
+      await db.query("ROLLBACK");
+      console.error("Error cancelling blood request:", error);
+      throw error;
+    }
+  },
 };
 
 export default BloodRequestModel;

@@ -6,6 +6,9 @@ import {
   assignBloodRequestToHospital,
   getBloodRequestStats,
   getUrgentBloodRequests,
+  fulfillBloodRequestWithInventory,
+  getAvailableInventoryForRequest,
+  reserveBloodUnitsForRequest,
 } from "../controllers/hospitalBloodRequestController.js";
 import hospitalAuth from "../middleware/hospitalAuth.js";
 
@@ -37,6 +40,27 @@ router.put(
   "/blood-requests/:id/assign",
   hospitalAuth,
   assignBloodRequestToHospital
+);
+
+// NEW: Fulfill blood request using hospital inventory
+router.put(
+  "/blood-requests/:id/fulfill",
+  hospitalAuth,
+  fulfillBloodRequestWithInventory
+);
+
+// NEW: Get available inventory for a specific request
+router.get(
+  "/blood-requests/:id/available-inventory",
+  hospitalAuth,
+  getAvailableInventoryForRequest
+);
+
+// NEW: Reserve blood units for a request
+router.put(
+  "/blood-requests/:id/reserve",
+  hospitalAuth,
+  reserveBloodUnitsForRequest
 );
 
 export default router;

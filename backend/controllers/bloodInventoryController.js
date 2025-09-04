@@ -6,7 +6,10 @@ import pool from "../config/db.js";
 export const getHospitalInventory = async (req, res) => {
   const { hospital } = req.session;
 
+  console.log("Hospital session data:", hospital); // Debug log
+
   if (!hospital || !hospital.id) {
+    console.log("❌ Unauthorized access - no hospital session"); // Debug log
     return res.status(401).json({ error: "Unauthorized" });
   }
 
@@ -18,10 +21,17 @@ export const getHospitalInventory = async (req, res) => {
     if (status && status !== "all") filters.status = status;
     if (expiringWithinDays) filters.expiringWithinDays = expiringWithinDays;
 
+    console.log(
+      `Fetching inventory for hospital ID: ${hospital.id}, filters:`,
+      filters
+    ); // Debug log
+
     const inventory = await BloodInventoryModel.getHospitalInventory(
       hospital.id,
       filters
     );
+
+    console.log(`Found ${inventory.length} inventory items`); // Debug log
     res.status(200).json(inventory);
   } catch (err) {
     console.error("Error fetching hospital inventory:", err.message);
@@ -33,12 +43,17 @@ export const getHospitalInventory = async (req, res) => {
 export const getInventorySummary = async (req, res) => {
   const { hospital } = req.session;
 
+  console.log("Getting inventory summary for hospital:", hospital); // Debug log
+
   if (!hospital || !hospital.id) {
+    console.log("❌ Unauthorized access - no hospital session for summary"); // Debug log
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
+    console.log(`Fetching inventory summary for hospital ID: ${hospital.id}`); // Debug log
     const summary = await BloodInventoryModel.getInventorySummary(hospital.id);
+    console.log("Inventory summary result:", summary); // Debug log
     res.status(200).json(summary);
   } catch (err) {
     console.error("Error fetching inventory summary:", err.message);
@@ -182,5 +197,99 @@ export const markExpiredUnits = async (req, res) => {
   } catch (err) {
     console.error("Error marking expired units:", err.message);
     res.status(500).json({ error: "Failed to mark expired units" });
+  }
+};
+
+// NEW: Get global blood availability across all hospitals
+export const getGlobalBloodAvailability = async (req, res) => {
+  try {
+    const { bloodType } = req.query;
+    const availability = await BloodInventoryModel.getGlobalBloodAvailability(
+      bloodType
+    );
+
+    res.status(200).json({
+      bloodType: bloodType || "all",
+      hospitals: availability,
+      totalHospitals: availability.length,
+    });
+  } catch (err) {
+    console.error("Error fetching global blood availability:", err.message);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch global blood availability" });
+  }
+};
+
+// NEW: Find available blood units for cross-hospital sharing
+export const findAvailableBloodUnits = async (req, res) => {
+  try {
+    const { bloodType } = req.params;
+    const { quantity = 1, excludeHospitalId } = req.query;
+
+    const availableUnits = await BloodInventoryModel.findAvailableBloodUnits(
+      bloodType,
+      parseInt(quantity),
+      excludeHospitalId ? parseInt(excludeHospitalId) : null
+    );
+
+    res.status(200).json({
+      bloodType,
+      requestedQuantity: parseInt(quantity),
+      availableUnits: availableUnits.length,
+      units: availableUnits,
+    });
+  } catch (err) {
+    console.error("Error finding available blood units:", err.message);
+    res.status(500).json({ error: "Failed to find available blood units" });
+  }
+};
+
+// DEBUG: Get all inventory data for debugging
+export const debugInventory = async (req, res) => {
+  try {
+    const { hospital } = req.session;
+
+    console.log("=== DEBUG INVENTORY ===");
+    console.log("Session hospital:", hospital);
+
+    // Get all inventory regardless of hospital for debugging
+    const allInventory = await pool.query(
+      "SELECT * FROM blood_inventory ORDER BY hospital_id, blood_type"
+    );
+    const hospitalCount = await pool.query(
+      "SELECT COUNT(DISTINCT hospital_id) as count FROM blood_inventory"
+    );
+
+    console.log(`Total inventory items: ${allInventory.rows.length}`);
+    console.log(`Hospitals with inventory: ${hospitalCount.rows[0].count}`);
+
+    if (hospital && hospital.id) {
+      const hospitalInventory = await pool.query(
+        "SELECT * FROM blood_inventory WHERE hospital_id = $1",
+        [hospital.id]
+      );
+      console.log(
+        `Inventory for hospital ${hospital.id}: ${hospitalInventory.rows.length} items`
+      );
+
+      res.json({
+        session: hospital,
+        totalInventory: allInventory.rows.length,
+        hospitalInventory: hospitalInventory.rows.length,
+        hospitalInventoryItems: hospitalInventory.rows,
+        allHospitalsWithInventory: hospitalCount.rows[0].count,
+      });
+    } else {
+      res.json({
+        session: hospital,
+        totalInventory: allInventory.rows.length,
+        hospitalInventory: 0,
+        error: "No hospital session",
+      });
+    }
+  } catch (err) {
+    console.error("Error in debug inventory:", err.message);
+    res.status(500).json({ error: err.message });
   }
 };

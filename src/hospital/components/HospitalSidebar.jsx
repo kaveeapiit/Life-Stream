@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Droplet, FlaskConical, Users, LogOut, Menu, Package, Plus, Heart, MapPin, Hospital } from 'lucide-react';
+import API_BASE_URL from '../../config/api.js';
 
 export default function HospitalSidebar() {
   const navigate = useNavigate();
@@ -30,13 +31,15 @@ export default function HospitalSidebar() {
 
   const Item = ({ to, icon: Icon, label }) => {
     const active = pathname.toLowerCase().startsWith(to.toLowerCase());
+    
     return (
       <li
-        onClick={() => { navigate(to); setOpen(false); }}
-        className={`cursor-pointer flex items-center gap-3 px-4 py-2 rounded-lg transition
+        className={`cursor-pointer px-4 py-2 rounded-lg transition flex items-center gap-3
         ${active ? 'bg-white/20 text-white' : 'text-gray-200 hover:bg-white/10'}`}
+        onClick={() => { navigate(to); setOpen(false); }}
       >
-        <Icon size={18} /> {label}
+        <Icon size={18} /> 
+        <span>{label}</span>
       </li>
     );
   };
@@ -74,7 +77,6 @@ export default function HospitalSidebar() {
           <Item to="/hospital/available-donors" icon={Users} label="Available Donors" />
           <Item to="/hospital/donor-matching" icon={Heart} label="Donor Matching" />
           <Item to="/hospital/location-matching" icon={MapPin} label="Location Matching" />
-          <Item to="/hospital/blood-inventory" icon={Package} label="Blood Inventory" />
           <Item to="/hospital/collect-donation" icon={Plus} label="Collect Donation" />
           <Item to="/hospital/blood-requests" icon={Droplet} label="Blood Requests" />
           <Item to="/hospital/hospital-requests" icon={Hospital} label="Hospital Support" />

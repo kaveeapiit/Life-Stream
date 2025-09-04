@@ -8,6 +8,7 @@ import {
   getDonationHistoryForHospital,
   getAllDonationsForAdmin,
   getDonationHistoryForAdmin,
+  autoConvertToInventory,
 } from "../models/donationModel.js";
 import { getAvailableDonors } from "../models/UserModel.js";
 import pool from "../config/db.js";
@@ -138,30 +139,120 @@ export const fetchAvailableDonors = async (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  const { bloodType = "", search = "", page = 1, limit = 20 } = req.query;
-
   try {
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const result = await getAvailableDonors({
-      bloodType,
-      search,
-      limit: parseInt(limit),
-      offset,
-    });
-
-    res.status(200).json({
-      donors: result.donors,
-      total: result.total,
-      page: parseInt(page),
-      totalPages: Math.ceil(result.total / parseInt(limit)),
-    });
+    const { bloodType, location } = req.query;
+    const donors = await getAvailableDonors({ bloodType, location });
+    res.status(200).json(donors);
   } catch (err) {
     console.error("Error fetching available donors:", err.message);
     res.status(500).json({ error: "Failed to fetch available donors" });
   }
 };
 
-// ✅ 7. Hospital dashboard statistics
+// ✅ ADMIN: Get all donations for admin management
+export const fetchAllDonationsForAdmin = async (req, res) => {
+  try {
+    const donations = await getAllDonationsForAdmin();
+    res.status(200).json(donations);
+  } catch (err) {
+    console.error("Error fetching all admin donations:", err.message);
+    res.status(500).json({ error: "Failed to fetch donations" });
+  }
+};
+
+// ✅ ADMIN: Get donation history for admin
+export const fetchDonationHistoryForAdmin = async (req, res) => {
+  try {
+    const donations = await getDonationHistoryForAdmin();
+    res.status(200).json(donations);
+  } catch (err) {
+    console.error("Error fetching admin donation history:", err.message);
+    res.status(500).json({ error: "Failed to fetch donation history" });
+  }
+};
+
+// NEW: Enhanced approval with auto-conversion to inventory
+export const approveAndConvertDonation = async (req, res) => {
+  const { id } = req.params;
+  const { hospitalId, expiryDate, autoConvert = true } = req.body;
+
+  if (!hospitalId || !expiryDate) {
+    return res.status(400).json({
+      error: "Hospital ID and expiry date are required",
+    });
+  }
+
+  try {
+    // First approve the donation
+    const approved = await updateDonationStatus(id, "Approved");
+
+    if (!approved) {
+      return res.status(404).json({ error: "Donation not found" });
+    }
+
+    // Auto-convert to inventory if requested
+    if (autoConvert) {
+      const conversionResult = await autoConvertToInventory(
+        id,
+        hospitalId,
+        expiryDate
+      );
+
+      if (conversionResult.success) {
+        res.status(200).json({
+          donation: approved,
+          bloodUnit: conversionResult.bloodUnit,
+          message:
+            "Donation approved and successfully converted to blood inventory",
+          autoConverted: true,
+        });
+      } else {
+        res.status(200).json({
+          donation: approved,
+          message: "Donation approved but conversion to inventory failed",
+          autoConverted: false,
+          conversionError: conversionResult.error,
+        });
+      }
+    } else {
+      res.status(200).json({
+        donation: approved,
+        message: "Donation approved successfully",
+        autoConverted: false,
+      });
+    }
+  } catch (err) {
+    console.error("Error in approveAndConvertDonation:", err.message);
+    res.status(500).json({ error: "Failed to approve and convert donation" });
+  }
+};
+
+// NEW: Convert existing approved donation to inventory
+export const convertDonationToInventory = async (req, res) => {
+  const { id } = req.params;
+  const { hospitalId, expiryDate } = req.body;
+
+  if (!hospitalId || !expiryDate) {
+    return res.status(400).json({
+      error: "Hospital ID and expiry date are required",
+    });
+  }
+
+  try {
+    const result = await autoConvertToInventory(id, hospitalId, expiryDate);
+
+    if (result.success) {
+      res.status(200).json(result);
+    } else {
+      res.status(400).json({ error: result.error });
+    }
+  } catch (err) {
+    console.error("Error converting donation to inventory:", err.message);
+    res.status(500).json({ error: "Failed to convert donation to inventory" });
+  }
+};
+
+// ✅ Hospital Dashboard Stats
 export const getHospitalDashboardStats = async (req, res) => {
   const { hospital } = req.session;
 
@@ -170,61 +261,33 @@ export const getHospitalDashboardStats = async (req, res) => {
   }
 
   try {
-    // Get today's date for filtering
-    const today = new Date().toISOString().split("T")[0];
+    // Get donation statistics for the hospital
+    const donationStats = await pool.query(
+      `
+      SELECT 
+        COUNT(CASE WHEN status = 'Pending' THEN 1 END) as pending_donations,
+        COUNT(CASE WHEN status = 'Approved' THEN 1 END) as approved_donations,
+        COUNT(CASE WHEN status = 'Collected' THEN 1 END) as collected_donations,
+        COUNT(CASE WHEN status = 'Declined' THEN 1 END) as declined_donations,
+        COUNT(CASE WHEN DATE(created_at) = CURRENT_DATE THEN 1 END) as today_donations
+      FROM donations 
+      WHERE LOWER(location) LIKE LOWER($1) OR location IS NULL OR location = ''
+    `,
+      [`%${hospital.username}%`]
+    );
 
-    // Query for various stats
-    const statsQueries = await Promise.all([
-      // Pending donations for this hospital
-      pool.query("SELECT COUNT(*) FROM donations WHERE status = $1", [
-        "Pending",
-      ]),
-      // Pending blood requests (recipients)
-      pool.query("SELECT COUNT(*) FROM blood_requests WHERE status = $1", [
-        "pending",
-      ]),
-      // Approved donations today
-      pool.query(
-        "SELECT COUNT(*) FROM donations WHERE status = $1 AND DATE(created_at) = $2",
-        ["Approved", today]
-      ),
-      // Declined donations today
-      pool.query(
-        "SELECT COUNT(*) FROM donations WHERE status = $1 AND DATE(created_at) = $2",
-        ["Declined", today]
-      ),
-    ]);
-
-    return res.json({
-      pendingDonations: parseInt(statsQueries[0].rows[0].count),
-      pendingRecipients: parseInt(statsQueries[1].rows[0].count),
-      todayApproved: parseInt(statsQueries[2].rows[0].count),
-      todayDeclined: parseInt(statsQueries[3].rows[0].count),
+    res.status(200).json({
+      hospital: hospital.username,
+      donations: donationStats.rows[0] || {
+        pending_donations: 0,
+        approved_donations: 0,
+        collected_donations: 0,
+        declined_donations: 0,
+        today_donations: 0,
+      },
     });
   } catch (err) {
-    console.error("Error fetching dashboard stats:", err.message);
+    console.error("Error fetching hospital dashboard stats:", err.message);
     res.status(500).json({ error: "Failed to fetch dashboard statistics" });
-  }
-};
-
-// ✅ ADMIN: Fetch all donations for admin management
-export const fetchAllDonationsForAdmin = async (req, res) => {
-  try {
-    const donations = await getAllDonationsForAdmin();
-    res.status(200).json(donations);
-  } catch (err) {
-    console.error("Error fetching all donations for admin:", err.message);
-    res.status(500).json({ error: "Failed to fetch donations" });
-  }
-};
-
-// ✅ ADMIN: Fetch donation history for admin
-export const fetchDonationHistoryForAdmin = async (req, res) => {
-  try {
-    const donations = await getDonationHistoryForAdmin();
-    res.status(200).json(donations);
-  } catch (err) {
-    console.error("Error fetching donation history for admin:", err.message);
-    res.status(500).json({ error: "Failed to fetch donation history" });
   }
 };

@@ -1,4 +1,5 @@
 import BloodRequestModel from "../models/BloodRequestModel.js";
+import BloodInventoryModel from "../models/BloodInventoryModel.js";
 
 // 🏥 Hospital Blood Request Management Controllers
 
@@ -188,5 +189,166 @@ export const getUrgentBloodRequests = async (req, res) => {
   } catch (err) {
     console.error("Error fetching urgent blood requests:", err);
     res.status(500).json({ error: "Failed to fetch urgent blood requests" });
+  }
+};
+
+// NEW: Fulfill blood request using hospital inventory
+export const fulfillBloodRequestWithInventory = async (req, res) => {
+  const { hospital } = req.session;
+  const { id } = req.params;
+  const { bloodUnitIds, notes } = req.body;
+
+  if (!hospital || !hospital.id) {
+    return res
+      .status(401)
+      .json({ error: "Unauthorized: Hospital login required" });
+  }
+
+  if (
+    !bloodUnitIds ||
+    !Array.isArray(bloodUnitIds) ||
+    bloodUnitIds.length === 0
+  ) {
+    return res.status(400).json({ error: "Blood unit IDs are required" });
+  }
+
+  try {
+    // Verify all blood units belong to this hospital
+    const verificationResults = await Promise.all(
+      bloodUnitIds.map((unitId) => BloodInventoryModel.getBloodUnitById(unitId))
+    );
+
+    const invalidUnits = verificationResults.filter(
+      (unit) => !unit || unit.hospital_id !== hospital.id
+    );
+
+    if (invalidUnits.length > 0) {
+      return res.status(403).json({
+        error: "Some blood units do not belong to your hospital",
+      });
+    }
+
+    // Fulfill the request
+    const result = await BloodRequestModel.fulfillBloodRequest(
+      id,
+      bloodUnitIds
+    );
+
+    if (result.success) {
+      // Also update the request with hospital notes
+      await BloodRequestModel.updateRequestStatus(
+        id,
+        "fulfilled",
+        hospital.username,
+        notes || "Fulfilled using hospital inventory"
+      );
+
+      res.status(200).json({
+        ...result,
+        message:
+          "Blood request fulfilled successfully using hospital inventory",
+      });
+    } else {
+      res.status(400).json({ error: result.error });
+    }
+  } catch (err) {
+    console.error("Error fulfilling blood request with inventory:", err);
+    res.status(500).json({ error: "Failed to fulfill blood request" });
+  }
+};
+
+// NEW: Get available blood inventory for request fulfillment
+export const getAvailableInventoryForRequest = async (req, res) => {
+  const { hospital } = req.session;
+  const { id } = req.params;
+
+  if (!hospital || !hospital.id) {
+    return res
+      .status(401)
+      .json({ error: "Unauthorized: Hospital login required" });
+  }
+
+  try {
+    // Get request details
+    const request = await BloodRequestModel.getRequestById(id);
+    if (!request) {
+      return res.status(404).json({ error: "Blood request not found" });
+    }
+
+    // Get available blood units of the required type
+    const availableUnits = await BloodInventoryModel.getHospitalInventory(
+      hospital.id,
+      {
+        bloodType: request.blood_type,
+        status: "Available",
+      }
+    );
+
+    // Filter out expired units
+    const validUnits = availableUnits.filter(
+      (unit) => new Date(unit.expiry_date) > new Date()
+    );
+
+    res.status(200).json({
+      request: request,
+      availableUnits: validUnits,
+      totalAvailable: validUnits.length,
+    });
+  } catch (err) {
+    console.error("Error getting available inventory for request:", err);
+    res.status(500).json({ error: "Failed to get available inventory" });
+  }
+};
+
+// NEW: Reserve blood units for a request
+export const reserveBloodUnitsForRequest = async (req, res) => {
+  const { hospital } = req.session;
+  const { id } = req.params;
+  const { bloodUnitIds } = req.body;
+
+  if (!hospital || !hospital.id) {
+    return res
+      .status(401)
+      .json({ error: "Unauthorized: Hospital login required" });
+  }
+
+  if (
+    !bloodUnitIds ||
+    !Array.isArray(bloodUnitIds) ||
+    bloodUnitIds.length === 0
+  ) {
+    return res.status(400).json({ error: "Blood unit IDs are required" });
+  }
+
+  try {
+    // Reserve the blood units
+    const reservedUnits = await BloodInventoryModel.reserveBloodUnits(
+      bloodUnitIds,
+      id
+    );
+
+    if (reservedUnits.length === 0) {
+      return res.status(400).json({
+        error:
+          "No blood units could be reserved (may already be reserved or unavailable)",
+      });
+    }
+
+    // Update request status to approved
+    await BloodRequestModel.updateRequestStatus(
+      id,
+      "approved",
+      hospital.username,
+      `Reserved ${reservedUnits.length} blood unit(s) for fulfillment`
+    );
+
+    res.status(200).json({
+      message: `Successfully reserved ${reservedUnits.length} blood unit(s)`,
+      reservedUnits: reservedUnits,
+      requestId: id,
+    });
+  } catch (err) {
+    console.error("Error reserving blood units for request:", err);
+    res.status(500).json({ error: "Failed to reserve blood units" });
   }
 };

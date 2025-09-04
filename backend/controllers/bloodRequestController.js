@@ -1,9 +1,29 @@
 import BloodRequestModel from "../models/BloodRequestModel.js";
+import BloodInventoryModel from "../models/BloodInventoryModel.js";
 
 export const createBloodRequest = async (req, res) => {
   try {
     const request = await BloodRequestModel.createRequest(req.body);
-    res.status(201).json(request);
+
+    // Try to auto-fulfill the request if blood is available
+    const autoFulfillResult =
+      await BloodRequestModel.checkAndAutoFulfillRequest(request.id);
+
+    if (autoFulfillResult.success) {
+      res.status(201).json({
+        ...request,
+        autoFulfilled: true,
+        message:
+          "Request created and automatically approved - blood unit reserved",
+        bloodUnit: autoFulfillResult.bloodUnit,
+      });
+    } else {
+      res.status(201).json({
+        ...request,
+        autoFulfilled: false,
+        message: "Request created successfully, awaiting manual review",
+      });
+    }
   } catch (err) {
     console.error("Error in createBloodRequest:", err);
     res.status(500).json({ error: "Failed to create request" });
@@ -85,5 +105,75 @@ export const getRequestHistoryForAdmin = async (req, res) => {
   } catch (err) {
     console.error("Error in getRequestHistoryForAdmin:", err);
     res.status(500).json({ error: "Failed to fetch blood request history" });
+  }
+};
+
+// NEW: Fulfill a blood request
+export const fulfillBloodRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { bloodUnitIds } = req.body;
+
+    if (
+      !bloodUnitIds ||
+      !Array.isArray(bloodUnitIds) ||
+      bloodUnitIds.length === 0
+    ) {
+      return res.status(400).json({ error: "Blood unit IDs are required" });
+    }
+
+    const result = await BloodRequestModel.fulfillBloodRequest(
+      id,
+      bloodUnitIds
+    );
+
+    if (result.success) {
+      res.status(200).json(result);
+    } else {
+      res.status(400).json({ error: result.error });
+    }
+  } catch (err) {
+    console.error("Error in fulfillBloodRequest:", err);
+    res.status(500).json({ error: "Failed to fulfill blood request" });
+  }
+};
+
+// NEW: Cancel a blood request
+export const cancelBloodRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const result = await BloodRequestModel.cancelBloodRequest(id, reason);
+    res.status(200).json({
+      message: "Blood request cancelled successfully",
+      request: result,
+    });
+  } catch (err) {
+    console.error("Error in cancelBloodRequest:", err);
+    res.status(500).json({ error: "Failed to cancel blood request" });
+  }
+};
+
+// NEW: Check available blood for a request
+export const checkAvailableBlood = async (req, res) => {
+  try {
+    const { bloodType } = req.params;
+    const { excludeHospitalId } = req.query;
+
+    const availableUnits = await BloodInventoryModel.findAvailableBloodUnits(
+      bloodType,
+      10, // Get up to 10 units
+      excludeHospitalId ? parseInt(excludeHospitalId) : null
+    );
+
+    res.status(200).json({
+      bloodType,
+      availableUnits: availableUnits.length,
+      units: availableUnits,
+    });
+  } catch (err) {
+    console.error("Error in checkAvailableBlood:", err);
+    res.status(500).json({ error: "Failed to check available blood" });
   }
 };
