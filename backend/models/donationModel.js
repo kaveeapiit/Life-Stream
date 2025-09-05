@@ -8,18 +8,36 @@ export const insertDonation = async ({
   bloodType,
   location,
 }) => {
-  const query = `
-    INSERT INTO donations (user_id, name, email, blood_type, location, status)
-    VALUES ($1, $2, $3, $4, $5, $6)
-  `;
-  await pool.query(query, [
-    userId || null,
-    name,
-    email,
-    bloodType,
-    location,
-    "Pending",
-  ]);
+  try {
+    const query = `
+      INSERT INTO donations (user_id, name, email, blood_type, location, status)
+      VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+    
+    console.log('Executing donation insert query with values:', [
+      userId || null,
+      name,
+      email,
+      bloodType,
+      location,
+      "Pending",
+    ]);
+    
+    const result = await pool.query(query, [
+      userId || null,
+      name,
+      email,
+      bloodType,
+      location,
+      "Pending",
+    ]);
+    
+    console.log('Donation inserted successfully');
+    return result;
+  } catch (error) {
+    console.error('Database error in insertDonation:', error);
+    throw error;
+  }
 };
 
 // ✅ Fetch all donations for a user by email

@@ -1,7 +1,14 @@
 // Debug routes for troubleshooting authentication issues
 import express from "express";
+import { testDatabase, testUserValidation } from "../controllers/debugController.js";
 
 const router = express.Router();
+
+// Test database connection and schema
+router.get("/db-test", testDatabase);
+
+// Test user validation without insertion
+router.post("/user-validation", testUserValidation);
 
 // Debug endpoint to check environment variables (non-sensitive only)
 router.get("/env", (req, res) => {

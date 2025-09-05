@@ -19,6 +19,16 @@ export const submitDonation = async (req, res) => {
   const userId = req.user?.id || null;
 
   try {
+    console.log('Donation submission attempt:', { name, email, bloodType, location, userId });
+    
+    // Validate required fields
+    if (!name || !email || !bloodType || !location) {
+      console.error('Donation validation failed: Missing required fields');
+      return res.status(400).json({ 
+        error: "All fields are required: name, email, bloodType, location" 
+      });
+    }
+
     await insertDonation({
       userId,
       name,
@@ -27,10 +37,15 @@ export const submitDonation = async (req, res) => {
       location,
     });
 
+    console.log('Donation submitted successfully for:', email);
     res.status(201).json({ message: "Donation submitted successfully" });
   } catch (err) {
     console.error("Donation submission failed:", err.message);
-    res.status(500).json({ error: "Failed to submit donation" });
+    console.error("Full error:", err);
+    res.status(500).json({ 
+      error: "Failed to submit donation",
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 };
 
