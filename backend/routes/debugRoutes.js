@@ -1,7 +1,14 @@
 // Debug routes for troubleshooting authentication issues
 import express from "express";
-import { testDatabase, testUserValidation, testDonationValidation } from "../controllers/debugController.js";
-import { fixSequences, checkSequences } from "../controllers/sequenceController.js";
+import {
+  testDatabase,
+  testUserValidation,
+  testDonationValidation,
+} from "../controllers/debugController.js";
+import {
+  fixSequences,
+  checkSequences,
+} from "../controllers/sequenceController.js";
 
 const router = express.Router();
 
@@ -11,7 +18,7 @@ router.get("/db-test", testDatabase);
 // Test user validation without insertion
 router.post("/user-validation", testUserValidation);
 
-// Test donation validation without insertion  
+// Test donation validation without insertion
 router.post("/donation-validation", testDonationValidation);
 
 // Fix database sequences

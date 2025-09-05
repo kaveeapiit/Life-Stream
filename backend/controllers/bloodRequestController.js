@@ -3,7 +3,9 @@ import BloodInventoryModel from "../models/BloodInventoryModel.js";
 
 export const createBloodRequest = async (req, res) => {
   try {
+    console.log('Creating blood request with data:', req.body);
     const request = await BloodRequestModel.createRequest(req.body);
+    console.log('Blood request created successfully:', request);
 
     // Try to auto-fulfill the request if blood is available
     const autoFulfillResult =
@@ -26,7 +28,22 @@ export const createBloodRequest = async (req, res) => {
     }
   } catch (err) {
     console.error("Error in createBloodRequest:", err);
-    res.status(500).json({ error: "Failed to create request" });
+    console.error("Full error details:", {
+      message: err.message,
+      code: err.code,
+      detail: err.detail,
+      hint: err.hint,
+      constraint: err.constraint
+    });
+    
+    // Return detailed error for debugging
+    const errorResponse = { error: "Failed to create request" };
+    
+    // Add detailed error info for debugging Azure issues
+    errorResponse.details = err.message;
+    errorResponse.code = err.code;
+    
+    res.status(500).json(errorResponse);
   }
 };
 
