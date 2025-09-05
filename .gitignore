@@ -25,4 +25,11 @@ dist-ssr
 
 # Environment files
 .env
-.env.*
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+
+# Allow production env files to be committed (without sensitive data)
+!.env.production
+!backend/.env.production

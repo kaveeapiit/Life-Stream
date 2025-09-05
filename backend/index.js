@@ -29,7 +29,34 @@ const app = express();
 // ✅ Enable CORS with credentials
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173", // Use environment variable or default to local
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      const allowedOrigins = [
+        process.env.FRONTEND_URL || "http://localhost:5173",
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://localhost:5173",
+        // Azure Static Web Apps URL
+        "https://polite-coast-092204100.1.azurestaticapps.net",
+      ];
+
+      // Add Azure frontend URL if specified
+      if (
+        process.env.FRONTEND_URL &&
+        process.env.FRONTEND_URL !== "http://localhost:5173"
+      ) {
+        allowedOrigins.push(process.env.FRONTEND_URL);
+      }
+
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log("CORS blocked origin:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -44,9 +71,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // Not using HTTPS for local development
+      secure: process.env.NODE_ENV === "production", // Use HTTPS in production
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Allow cross-site cookies in production
     },
   })
 );

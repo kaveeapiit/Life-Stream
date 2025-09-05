@@ -1,0 +1,18 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
+  },
+  "responseOverrides": {
+    "401": {
+      "redirect": "/login",
+      "statusCode": 302
+    }
+  },
+  "platform": {
+    "apiRuntime": "node:18"
+  },
+  "environmentVariables": {
+    "VITE_API_BASE_URL": "https://life-stream-backend-e8gmhvdgcmcaaxav.centralindia-01.azurewebsites.net"
+  }
+}
