@@ -196,19 +196,19 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <ImpactCard 
-              icon="❤️"
+              icon="heart"
               title="Emergency Saves"
               description="Sarah received 4 units during emergency surgery. Today she's a nurse helping others."
               gradient="from-red-500 to-pink-500"
             />
             <ImpactCard 
-              icon="👶"
+              icon="baby"
               title="New Life Support"
               description="Premature baby Alex needed blood transfusions. He's now a healthy 5-year-old."
               gradient="from-blue-500 to-cyan-500"
             />
             <ImpactCard 
-              icon="🏥"
+              icon="shield"
               title="Cancer Fighter"
               description="Mark fought leukemia with support from 12 donors. He's been in remission for 2 years."
               gradient="from-green-500 to-emerald-500"
@@ -236,17 +236,17 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-8 text-left">
             <FeatureCard 
-              icon="🌍"
+              icon="globe"
               title="Global Reach"
               description="Connect with donors and hospitals across continents"
             />
             <FeatureCard 
-              icon="⚡"
+              icon="lightning"
               title="Real-time Matching"
               description="AI-powered system matches donors with urgent needs instantly"
             />
             <FeatureCard 
-              icon="🔒"
+              icon="shield"
               title="Secure & Private"
               description="Your health data is protected with military-grade encryption"
             />
@@ -364,12 +364,36 @@ function SVGWave({ className = '' }) {
 /* ---------- NEW Modern Components ---------- */
 
 function ModernStepCard({ step, index, delay = 0 }) {
-  const icons = ['🚀', '⚡', '💫'];
   const gradients = [
     'from-red-500 to-rose-500',
     'from-red-600 to-pink-600', 
     'from-red-700 to-rose-700'
   ];
+
+  const getIcon = (index) => {
+    switch(index) {
+      case 0:
+        return (
+          <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        );
+      case 1:
+        return (
+          <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+          </svg>
+        );
+      case 2:
+        return (
+          <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div
@@ -387,8 +411,8 @@ function ModernStepCard({ step, index, delay = 0 }) {
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         {/* Icon */}
-        <div className={`relative w-20 h-20 bg-gradient-to-br ${gradients[index]} rounded-2xl flex items-center justify-center mx-auto mb-6 text-4xl shadow-lg group-hover:rotate-6 transition-transform duration-300`}>
-          {icons[index]}
+        <div className={`relative w-20 h-20 bg-gradient-to-br ${gradients[index]} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:rotate-6 transition-transform duration-300`}>
+          {getIcon(index)}
         </div>
 
         {/* Content */}
@@ -410,10 +434,35 @@ function ModernStepCard({ step, index, delay = 0 }) {
 }
 
 function ImpactCard({ icon, title, description, gradient }) {
+  const getIcon = (iconType) => {
+    switch(iconType) {
+      case "heart":
+        return (
+          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        );
+      case "baby":
+        return (
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        );
+      case "shield":
+        return (
+          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10.5V11.5C15.4,11.5 16,12.4 16,13V16C16,17 15.4,17.5 14.8,17.5H9.2C8.6,17.5 8,17 8,16V13C8,12.4 8.6,11.5 9.2,11.5V10.5C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.5,8.7 10.5,10.5V11.5H13.5V10.5C13.5,8.7 12.8,8.2 12,8.2Z"/>
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 border border-gray-100">
-      <div className={`w-16 h-16 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center text-3xl mb-6 mx-auto shadow-lg group-hover:rotate-6 transition-transform duration-300`}>
-        {icon}
+      <div className={`w-16 h-16 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:rotate-6 transition-transform duration-300`}>
+        {getIcon(icon)}
       </div>
       <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
         {title}
@@ -426,9 +475,34 @@ function ImpactCard({ icon, title, description, gradient }) {
 }
 
 function FeatureCard({ icon, title, description }) {
+  const getIcon = (iconType) => {
+    switch(iconType) {
+      case "globe":
+        return (
+          <svg className="w-12 h-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        );
+      case "lightning":
+        return (
+          <svg className="w-12 h-12 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+          </svg>
+        );
+      case "shield":
+        return (
+          <svg className="w-12 h-12 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
-      <div className="text-4xl mb-4">{icon}</div>
+      <div className="mb-4">{getIcon(icon)}</div>
       <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
       <p className="text-gray-300">{description}</p>
     </div>
@@ -441,7 +515,9 @@ function NetworkVisualization() {
       {/* Central hub */}
       <div className="relative">
         <div className="w-24 h-24 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-2xl animate-pulse">
-          <span className="text-2xl">🏥</span>
+          <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
         </div>
         
         {/* Connecting nodes */}
@@ -473,7 +549,15 @@ function NetworkVisualization() {
                   animationDelay: `${i * 0.2}s`
                 }}
               >
-                <span className="text-sm">{i % 2 === 0 ? '👤' : '🩸'}</span>
+                {i % 2 === 0 ? (
+                  <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7 4V2C7 1.45 7.45 1 8 1S9 1.45 9 2V4H15V2C15 1.45 15.45 1 16 1S17 1.45 17 2V4H18C19.1 4 20 4.9 20 6V8H4V6C4 4.9 4.9 4 6 4H7ZM18 10V20C18 21.1 17.1 22 16 22H8C6.9 22 6 21.1 6 20V10H18ZM8 12V20H16V12H8Z"/>
+                  </svg>
+                )}
               </div>
             </div>
           );
