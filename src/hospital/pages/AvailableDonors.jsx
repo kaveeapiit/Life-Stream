@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 import HospitalSidebar from '../components/HospitalSidebar';
-import AuthDebug from '../components/AuthDebug';
 import { FaSearch, FaUser, FaEnvelope, FaTint, FaCalendarAlt } from 'react-icons/fa';
 import hospitalAPI from '../../config/hospitalAPI.js';
 
@@ -95,7 +94,6 @@ export default function AvailableDonors() {
             View registered users who could potentially donate blood for planning purposes.
             Total: {total} registered donors
           </p>
-          <AuthDebug />
         </div>
 
         {/* Filters */}
