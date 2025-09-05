@@ -35,25 +35,16 @@ jobs:
           echo "Running tests (if any)..."
           npm run test || echo "No tests specified, skipping..."
 
-      # Step 4: Login to Azure
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_09A4E426E14C43749192D510B3745F86 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_201F644437EA49D58907A41EFF8A3D2F }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F1C5A06035054DA789482BDAB04A9BEC }}
-
-      # Step 5: Deploy backend to Azure Web App
+      # Step 4: Deploy backend to Azure Web App using publish profile
       - name: Deploy backend to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'life-stream-backend'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: backend
-          # Let Azure install dependencies, do not include node_modules
-          scm-do-build-during-deployment: true
 
-      # Step 6: Optional: Output deployment info
+      # Step 5: Optional: Output deployment info
       - name: Show deployment URL
         run: |
-          echo "Backend deployed"
+          echo "Backend deployed to Azure App Service"
