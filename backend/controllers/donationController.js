@@ -42,10 +42,18 @@ export const submitDonation = async (req, res) => {
   } catch (err) {
     console.error("Donation submission failed:", err.message);
     console.error("Full error:", err);
-    res.status(500).json({ 
-      error: "Failed to submit donation",
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    
+    // Return more detailed error information
+    const errorResponse = { 
+      error: "Failed to submit donation"
+    };
+    
+    // Add detailed error info for debugging Azure issues
+    // TODO: Remove in production after debugging is complete
+    errorResponse.details = err.message;
+    errorResponse.code = err.code;
+    
+    res.status(500).json(errorResponse);
   }
 };
 

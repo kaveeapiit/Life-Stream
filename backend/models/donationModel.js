@@ -9,6 +9,7 @@ export const insertDonation = async ({
   location,
 }) => {
   try {
+    // Try the insertion with minimal required fields to match Azure schema
     const query = `
       INSERT INTO donations (user_id, name, email, blood_type, location, status)
       VALUES ($1, $2, $3, $4, $5, $6)
@@ -17,15 +18,16 @@ export const insertDonation = async ({
     
     const values = [
       userId || null,
-      name,
-      email,
-      bloodType,
-      location,
-      "Pending",
+      String(name || ''),          // Ensure it's a string
+      String(email || ''),         // Ensure it's a string  
+      String(bloodType || ''),     // Ensure it's a string
+      String(location || ''),      // Ensure it's a string
+      'Pending',                   // Default status
     ];
     
     console.log('Executing donation insert query:', query);
     console.log('With values:', values);
+    console.log('Value types:', values.map(v => typeof v));
     
     const result = await pool.query(query, values);
     
@@ -37,8 +39,24 @@ export const insertDonation = async ({
     console.error('Error code:', error.code);
     console.error('Error detail:', error.detail);
     console.error('Error hint:', error.hint);
-    console.error('Full error object:', error);
-    throw new Error(`Database insertion failed: ${error.message} (Code: ${error.code})`);
+    console.error('Error constraint:', error.constraint);
+    console.error('Error table:', error.table);
+    console.error('Error column:', error.column);
+    console.error('Full error object:', JSON.stringify(error, null, 2));
+    
+    // Create a more descriptive error message
+    let errorMessage = `Database insertion failed: ${error.message}`;
+    if (error.code) {
+      errorMessage += ` (Code: ${error.code})`;
+    }
+    if (error.detail) {
+      errorMessage += ` Detail: ${error.detail}`;
+    }
+    if (error.constraint) {
+      errorMessage += ` Constraint: ${error.constraint}`;
+    }
+    
+    throw new Error(errorMessage);
   }
 };
 
