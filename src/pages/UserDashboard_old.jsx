@@ -103,6 +103,11 @@ export default function UserDashboard() {
     }
   };
 
+  const showMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => setMessage(''), 3000);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -423,338 +428,40 @@ function ProfileSection({
   );
 }
 
-/* ---- Small Components ---- */
-function StatCard({ title, value, icon, subtitle }) {
-  return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div>{icon}</div>
-        <span className="text-3xl font-bold text-white">{value}</span>
-      </div>
-      <h3 className="text-lg font-semibold text-white mb-1">{title}</h3>
-      <p className="text-gray-400 text-sm">{subtitle}</p>
+      {/* Animations */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(100%); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-fadeIn { animation: fadeIn .35s ease forwards; }
+        .animate-slideIn { animation: slideIn .3s ease forwards; }
+      `}</style>
     </div>
   );
 }
 
-function TabButton({ active, onClick, icon, label }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
-        active
-          ? 'bg-red-600 text-white shadow-lg'
-          : 'text-gray-300 hover:text-white hover:bg-white/5'
-      }`}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
-}
-
-function DonorHistoryTable({ donations }) {
-  if (donations.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-        </svg>
-        <h3 className="text-xl font-semibold text-gray-400 mb-2">No Donations Yet</h3>
-        <p className="text-gray-500">Start your journey as a blood donor today!</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Your Donation History</h2>
-      
-      {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-white/10 rounded-t-xl">
-            <tr className="text-left text-gray-200">
-              <Th>Location</Th>
-              <Th>Blood Type</Th>
-              <Th>Date</Th>
-              <Th>Status</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {donations.map((d, i) => (
-              <tr
-                key={d.id || i}
-                className="border-t border-white/5 hover:bg-white/5 transition animate-fadeIn"
-                style={{ animationDelay: `${i * 40}ms` }}
-              >
-                <Td>{d.location || '—'}</Td>
-                <Td>{d.blood_type}</Td>
-                <Td>{new Date(d.created_at).toLocaleString()}</Td>
-                <Td>
-                  <StatusChip status={d.status} />
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden grid gap-4">
-        {donations.map((d, i) => (
-          <div
-            key={d.id || i}
-            className="rounded-xl bg-gray-900/60 border border-white/10 p-5 shadow-lg animate-fadeIn"
-            style={{ animationDelay: `${i * 40}ms` }}
-          >
-            <Row label="Location" value={d.location || '—'} />
-            <Row label="Blood Type" value={d.blood_type} />
-            <Row label="Date" value={new Date(d.created_at).toLocaleString()} />
-            <Row label="Status" value={<StatusChip status={d.status} />} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function RecipientHistoryTable({ bloodRequests }) {
-  if (bloodRequests.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-        </svg>
-        <h3 className="text-xl font-semibold text-gray-400 mb-2">No Blood Requests</h3>
-        <p className="text-gray-500">You haven't submitted any blood requests yet.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Your Blood Request History</h2>
-      
-      {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-white/10 rounded-t-xl">
-            <tr className="text-left text-gray-200">
-              <Th>Patient Name</Th>
-              <Th>Blood Type</Th>
-              <Th>Location</Th>
-              <Th>Urgency</Th>
-              <Th>Date</Th>
-              <Th>Status</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {bloodRequests.map((r, i) => (
-              <tr
-                key={r.id || i}
-                className="border-t border-white/5 hover:bg-white/5 transition animate-fadeIn"
-                style={{ animationDelay: `${i * 40}ms` }}
-              >
-                <Td>{r.name || '—'}</Td>
-                <Td>{r.blood_type}</Td>
-                <Td>{r.location || '—'}</Td>
-                <Td>
-                  <UrgencyChip urgency={r.urgency || r.urgency_level} />
-                </Td>
-                <Td>{new Date(r.created_at).toLocaleString()}</Td>
-                <Td>
-                  <StatusChip status={r.status} />
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden grid gap-4">
-        {bloodRequests.map((r, i) => (
-          <div
-            key={r.id || i}
-            className="rounded-xl bg-gray-900/60 border border-white/10 p-5 shadow-lg animate-fadeIn"
-            style={{ animationDelay: `${i * 40}ms` }}
-          >
-            <Row label="Patient" value={r.name || '—'} />
-            <Row label="Blood Type" value={r.blood_type} />
-            <Row label="Location" value={r.location || '—'} />
-            <Row label="Urgency" value={<UrgencyChip urgency={r.urgency || r.urgency_level} />} />
-            <Row label="Date" value={new Date(r.created_at).toLocaleString()} />
-            <Row label="Status" value={<StatusChip status={r.status} />} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function PersonalInfoForm({ user, profileData, setProfileData, onSubmit, isUpdating }) {
-  return (
-    <div className="space-y-6">
-      <h3 className="text-2xl font-bold">Personal Information</h3>
-      
-      <form onSubmit={onSubmit} className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
-          <FormField
-            label="Full Name"
-            type="text"
-            value={profileData.name}
-            onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
-            placeholder="Enter your full name"
-          />
-          
-          <FormField
-            label="Blood Type"
-            type="select"
-            value={profileData.bloodType}
-            onChange={(e) => setProfileData(prev => ({ ...prev, bloodType: e.target.value }))}
-            options={[
-              { value: '', label: 'Select Blood Type' },
-              { value: 'A+', label: 'A+' },
-              { value: 'A-', label: 'A-' },
-              { value: 'B+', label: 'B+' },
-              { value: 'B-', label: 'B-' },
-              { value: 'AB+', label: 'AB+' },
-              { value: 'AB-', label: 'AB-' },
-              { value: 'O+', label: 'O+' },
-              { value: 'O-', label: 'O-' }
-            ]}
-          />
-        </div>
-        
-        <FormField
-          label="Email Address"
-          type="email"
-          value={user?.email || ''}
-          disabled={true}
-        />
-        
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={isUpdating}
-            className="bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isUpdating ? 'Updating...' : 'Update Profile'}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function SecurityForm({ passwordData, setPasswordData, onSubmit, isUpdating }) {
-  return (
-    <div className="space-y-6">
-      <h3 className="text-2xl font-bold">Security Settings</h3>
-      
-      <form onSubmit={onSubmit} className="space-y-6">
-        <FormField
-          label="New Password"
-          type="password"
-          value={passwordData.newPassword}
-          onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-          placeholder="Enter new password"
-        />
-        
-        <FormField
-          label="Confirm New Password"
-          type="password"
-          value={passwordData.confirmPassword}
-          onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-          placeholder="Confirm new password"
-        />
-        
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={isUpdating}
-            className="bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isUpdating ? 'Updating...' : 'Update Password'}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function FormField({ label, type = 'text', value, onChange, placeholder, disabled = false, options = [] }) {
-  if (type === 'select') {
-    return (
-      <div>
-        <label className="block text-sm font-semibold text-gray-300 mb-2">{label}</label>
-        <select
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-          className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 backdrop-blur-xl disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {options.map(option => (
-            <option key={option.value} value={option.value} className="bg-gray-800">
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <label className="block text-sm font-semibold text-gray-300 mb-2">{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 backdrop-blur-xl disabled:opacity-50 disabled:cursor-not-allowed"
-      />
-    </div>
-  );
-}
-
-/* ---- Shared Table Components ---- */
+/* ---- Small components ---- */
 function Th({ children }) {
   return <th className="px-4 py-3 font-semibold">{children}</th>;
 }
-
 function Td({ children }) {
   return <td className="px-4 py-3">{children}</td>;
 }
 
 function StatusChip({ status }) {
   const map = {
-    Pending: 'bg-yellow-500/30 text-yellow-200 border border-yellow-400/30',
-    Approved: 'bg-green-600/30 text-green-300 border border-green-400/30',
-    Declined: 'bg-red-600/30 text-red-300 border border-red-400/30',
-    pending: 'bg-yellow-500/30 text-yellow-200 border border-yellow-400/30',
-    approved: 'bg-green-600/30 text-green-300 border border-green-400/30',
-    declined: 'bg-red-600/30 text-red-300 border border-red-400/30',
-    fulfilled: 'bg-blue-600/30 text-blue-300 border border-blue-400/30',
+    Pending: 'bg-yellow-500/30 text-yellow-200',
+    Approved: 'bg-green-600/30 text-green-300',
+    Declined: 'bg-red-600/30 text-red-300',
   };
   return (
-    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${map[status] || 'bg-gray-500/30 text-gray-200 border border-gray-400/30'}`}>
+    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${map[status] || 'bg-gray-500/30 text-gray-200'}`}>
       {status}
-    </span>
-  );
-}
-
-function UrgencyChip({ urgency }) {
-  const isUrgent = urgency === true || urgency === 'High' || urgency === 'high' || urgency === 'urgent';
-  return (
-    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-      isUrgent 
-        ? 'bg-red-600/30 text-red-300 border border-red-400/30' 
-        : 'bg-green-600/30 text-green-300 border border-green-400/30'
-    }`}>
-      {isUrgent ? 'Urgent' : 'Normal'}
     </span>
   );
 }
@@ -765,5 +472,15 @@ function Row({ label, value }) {
       <span className="font-semibold text-gray-300">{label}:</span>{' '}
       <span className="text-gray-200">{value}</span>
     </p>
+  );
+}
+
+function SkeletonTable() {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="h-10 bg-gray-800/40 rounded animate-pulse" />
+      ))}
+    </div>
   );
 }
