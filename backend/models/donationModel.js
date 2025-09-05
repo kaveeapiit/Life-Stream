@@ -12,31 +12,33 @@ export const insertDonation = async ({
     const query = `
       INSERT INTO donations (user_id, name, email, blood_type, location, status)
       VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
     `;
     
-    console.log('Executing donation insert query with values:', [
+    const values = [
       userId || null,
       name,
       email,
       bloodType,
       location,
       "Pending",
-    ]);
+    ];
     
-    const result = await pool.query(query, [
-      userId || null,
-      name,
-      email,
-      bloodType,
-      location,
-      "Pending",
-    ]);
+    console.log('Executing donation insert query:', query);
+    console.log('With values:', values);
     
-    console.log('Donation inserted successfully');
-    return result;
+    const result = await pool.query(query, values);
+    
+    console.log('Donation inserted successfully:', result.rows[0]);
+    return result.rows[0];
   } catch (error) {
-    console.error('Database error in insertDonation:', error);
-    throw error;
+    console.error('Database error in insertDonation:');
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    console.error('Error detail:', error.detail);
+    console.error('Error hint:', error.hint);
+    console.error('Full error object:', error);
+    throw new Error(`Database insertion failed: ${error.message} (Code: ${error.code})`);
   }
 };
 
