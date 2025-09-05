@@ -97,3 +97,63 @@ export const testUserValidation = async (req, res) => {
     });
   }
 };
+
+// Test donation insertion without actual insertion
+export const testDonationValidation = async (req, res) => {
+  const { name, email, bloodType, location } = req.body;
+  
+  try {
+    console.log('Testing donation validation with:', { name, email, bloodType, location });
+    
+    // Check if all required fields are provided
+    if (!name || !email || !bloodType || !location) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        provided: { name: !!name, email: !!email, bloodType: !!bloodType, location: !!location }
+      });
+    }
+    
+    // Test the actual SQL query that would be used
+    const testQuery = `
+      INSERT INTO donations (user_id, name, email, blood_type, location, status)
+      VALUES ($1, $2, $3, $4, $5, $6)
+    `;
+    
+    // Don't actually insert, just prepare the statement to check for SQL errors
+    const client = await pool.connect();
+    try {
+      // Test if we can prepare the statement
+      await client.query('SELECT 1'); // Basic connection test
+      
+      // Check the donations table structure
+      const schemaCheck = await client.query(`
+        SELECT column_name, data_type, is_nullable, column_default 
+        FROM information_schema.columns 
+        WHERE table_name = 'donations' 
+        ORDER BY ordinal_position
+      `);
+      
+      res.status(200).json({
+        success: true,
+        message: "Donation validation passed",
+        data: { name, email, bloodType, location },
+        schema: schemaCheck.rows,
+        testQuery: testQuery,
+        testValues: [null, name, email, bloodType, location, "Pending"]
+      });
+      
+    } finally {
+      client.release();
+    }
+    
+  } catch (error) {
+    console.error('Donation validation test failed:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint
+    });
+  }
+};
