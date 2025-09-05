@@ -1,12 +1,14 @@
 // src/admin/pages/Users.jsx
-import { useEffect, useState, useCallback } from 'react';
-import AdminSidebar from '../components/AdminSidebar';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchUsers, createUser, updateUser, deleteUser } from '../api/users';
 import {
-  Plus, Pencil, Trash2, Search, X, Droplet, Mail, User as UserIcon, KeyRound
+  Plus, Pencil, Trash2, Search, X, Droplet, Mail, User as UserIcon, KeyRound, ArrowLeft
 } from 'lucide-react';
 
 export default function Users() {
+  const navigate = useNavigate();
+
   const [list, setList] = useState([]);
   const [total, setTotal] = useState(0);
   const [q, setQ] = useState('');
@@ -21,7 +23,7 @@ export default function Users() {
   // Hard refresh after edit/delete (as you used)
   const refresh = () => window.location.reload();
 
-  const load = useCallback(async () => {
+  const load = async () => {
     setLoading(true);
     try {
       const data = await fetchUsers({ q, page, limit });
@@ -30,9 +32,9 @@ export default function Users() {
     } finally {
       setLoading(false);
     }
-  }, [q, page, limit]);
+  };
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(); }, [q, page]);
 
   const openCreate = () => {
     setEditingId(null);
@@ -68,55 +70,48 @@ export default function Users() {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white">
-      <AdminSidebar />
-      
-      <div className="flex-1 ml-0 md:ml-64 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none -z-10">
-          <div className="w-96 h-96 bg-red-600/25 blur-3xl rounded-full absolute -top-24 -left-24 animate-pulse" />
-          <div className="w-80 h-80 bg-indigo-500/20 blur-3xl rounded-full absolute bottom-0 right-0" />
-        </div>
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white overflow-hidden">
+      {/* blobs */}
+      <div className="absolute inset-0 pointer-events-none -z-10">
+        <div className="w-96 h-96 bg-red-600/25 blur-3xl rounded-full absolute -top-24 -left-24 animate-pulse" />
+        <div className="w-80 h-80 bg-indigo-500/20 blur-3xl rounded-full absolute bottom-0 right-0" />
+      </div>
 
-        <main className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 animate-fadeIn">
-          {/* Header */}
-          <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/80 shadow-lg">
-                <UserIcon className="w-6 h-6" />
-              </div>
-              <div>
-                <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">
-                  User <span className="text-red-400">Management</span>
-                </h1>
-                <p className="text-gray-300 text-sm md:text-base">Manage registered users and their information</p>
-              </div>
-            </div>
-          </header>
-
-          {/* Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl shadow-2xl p-6">
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              {/* Search */}
-              <div className="relative flex-1 sm:flex-none">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  className="w-full sm:w-72 pl-9 pr-3 py-2 rounded-lg bg-gray-900/60 border border-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
-                  placeholder="Search users..."
-                  value={q}
-                  onChange={(e) => { setPage(1); setQ(e.target.value); }}
-                />
-              </div>
-            </div>
-
-            {/* Add Button */}
+      <main className="p-6 md:p-10 max-w-6xl mx-auto space-y-8 animate-fadeIn">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-3">
             <button
-              onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
+              onClick={() => navigate('/admin/dashboard')}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs border border-white/20 transition"
             >
-              <Plus size={16} /> Add User
+              <ArrowLeft size={14} /> Back
+            </button>
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              Users <span className="text-red-400">Management</span>
+            </h1>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            {/* Search */}
+            <div className="relative flex-1 sm:flex-none">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                className="w-full sm:w-72 pl-9 pr-3 py-2 rounded-lg bg-gray-900/60 border border-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+                placeholder="Search email or name..."
+                value={q}
+                onChange={e => { setPage(1); setQ(e.target.value); }}
+              />
+            </div>
+
+            <button
+              className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow shadow-red-700/30 transition"
+              onClick={openCreate}
+            >
+              <Plus size={16} /> New User
             </button>
           </div>
+        </div>
 
         {/* Desktop Table */}
         <div className="hidden md:block overflow-hidden rounded-xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl">
@@ -248,31 +243,32 @@ export default function Users() {
 
           <Pagination page={page} totalPages={totalPages} setPage={setPage} mobile />
         </div>
-        
-        {/* Modal */}
-        {showModal && (
-          <Modal onClose={() => setShowModal(false)}>
-            <form onSubmit={save} className="space-y-5">
-              <h2 className="text-xl font-semibold">
-                {editingId ? 'Edit User' : 'New User'}
-              </h2>
+      </main>
 
-              <LabelInput
-                icon={<Mail size={16} className="text-red-500" />}
-                type="email"
-                placeholder="Email"
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })}
-                required
-              />
+      {/* Modal */}
+      {showModal && (
+        <Modal onClose={() => setShowModal(false)}>
+          <form onSubmit={save} className="space-y-5">
+            <h2 className="text-xl font-semibold">
+              {editingId ? 'Edit User' : 'New User'}
+            </h2>
 
-              <LabelInput
-                icon={<KeyRound size={16} className="text-red-500" />}
-                type="password"
-                placeholder={editingId ? 'Password (blank to keep)' : 'Password'}
-                value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })}
-              />
+            <LabelInput
+              icon={<Mail size={16} className="text-red-500" />}
+              type="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+              required
+            />
+
+            <LabelInput
+              icon={<KeyRound size={16} className="text-red-500" />}
+              type="password"
+              placeholder={editingId ? 'Password (blank to keep)' : 'Password'}
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+            />
 
             <LabelInput
               icon={<UserIcon size={16} className="text-red-500" />}
@@ -309,13 +305,10 @@ export default function Users() {
         </Modal>
       )}
 
-        </main>
-        
-        <style>{`
-          @keyframes fadeIn { from {opacity:0; transform: translateY(8px);} to {opacity:1; transform: translateY(0);} }
-          .animate-fadeIn { animation: fadeIn .4s ease forwards; }
-        `}</style>
-      </div>
+      <style>{`
+        @keyframes fadeIn { from {opacity:0; transform: translateY(8px);} to {opacity:1; transform: translateY(0);} }
+        .animate-fadeIn { animation: fadeIn .4s ease forwards; }
+      `}</style>
     </div>
   );
 }
