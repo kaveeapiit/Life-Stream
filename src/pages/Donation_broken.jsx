@@ -1,9 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, MapPin, Clock, Phone, Users } from 'lucide-react';
 import API_BASE_URL from '../config/api.js';
 
 export default function Donation() {
-  const [form, setForm] = useState({
+  const [form, se          <button
+            type="submit"
+            disabled={loading || !isLoggedIn}
+            className={`w-full py-4 rounded-lg font-semibold tracking-wide shadow-lg transition-all duration-200 ${
+              isLoggedIn 
+                ? 'bg-red-600 hover:bg-red-500 hover:shadow-red-600/50' 
+                : 'bg-gray-500 cursor-not-allowed'
+            } ${loading && 'opacity-60 cursor-not-allowed'}`}
+          >
+            {isLoggedIn ? (loading ? 'Submitting...' : '🩸 Register Donation') : 'Login to Submit'}
+          />eState({
     name: '',
     email: '',
     bloodType: '',
@@ -39,7 +49,7 @@ export default function Donation() {
       });
       const data = await res.json();
       if (res.ok) {
-        setStatus({ type: 'success', message: '🎉 Donation registered successfully!' });
+        setStatus({ type: 'success', message: 'Donation registered successfully!' });
         setForm(f => ({ ...f, location: '' }));
       } else {
         setStatus({ type: 'error', message: data.error || 'Something went wrong.' });
@@ -197,13 +207,8 @@ function TabButton({ active, onClick, icon, label }) {
   );
 }
 
-// Donation Form Component - Updated with underline style
+// Donation Form Component
 function DonationForm({ form, setForm, onSubmit, loading, status, isLoggedIn, donationCenters }) {
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
   return (
     <div className="max-w-2xl mx-auto">
       <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl">
@@ -220,17 +225,16 @@ function DonationForm({ form, setForm, onSubmit, loading, status, isLoggedIn, do
 
         <form onSubmit={onSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <UnderInput label="Full Name" name="name" value={form.name} readOnly />
-            <UnderInput label="Email Address" name="email" type="email" value={form.email} readOnly />
+            <UnderInput label="Full Name" value={form.name} readOnly />
+            <UnderInput label="Email Address" value={form.email} readOnly type="email" />
           </div>
           
-          <UnderInput label="Blood Type" name="bloodType" value={form.bloodType || 'N/A'} readOnly />
+          <UnderInput label="Blood Type" value={form.bloodType || 'N/A'} readOnly />
 
           <DarkSelect
             label="Select Donation Center"
-            name="location"
             value={form.location}
-            onChange={handleChange}
+            onChange={(e) => setForm({ ...form, location: e.target.value })}
             placeholder="Choose your preferred location"
             options={donationCenters.map(center => center.name)}
             disabled={!isLoggedIn}
@@ -246,7 +250,7 @@ function DonationForm({ form, setForm, onSubmit, loading, status, isLoggedIn, do
                 : 'bg-gray-500 cursor-not-allowed'
             } ${loading && 'opacity-60 cursor-not-allowed'}`}
           >
-            {isLoggedIn ? (loading ? 'Submitting...' : '🩸 Register Donation') : 'Login to Submit'}
+            {isLoggedIn ? (loading ? 'Submitting...' : 'Register Donation') : 'Please Login First'}
           </button>
 
           {loading && (
@@ -426,62 +430,127 @@ function InteractiveMap({ centers, selectedCenter, setSelectedCenter }) {
   );
 }
 
-// Input Components - Matching FindBlood page style
-const baseInput = "w-full bg-transparent text-white/90 text-base font-medium py-3 focus:outline-none";
-const underline = "border-b border-white/20 focus:border-red-500 transition-colors duration-200";
-const labelCls = "block text-sm font-semibold text-white/70 mb-1";
-
-function UnderInput({ label, name, value, onChange, type = "text", readOnly = false, disabled = false, required }) {
+// Chip Field Component
+function ChipField({ label, value, type = 'text', readOnly = false }) {
   return (
     <div className="relative">
-      <label htmlFor={name} className={labelCls}>{label}</label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        readOnly={readOnly}
-        disabled={disabled}
-        required={required}
-        placeholder={label}
-        className={`${baseInput} ${underline} ${disabled || readOnly ? "opacity-60 cursor-not-allowed" : ""}`}
-      />
+      <span className="absolute -top-2 left-4 px-2 py-0.5 bg-gray-900 text-xs text-red-400 rounded">
+        {label}
+      </span>
+      {readOnly ? (
+        <div className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-gray-200">
+          {value}
+        </div>
+      ) : (
+        <input
+          type={type}
+          value={value}
+          readOnly={readOnly}
+          className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white
+                     focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        />
+      )}
     </div>
   );
 }
 
-function DarkSelect({ label, name, value, onChange, options, placeholder, disabled = false, required = false }) {
+// Fancy Select Component
+function FancySelect({ label, value, onChange, options, placeholder = 'Select…' }) {
+  const [open, setOpen] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(-1);
+  const btnRef = useRef(null);
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    const handler = e => {
+      if (!open) return;
+      if (
+        btnRef.current && !btnRef.current.contains(e.target) &&
+        listRef.current && !listRef.current.contains(e.target)
+      ) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const onKeyDown = e => {
+    if (!open) {
+      if (['ArrowDown','Enter',' '].includes(e.key)) {
+        e.preventDefault(); setOpen(true); setActiveIdx(0);
+      }
+      return;
+    }
+    if (e.key === 'Escape') { setOpen(false); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(i => (i + 1) % options.length); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx(i => (i - 1 + options.length) % options.length); }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIdx >= 0) {
+        onChange(options[activeIdx].value);
+        setOpen(false);
+      }
+    }
+  };
+
+  const selected = options.find(o => o.value === value);
+
   return (
     <div className="relative">
-      <label htmlFor={name} className={labelCls}>{label}</label>
-      <select
-        id={name}
-        name={name}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        required={required}
-        className={`w-full bg-transparent text-white/90 text-base font-medium py-3 pl-0 pr-8
-                    ${underline} outline-none appearance-none rounded-none
-                    ${disabled && 'opacity-60 cursor-not-allowed'}`}
+      <span className="absolute -top-2 left-4 px-2 py-0.5 bg-gray-900 text-xs text-red-400 rounded">{label}</span>
+
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        onKeyDown={onKeyDown}
+        className="w-full px-4 py-3 rounded-lg bg-gray-900/50 border border-gray-700 text-sm text-white
+                   flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-red-500 transition"
+        aria-haspopup="listbox"
+        aria-expanded={open}
       >
-        <option value="" disabled>{placeholder}</option>
-        {options.map(o => (
-          <option key={o} value={o}>{o}</option>
-        ))}
-      </select>
-      <svg
-        className="pointer-events-none absolute right-0 top-[38px] w-4 h-4 text-white/60"
-        fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-      </svg>
-      <style>{`
-        select option { background-color:#111827; color:#ffffff; }
-        select::-ms-expand { display:none; }
-        select { -webkit-appearance:none; -moz-appearance:none; appearance:none; background-image:none!important; }
-      `}</style>
+        <span className={`${selected ? '' : 'text-gray-400'}`}>
+          {selected ? (
+            <>
+              <span className="text-red-300 font-semibold">{selected.primary}</span>{' '}
+              <span className="text-gray-200">{selected.secondary}</span>
+            </>
+          ) : (
+            placeholder
+          )}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <ul
+          ref={listRef}
+          role="listbox"
+          tabIndex={-1}
+          onKeyDown={onKeyDown}
+          className="absolute z-50 mt-2 w-full max-h-60 overflow-auto rounded-lg bg-gray-900 border border-gray-700 shadow-xl focus:outline-none"
+        >
+          {options.map((o, idx) => {
+            const isActive = idx === activeIdx;
+            const isSelected = o.value === value;
+            return (
+              <li
+                key={o.value}
+                role="option"
+                aria-selected={isSelected}
+                className={`px-4 py-2 text-sm cursor-pointer flex gap-1
+                  ${isActive ? 'bg-white/10' : ''}
+                  ${isSelected ? 'bg-white/5' : ''}
+                  hover:bg-white/10`}
+                onMouseEnter={() => setActiveIdx(idx)}
+                onClick={() => { onChange(o.value); setOpen(false); }}
+              >
+                <span className="text-red-300 font-semibold">{o.primary}</span>
+                <span className="text-gray-200">{o.secondary}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
