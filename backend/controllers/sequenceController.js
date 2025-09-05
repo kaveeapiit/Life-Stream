@@ -27,7 +27,10 @@ export const fixSequences = async (req, res) => {
     const bloodInventorySeqFix = await pool.query(`
       SELECT setval('blood_inventory_id_seq', COALESCE((SELECT MAX(id) FROM blood_inventory), 0) + 1, false);
     `);
-    console.log("Blood inventory sequence fixed:", bloodInventorySeqFix.rows[0]);
+    console.log(
+      "Blood inventory sequence fixed:",
+      bloodInventorySeqFix.rows[0]
+    );
 
     // Test next values
     const donationsNextVal = await pool.query(
@@ -90,16 +93,24 @@ export const checkSequences = async (req, res) => {
       `SELECT MAX(id) as max_id FROM donations;`
     );
     const maxUserId = await pool.query(`SELECT MAX(id) as max_id FROM users;`);
-    const maxBloodRequestId = await pool.query(`SELECT MAX(id) as max_id FROM blood_requests;`);
-    const maxBloodInventoryId = await pool.query(`SELECT MAX(id) as max_id FROM blood_inventory;`);
+    const maxBloodRequestId = await pool.query(
+      `SELECT MAX(id) as max_id FROM blood_requests;`
+    );
+    const maxBloodInventoryId = await pool.query(
+      `SELECT MAX(id) as max_id FROM blood_inventory;`
+    );
 
     // Check count of records
     const donationsCount = await pool.query(
       `SELECT COUNT(*) as count FROM donations;`
     );
     const usersCount = await pool.query(`SELECT COUNT(*) as count FROM users;`);
-    const bloodRequestsCount = await pool.query(`SELECT COUNT(*) as count FROM blood_requests;`);
-    const bloodInventoryCount = await pool.query(`SELECT COUNT(*) as count FROM blood_inventory;`);
+    const bloodRequestsCount = await pool.query(
+      `SELECT COUNT(*) as count FROM blood_requests;`
+    );
+    const bloodInventoryCount = await pool.query(
+      `SELECT COUNT(*) as count FROM blood_inventory;`
+    );
 
     res.status(200).json({
       success: true,

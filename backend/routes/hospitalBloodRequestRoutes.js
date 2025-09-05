@@ -19,6 +19,9 @@ const router = express.Router();
 // Get all blood requests for hospital management (with filtering and pagination)
 router.get("/blood-requests", hybridHospitalAuth, getHospitalBloodRequests);
 
+// Get all blood requests for hospital management (alias route)
+router.get("/blood-requests/all", hybridHospitalAuth, getHospitalBloodRequests);
+
 // Get blood request statistics for dashboard
 router.get("/blood-requests/stats", hybridHospitalAuth, getBloodRequestStats);
 
