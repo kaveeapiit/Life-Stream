@@ -11,6 +11,7 @@ import {
   ShieldPlus,
   Shield
 } from 'lucide-react';
+import adminAPI from '../../config/adminAPI.js';
 
 export default function AdminSidebar() {
   const navigate = useNavigate();
@@ -33,8 +34,8 @@ export default function AdminSidebar() {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const logout = () => {
-    localStorage.clear();
+  const logout = async () => {
+    await adminAPI.logout();
     navigate('/admin/login');
   };
 
