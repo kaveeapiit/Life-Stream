@@ -15,35 +15,38 @@ export const insertDonation = async ({
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
-    
+
     const values = [
       userId || null,
-      String(name || ''),          // Ensure it's a string
-      String(email || ''),         // Ensure it's a string  
-      String(bloodType || ''),     // Ensure it's a string
-      String(location || ''),      // Ensure it's a string
-      'Pending',                   // Default status
+      String(name || ""), // Ensure it's a string
+      String(email || ""), // Ensure it's a string
+      String(bloodType || ""), // Ensure it's a string
+      String(location || ""), // Ensure it's a string
+      "Pending", // Default status
     ];
-    
-    console.log('Executing donation insert query:', query);
-    console.log('With values:', values);
-    console.log('Value types:', values.map(v => typeof v));
-    
+
+    console.log("Executing donation insert query:", query);
+    console.log("With values:", values);
+    console.log(
+      "Value types:",
+      values.map((v) => typeof v)
+    );
+
     const result = await pool.query(query, values);
-    
-    console.log('Donation inserted successfully:', result.rows[0]);
+
+    console.log("Donation inserted successfully:", result.rows[0]);
     return result.rows[0];
   } catch (error) {
-    console.error('Database error in insertDonation:');
-    console.error('Error message:', error.message);
-    console.error('Error code:', error.code);
-    console.error('Error detail:', error.detail);
-    console.error('Error hint:', error.hint);
-    console.error('Error constraint:', error.constraint);
-    console.error('Error table:', error.table);
-    console.error('Error column:', error.column);
-    console.error('Full error object:', JSON.stringify(error, null, 2));
-    
+    console.error("Database error in insertDonation:");
+    console.error("Error message:", error.message);
+    console.error("Error code:", error.code);
+    console.error("Error detail:", error.detail);
+    console.error("Error hint:", error.hint);
+    console.error("Error constraint:", error.constraint);
+    console.error("Error table:", error.table);
+    console.error("Error column:", error.column);
+    console.error("Full error object:", JSON.stringify(error, null, 2));
+
     // Create a more descriptive error message
     let errorMessage = `Database insertion failed: ${error.message}`;
     if (error.code) {
@@ -55,7 +58,7 @@ export const insertDonation = async ({
     if (error.constraint) {
       errorMessage += ` Constraint: ${error.constraint}`;
     }
-    
+
     throw new Error(errorMessage);
   }
 };

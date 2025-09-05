@@ -19,13 +19,19 @@ export const submitDonation = async (req, res) => {
   const userId = req.user?.id || null;
 
   try {
-    console.log('Donation submission attempt:', { name, email, bloodType, location, userId });
-    
+    console.log("Donation submission attempt:", {
+      name,
+      email,
+      bloodType,
+      location,
+      userId,
+    });
+
     // Validate required fields
     if (!name || !email || !bloodType || !location) {
-      console.error('Donation validation failed: Missing required fields');
-      return res.status(400).json({ 
-        error: "All fields are required: name, email, bloodType, location" 
+      console.error("Donation validation failed: Missing required fields");
+      return res.status(400).json({
+        error: "All fields are required: name, email, bloodType, location",
       });
     }
 
@@ -37,22 +43,22 @@ export const submitDonation = async (req, res) => {
       location,
     });
 
-    console.log('Donation submitted successfully for:', email);
+    console.log("Donation submitted successfully for:", email);
     res.status(201).json({ message: "Donation submitted successfully" });
   } catch (err) {
     console.error("Donation submission failed:", err.message);
     console.error("Full error:", err);
-    
+
     // Return more detailed error information
-    const errorResponse = { 
-      error: "Failed to submit donation"
+    const errorResponse = {
+      error: "Failed to submit donation",
     };
-    
+
     // Add detailed error info for debugging Azure issues
     // TODO: Remove in production after debugging is complete
     errorResponse.details = err.message;
     errorResponse.code = err.code;
-    
+
     res.status(500).json(errorResponse);
   }
 };
