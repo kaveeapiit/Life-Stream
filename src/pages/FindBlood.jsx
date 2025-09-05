@@ -310,7 +310,7 @@ function BloodRequestForm({ form, handleChange, onSubmit, loading, msg, isLogged
                 : 'bg-gray-500 cursor-not-allowed'
             } ${loading && 'opacity-60 cursor-not-allowed'}`}
           >
-            {isLoggedIn ? (loading ? 'Submitting Request...' : '🩸 Submit Blood Request') : 'Login to Submit Request'}
+            {isLoggedIn ? (loading ? 'Submitting Request...' : 'Submit Blood Request') : 'Login to Submit Request'}
           </button>
 
           {loading && (

@@ -39,7 +39,7 @@ export default function Donation() {
       });
       const data = await res.json();
       if (res.ok) {
-        setStatus({ type: 'success', message: '🎉 Donation registered successfully!' });
+        setStatus({ type: 'success', message: 'Donation registered successfully!' });
         setForm(f => ({ ...f, location: '' }));
       } else {
         setStatus({ type: 'error', message: data.error || 'Something went wrong.' });
@@ -242,7 +242,7 @@ function DonationForm({ form, setForm, onSubmit, loading, status, isLoggedIn, do
                 : 'bg-gray-500 cursor-not-allowed'
             } ${loading && 'opacity-60 cursor-not-allowed'}`}
           >
-            {isLoggedIn ? (loading ? 'Submitting...' : '💝 Register Donation') : 'Please Login First'}
+            {isLoggedIn ? (loading ? 'Submitting...' : 'Register Donation') : 'Please Login First'}
           </button>
 
           {loading && (
