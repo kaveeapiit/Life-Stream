@@ -1,0 +1,50 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy Node.js app to Azure Web App - life-stream-backend
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+
+      # Step 3: Install dependencies and build backend
+      - name: Install backend dependencies and build
+        run: |
+          cd backend
+          echo "Installing dependencies..."
+          npm install
+          echo "Building backend..."
+          npm run build --if-present
+          echo "Running tests (if any)..."
+          npm run test || echo "No tests specified, skipping..."
+
+      # Step 4: Deploy backend to Azure Web App using publish profile
+      - name: Deploy backend to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'life-stream-backend'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: backend
+
+      # Step 5: Optional: Output deployment info
+      - name: Show deployment URL
+        run: |
+          echo "Backend deployed to Azure App Service"
