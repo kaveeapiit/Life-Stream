@@ -9,7 +9,7 @@ import {
   FaInfoCircle,
   FaChartBar
 } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function LocationBasedDonorMatching() {
   const [loading, setLoading] = useState(true);
@@ -27,23 +27,20 @@ export default function LocationBasedDonorMatching() {
   const fetchCompatibleDonors = useCallback(async (bloodType, page = 1) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
+      const params = {
         bloodType,
         page: page.toString(),
         limit: '15'
-      });
+      };
 
-      const res = await fetch(`${API_BASE_URL}/api/hospital/donors/location/compatible?${params}`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getLocationCompatibleDonors(params);
 
-      if (!res.ok) throw new Error('Failed to fetch compatible donors');
-
-      const data = await res.json();
-      setCompatibleDonors(data.donors || []);
-      setTotalPages(data.totalPages || 1);
-      setTotal(data.total || 0);
-      setHospitalLocation(data.hospitalLocation || '');
+      if (data) {
+        setCompatibleDonors(data.donors || []);
+        setTotalPages(data.totalPages || 1);
+        setTotal(data.total || 0);
+        setHospitalLocation(data.hospitalLocation || '');
+      }
     } catch (err) {
       console.error('Error fetching compatible donors:', err);
       setCompatibleDonors([]);
@@ -55,15 +52,12 @@ export default function LocationBasedDonorMatching() {
   // Fetch location statistics
   const fetchLocationStats = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/matching/location/stats`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getLocationStats();
 
-      if (!res.ok) throw new Error('Failed to fetch location stats');
-
-      const data = await res.json();
-      setLocationStats(data);
-      setHospitalLocation(data.hospitalLocation || '');
+      if (data) {
+        setLocationStats(data);
+        setHospitalLocation(data.hospitalLocation || '');
+      }
     } catch (err) {
       console.error('Error fetching location stats:', err);
     }

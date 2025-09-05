@@ -14,7 +14,7 @@ import {
   FaChevronDown,
   FaChevronUp
 } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function BloodRequests() {
   const [requests, setRequests] = useState([]);
@@ -42,27 +42,22 @@ export default function BloodRequests() {
   const fetchRequests = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
+      const params = {
         page: page.toString(),
         limit: '15',
         ...(statusFilter !== 'all' && { status: statusFilter }),
         ...(bloodTypeFilter !== 'all' && { bloodType: bloodTypeFilter }),
         ...(urgencyFilter !== 'all' && { urgency: urgencyFilter })
-      });
+      };
 
-      const res = await fetch(`${API_BASE_URL}/api/hospital/blood-requests?${params}`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getAllBloodRequests(params);
 
-      if (!res.ok) {
-        throw new Error(`Failed to fetch requests: ${res.status}`);
+      if (data) {
+        setRequests(data.requests);
+        setCurrentPage(data.page);
+        setTotalPages(data.totalPages);
+        setTotal(data.total);
       }
-      
-      const data = await res.json();
-      setRequests(data.requests);
-      setCurrentPage(data.page);
-      setTotalPages(data.totalPages);
-      setTotal(data.total);
     } catch (err) {
       console.error('Error fetching blood requests:', err);
       setRequests([]);
@@ -78,23 +73,14 @@ export default function BloodRequests() {
   const handleStatusUpdate = async (requestId, newStatus, notes = '') => {
     setActionLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/blood-requests/${requestId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({ status: newStatus, notes })
-      });
+      const result = await hospitalAPI.updateBloodRequestStatus(requestId, newStatus);
 
-      if (!res.ok) {
-        throw new Error('Failed to update status');
+      if (result) {
+        // Refresh the requests list
+        await fetchRequests(currentPage);
+        setShowDetails(false);
+        setSelectedRequest(null);
       }
-
-      // Refresh the requests list
-      await fetchRequests(currentPage);
-      setShowDetails(false);
-      setSelectedRequest(null);
     } catch (err) {
       console.error('Error updating status:', err);
       alert('Failed to update request status');
@@ -105,17 +91,12 @@ export default function BloodRequests() {
 
   const viewRequestDetails = async (requestId) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/blood-requests/${requestId}`, {
-        credentials: 'include'
-      });
+      const request = await hospitalAPI.getBloodRequestDetails(requestId);
 
-      if (!res.ok) {
-        throw new Error('Failed to fetch request details');
+      if (request) {
+        setSelectedRequest(request);
+        setShowDetails(true);
       }
-
-      const request = await res.json();
-      setSelectedRequest(request);
-      setShowDetails(true);
     } catch (err) {
       console.error('Error fetching request details:', err);
       alert('Failed to load request details');

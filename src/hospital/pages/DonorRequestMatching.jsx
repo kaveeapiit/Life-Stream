@@ -15,7 +15,7 @@ import {
   FaChevronUp,
   FaInfoCircle
 } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function DonorRequestMatching() {
   const [donors, setDonors] = useState([]);
@@ -39,26 +39,21 @@ export default function DonorRequestMatching() {
   const fetchDonors = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
+      const params = {
         page: page.toString(),
         limit: '15',
         ...(search && { search }),
         ...(bloodTypeFilter !== 'all' && { bloodType: bloodTypeFilter })
-      });
+      };
 
-      const res = await fetch(`${API_BASE_URL}/api/hospital/donors/matching?${params}`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getMatchingDonors(params);
 
-      if (!res.ok) {
-        throw new Error(`Failed to fetch donors: ${res.status}`);
+      if (data) {
+        setDonors(data.donors);
+        setCurrentPage(data.page);
+        setTotalPages(data.totalPages);
+        setTotal(data.total);
       }
-      
-      const data = await res.json();
-      setDonors(data.donors);
-      setCurrentPage(data.page);
-      setTotalPages(data.totalPages);
-      setTotal(data.total);
     } catch (err) {
       console.error('Error fetching donors:', err);
       setDonors([]);
@@ -71,12 +66,9 @@ export default function DonorRequestMatching() {
   const fetchBloodRequests = useCallback(async () => {
     setRequestsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/blood-requests?status=pending&limit=50`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getBloodRequests({ status: 'pending', limit: '50' });
 
-      if (res.ok) {
-        const data = await res.json();
+      if (data) {
         setBloodRequests(data.requests);
       }
     } catch (err) {
@@ -89,12 +81,9 @@ export default function DonorRequestMatching() {
   // Fetch donor-request matching summary
   const fetchMatchingSummary = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/matching/summary`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getMatchingSummary();
 
-      if (res.ok) {
-        const data = await res.json();
+      if (data) {
         setMatchingSummary(data);
       }
     } catch (err) {
@@ -105,12 +94,9 @@ export default function DonorRequestMatching() {
   // Fetch blood type overview
   const fetchBloodTypeOverview = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/matching/overview`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getMatchingOverview();
 
-      if (res.ok) {
-        const data = await res.json();
+      if (data) {
         setBloodTypeOverview(data);
       }
     } catch (err) {
@@ -121,12 +107,9 @@ export default function DonorRequestMatching() {
   // Find compatible donors for a specific request
   const findCompatibleDonors = async (requestId) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/blood-requests/${requestId}/compatible-donors?limit=30`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getCompatibleDonors(requestId, { limit: '30' });
 
-      if (res.ok) {
-        const data = await res.json();
+      if (data) {
         setCompatibleDonors(data.donors);
         setSelectedRequest(data.request);
         setShowMatchingPanel(true);

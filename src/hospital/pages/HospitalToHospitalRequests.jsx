@@ -18,7 +18,7 @@ import {
   FaHeartbeat,
   FaBuilding
 } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function HospitalToHospitalRequests() {
   const [activeTab, setActiveTab] = useState('available'); // available, myRequests, createRequest
@@ -79,23 +79,22 @@ export default function HospitalToHospitalRequests() {
   const fetchAvailableRequests = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
+      const params = {
         page: page.toString(),
         limit: '10',
         ...(bloodTypeFilter !== 'all' && { blood_type: bloodTypeFilter }),
         ...(urgencyFilter !== 'all' && { urgency_level: urgencyFilter })
-      });
+      };
 
-      const res = await fetch(`${API_BASE_URL}/api/hospital/requests/available?${params}`, {
-        credentials: 'include'
-      });
-
-      if (!res.ok) throw new Error('Failed to fetch available requests');
-
-      const data = await res.json();
-      setAvailableRequests(data.requests || []);
-      setTotalPages(data.totalPages || 1);
-      setTotal(data.total || 0);
+      const data = await hospitalAPI.getAvailableRequests(params);
+      
+      if (data) {
+        setAvailableRequests(data.requests || []);
+        setTotalPages(data.totalPages || 1);
+        setTotal(data.total || 0);
+      } else {
+        setAvailableRequests([]);
+      }
     } catch (err) {
       console.error('Error fetching available requests:', err);
       setAvailableRequests([]);
@@ -108,22 +107,21 @@ export default function HospitalToHospitalRequests() {
   const fetchMyRequests = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
+      const params = {
         page: page.toString(),
         limit: '10',
         ...(statusFilter !== 'all' && { status: statusFilter })
-      });
+      };
 
-      const res = await fetch(`${API_BASE_URL}/api/hospital/requests/mine?${params}`, {
-        credentials: 'include'
-      });
-
-      if (!res.ok) throw new Error('Failed to fetch my requests');
-
-      const data = await res.json();
-      setMyRequests(data.requests || []);
-      setMyTotalPages(data.totalPages || 1);
-      setMyTotal(data.total || 0);
+      const data = await hospitalAPI.getMyRequests(params);
+      
+      if (data) {
+        setMyRequests(data.requests || []);
+        setMyTotalPages(data.totalPages || 1);
+        setMyTotal(data.total || 0);
+      } else {
+        setMyRequests([]);
+      }
     } catch (err) {
       console.error('Error fetching my requests:', err);
       setMyRequests([]);
@@ -138,32 +136,29 @@ export default function HospitalToHospitalRequests() {
     setActionLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/requests`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(createFormData)
-      });
-
-      if (!res.ok) throw new Error('Failed to create request');
-
-      // Reset form and switch to my requests tab
-      setCreateFormData({
-        patient_name: '',
-        patient_id: '',
-        blood_type: '',
-        units_needed: 1,
-        urgency_level: 'normal',
-        medical_condition: '',
-        contact_details: '',
-        location: '',
-        preferred_hospitals: []
-      });
+      const data = await hospitalAPI.createRequest(createFormData);
       
-      setActiveTab('myRequests');
-      fetchMyRequests();
-      
-      alert('Blood request created successfully!');
+      if (data) {
+        // Reset form and switch to my requests tab
+        setCreateFormData({
+          patient_name: '',
+          patient_id: '',
+          blood_type: '',
+          units_needed: 1,
+          urgency_level: 'normal',
+          medical_condition: '',
+          contact_details: '',
+          location: '',
+          preferred_hospitals: []
+        });
+        
+        setActiveTab('myRequests');
+        fetchMyRequests();
+        
+        alert('Blood request created successfully!');
+      } else {
+        alert('Failed to create blood request. Please try again.');
+      }
     } catch (err) {
       console.error('Error creating request:', err);
       alert('Failed to create blood request. Please try again.');
@@ -177,20 +172,17 @@ export default function HospitalToHospitalRequests() {
     setActionLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/requests/${requestId}/respond`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(responseData)
-      });
-
-      if (!res.ok) throw new Error('Failed to respond to request');
-
-      setShowResponseModal(false);
-      setSelectedRequest(null);
-      fetchAvailableRequests(currentPage);
+      const data = await hospitalAPI.respondToRequest(requestId, 'respond', responseData);
       
-      alert('Response submitted successfully!');
+      if (data) {
+        setShowResponseModal(false);
+        setSelectedRequest(null);
+        fetchAvailableRequests(currentPage);
+        
+        alert('Response submitted successfully!');
+      } else {
+        alert('Failed to submit response. Please try again.');
+      }
     } catch (err) {
       console.error('Error responding to request:', err);
       alert('Failed to submit response. Please try again.');

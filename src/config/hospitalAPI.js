@@ -1,8 +1,11 @@
 // Hospital API service with JWT token support
-import API_BASE_URL from "./api.js";
 
 class HospitalAPI {
   constructor() {
+    // Automatically detect environment
+    this.baseURL = import.meta.env.PROD
+      ? "https://life-stream-backend-e8gmhvdgcmcaaxav.centralindia-01.azurewebsites.net"
+      : "http://localhost:5050";
     this.token = localStorage.getItem("hospital_token");
   }
 
@@ -33,7 +36,7 @@ class HospitalAPI {
 
   // Make authenticated request
   async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${this.baseURL}${endpoint}`;
     const config = {
       credentials: "include", // Still include for session fallback
       headers: this.getHeaders(),
@@ -60,7 +63,7 @@ class HospitalAPI {
 
   // Login method
   async login(username, password) {
-    const response = await fetch(`${API_BASE_URL}/api/hospital/login`, {
+    const response = await fetch(`${this.baseURL}/api/hospital/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -152,11 +155,132 @@ class HospitalAPI {
     return response ? await response.json() : null;
   }
 
+  // Donor matching methods
+  async getMatchingDonors(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/api/hospital/donors/matching${
+      queryString ? `?${queryString}` : ""
+    }`;
+    const response = await this.request(endpoint);
+    return response ? await response.json() : null;
+  }
+
+  async getBloodRequests(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/api/hospital/blood-requests${
+      queryString ? `?${queryString}` : ""
+    }`;
+    const response = await this.request(endpoint);
+    return response ? await response.json() : null;
+  }
+
+  async getMatchingSummary() {
+    const response = await this.request("/api/hospital/matching/summary");
+    return response ? await response.json() : null;
+  }
+
+  async getMatchingOverview() {
+    const response = await this.request("/api/hospital/matching/overview");
+    return response ? await response.json() : null;
+  }
+
+  async getCompatibleDonors(requestId, params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/api/hospital/blood-requests/${requestId}/compatible-donors${
+      queryString ? `?${queryString}` : ""
+    }`;
+    const response = await this.request(endpoint);
+    return response ? await response.json() : null;
+  }
+
+  // Location-based matching methods
+  async getLocationCompatibleDonors(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/api/hospital/donors/location/compatible${
+      queryString ? `?${queryString}` : ""
+    }`;
+    const response = await this.request(endpoint);
+    return response ? await response.json() : null;
+  }
+
+  async getLocationStats() {
+    const response = await this.request(
+      "/api/hospital/matching/location/stats"
+    );
+    return response ? await response.json() : null;
+  }
+
+  // Hospital-to-hospital request methods
+  async getAvailableRequests(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/api/hospital/requests/available${
+      queryString ? `?${queryString}` : ""
+    }`;
+    const response = await this.request(endpoint);
+    return response ? await response.json() : null;
+  }
+
+  async getMyRequests(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/api/hospital/requests/mine${
+      queryString ? `?${queryString}` : ""
+    }`;
+    const response = await this.request(endpoint);
+    return response ? await response.json() : null;
+  }
+
+  async createRequest(requestData) {
+    const response = await this.request("/api/hospital/requests", {
+      method: "POST",
+      body: JSON.stringify(requestData),
+    });
+    return response ? await response.json() : null;
+  }
+
+  async respondToRequest(requestId, action, responseData = {}) {
+    const response = await this.request(
+      `/api/hospital/requests/${requestId}/respond`,
+      {
+        method: "POST",
+        body: JSON.stringify({ action, ...responseData }),
+      }
+    );
+    return response ? await response.json() : null;
+  }
+
+  // Blood requests management
+  async getAllBloodRequests(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const endpoint = `/api/hospital/blood-requests/all${
+      queryString ? `?${queryString}` : ""
+    }`;
+    const response = await this.request(endpoint);
+    return response ? await response.json() : null;
+  }
+
+  async updateBloodRequestStatus(requestId, status) {
+    const response = await this.request(
+      `/api/hospital/blood-requests/${requestId}/status`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ status }),
+      }
+    );
+    return response ? await response.json() : null;
+  }
+
+  async getBloodRequestDetails(requestId) {
+    const response = await this.request(
+      `/api/hospital/blood-requests/${requestId}`
+    );
+    return response ? await response.json() : null;
+  }
+
   // Logout method
   async logout() {
     try {
       // Call backend logout endpoint to clear session
-      await fetch(`${API_BASE_URL}/api/hospital/logout`, {
+      await fetch(`${this.baseURL}/api/hospital/logout`, {
         method: "POST",
         credentials: "include",
       });

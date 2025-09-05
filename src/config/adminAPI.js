@@ -1,8 +1,11 @@
 // Admin API service with JWT token support
-import API_BASE_URL from "./api.js";
 
 class AdminAPI {
   constructor() {
+    // Automatically detect environment
+    this.baseURL = import.meta.env.PROD
+      ? "https://life-stream-backend-e8gmhvdgcmcaaxav.centralindia-01.azurewebsites.net"
+      : "http://localhost:5050";
     this.token = localStorage.getItem("admin_token");
   }
 
@@ -33,7 +36,7 @@ class AdminAPI {
 
   // Make authenticated request
   async request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${this.baseURL}${endpoint}`;
     const config = {
       credentials: "include", // Still include for session fallback
       headers: this.getHeaders(),
@@ -60,7 +63,7 @@ class AdminAPI {
 
   // Login method
   async login(username, password) {
-    const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
+    const response = await fetch(`${this.baseURL}/api/admin/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -186,7 +189,7 @@ class AdminAPI {
   async logout() {
     try {
       // Call backend logout endpoint to clear session
-      await fetch(`${API_BASE_URL}/api/admin/logout`, {
+      await fetch(`${this.baseURL}/api/admin/logout`, {
         method: "POST",
         credentials: "include",
       });
