@@ -1,0 +1,18 @@
+# Complete Azure Environment Variables for App Service
+# Copy these values to your Azure App Service Environment Variables
+
+# Database Configuration
+DB_HOST=life-stream-postgres.postgres.database.azure.com
+DB_USER=lifestream_admin
+DB_NAME=postgres
+DB_PASSWORD=AmmoEka1234
+DB_PORT=5432
+
+# Session Configuration (change this to a random secret)
+SESSION_SECRET=your-super-secret-random-session-key-change-this-to-something-random
+
+# Node Environment
+NODE_ENV=production
+
+# Port (Azure sets this automatically, but good to have)
+PORT=8080

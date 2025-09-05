@@ -1,0 +1,7 @@
+id,username,password,hospital_name,location,contact_number,email,created_at
+1,Hospital,$2b$10$GGG.TNZdJExdw4y.Phla0uNC1C6pnUYlULj5t5EOeflb.ORU3gBE.,,,,'2025-09-05 15:38:45'
+4,Colombo,$2b$10$1kMfMe0qYxQKBTwseisGAeVx3E0ynX3adrmefhdOWZnPfgBljS9f.,,,,'2025-09-05 15:38:45'
+5,Jaffna,$2b$10$8JMufK5qCnz4w9AnTNM98euuF2s./WNEjC4ed3MXWg2DjcDD5hMMe,,,,'2025-09-05 15:38:45'
+6,Galle,$2b$10$jUviu6lxjvvPCXSVINeL8eY.OA5g1.D0j2jqpvs/FStsmfw/roafm,,,,'2025-09-05 15:38:45'
+7,Badulla,$2b$10$UNO0Oe.poEOpv/TroTRG4OM06dqRb1leoKcnbaOWdjado12B1OhBa,,,,'2025-09-05 15:38:45'
+3,Kandy,$2b$10$7EjrpN9n1aZCgYejwB0hfe9g82DE3b8MVnJQwmpZ22N33OwkStUWK,,,,'2025-09-05 15:38:45'
