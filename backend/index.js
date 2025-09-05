@@ -23,6 +23,7 @@ import bloodInventoryRoutes from "./routes/bloodInventoryRoutes.js";
 import hospitalBloodRequestRoutes from "./routes/hospitalBloodRequestRoutes.js";
 import donorRequestMatchingRoutes from "./routes/donorRequestMatchingRoutes.js";
 import hospitalToHospitalRoutes from "./routes/hospitalToHospitalRoutes.js";
+import debugRoutes from "./routes/debugRoutes.js";
 
 const app = express();
 
@@ -101,9 +102,10 @@ app.use("/api/recipient", recipientRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/blood", bloodRequestRoutes);
 app.use("/api/admin/hospitals", adminHospitalRoutes);
+app.use("/api/debug", debugRoutes);
 
 // ✅ Error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error("Unhandled error:", err);
   res.status(500).json({ error: "Internal server error" });
 });
