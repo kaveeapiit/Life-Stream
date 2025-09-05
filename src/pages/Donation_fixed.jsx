@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, MapPin, Clock, Phone, Users } from 'lucide-react';
 import API_BASE_URL from '../config/api.js';
 
@@ -39,7 +39,7 @@ export default function Donation() {
       });
       const data = await res.json();
       if (res.ok) {
-        setStatus({ type: 'success', message: 'Donation registered successfully!' });
+        setStatus({ type: 'success', message: '🎉 Donation registered successfully!' });
         setForm(f => ({ ...f, location: '' }));
       } else {
         setStatus({ type: 'error', message: data.error || 'Something went wrong.' });
@@ -246,7 +246,7 @@ function DonationForm({ form, setForm, onSubmit, loading, status, isLoggedIn, do
                 : 'bg-gray-500 cursor-not-allowed'
             } ${loading && 'opacity-60 cursor-not-allowed'}`}
           >
-            {isLoggedIn ? (loading ? 'Submitting...' : 'Register Donation') : 'Login to Submit'}
+            {isLoggedIn ? (loading ? 'Submitting...' : '🩸 Register Donation') : 'Login to Submit'}
           </button>
 
           {loading && (
