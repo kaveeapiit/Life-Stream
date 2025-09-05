@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, User, Lock, Eye, EyeOff, AlertCircle, LogIn } from "lucide-react";
-import API_BASE_URL from '../../config/api.js';
+import adminAPI from '../../config/adminAPI.js';
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -18,16 +18,16 @@ export default function AdminLogin() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) throw new Error("Login failed");
-      navigate("/admin/dashboard");
-    } catch {
-      setError("Invalid credentials");
+      const result = await adminAPI.login(formData.username, formData.password);
+      
+      if (result.success) {
+        navigate("/admin/dashboard");
+      } else {
+        setError(result.error || "Invalid credentials");
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError("Login failed");
     } finally {
       setLoading(false);
     }

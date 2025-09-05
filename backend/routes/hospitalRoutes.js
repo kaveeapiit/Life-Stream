@@ -7,7 +7,7 @@ import {
   fetchAvailableDonors,
   getHospitalDashboardStats,
 } from "../controllers/donationController.js";
-import hospitalAuth from "../middleware/hospitalAuth.js";
+import hybridHospitalAuth from "../middleware/hybridHospitalAuth.js";
 
 const router = express.Router();
 
@@ -17,20 +17,24 @@ router.post("/login", hospitalLogin);
 // ✅ Protected: Get Pending Donations for Logged-In Hospital
 router.get(
   "/donations/pending",
-  hospitalAuth,
+  hybridHospitalAuth,
   fetchPendingDonationsForHospital
 );
 
 // ✅ Protected: Get All Donations for Hospital Management
-router.get("/donations/all", hospitalAuth, fetchAllDonationsForHospital);
+router.get("/donations/all", hybridHospitalAuth, fetchAllDonationsForHospital);
 
 // ✅ Protected: Get Donation History for Hospital
-router.get("/donations/history", hospitalAuth, fetchDonationHistoryForHospital);
+router.get(
+  "/donations/history",
+  hybridHospitalAuth,
+  fetchDonationHistoryForHospital
+);
 
 // ✅ Protected: Get Available Donors for Blood Donation Planning
-router.get("/donors/available", hospitalAuth, fetchAvailableDonors);
+router.get("/donors/available", hybridHospitalAuth, fetchAvailableDonors);
 
 // ✅ Protected: Get Hospital Dashboard Statistics
-router.get("/dashboard/stats", hospitalAuth, getHospitalDashboardStats);
+router.get("/dashboard/stats", hybridHospitalAuth, getHospitalDashboardStats);
 
 export default router;

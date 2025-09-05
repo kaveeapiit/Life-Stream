@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import HospitalSidebar from '../components/HospitalSidebar';
 import AuthDebug from '../components/AuthDebug';
 import { FaSearch, FaUser, FaEnvelope, FaTint, FaCalendarAlt } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function AvailableDonors() {
   const [donors, setDonors] = useState([]);
@@ -18,31 +18,23 @@ export default function AvailableDonors() {
   const fetchDonors = useCallback(async (page = 1) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
+      const params = {
         page: page.toString(),
         limit: '20',
         ...(search && { search }),
         ...(bloodTypeFilter !== 'all' && { bloodType: bloodTypeFilter })
-      });
+      };
 
-      console.log('Fetching donors with params:', params.toString());
-      const res = await fetch(`${API_BASE_URL}/api/hospital/donors/available?${params}`, {
-        credentials: 'include'
-      });
+      console.log('Fetching donors with params:', params);
+      const data = await hospitalAPI.getAvailableDonors(params);
 
-      console.log('Response status:', res.status);
-      if (!res.ok) {
-        const errorData = await res.text();
-        console.error('Error response:', errorData);
-        throw new Error(`Failed to fetch donors: ${res.status}`);
+      if (data) {
+        console.log('Donors data received:', data);
+        setDonors(data.donors);
+        setCurrentPage(data.page);
+        setTotalPages(data.totalPages);
+        setTotal(data.total);
       }
-      
-      const data = await res.json();
-      console.log('Donors data received:', data);
-      setDonors(data.donors);
-      setCurrentPage(data.page);
-      setTotalPages(data.totalPages);
-      setTotal(data.total);
     } catch (err) {
       console.error('Error fetching donors:', err);
       setDonors([]);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminSidebar from '../components/AdminSidebar';
 import { FaSearch, FaCheckCircle, FaTimesCircle, FaHistory, FaClock, FaHeartbeat, FaExclamationTriangle } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import adminAPI from '../../config/adminAPI.js';
 
 export default function AdminBloodRequests() {
   const [requests, setRequests] = useState([]);
@@ -20,13 +20,8 @@ export default function AdminBloodRequests() {
   const fetchAllRequests = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/blood-requests/all`, {
-        credentials: 'include'
-      });
+      const data = await adminAPI.getAllBloodRequests();
       
-      if (!res.ok) throw new Error('Failed to fetch blood requests');
-      
-      const data = await res.json();
       console.log('All blood requests:', data);
       
       if (Array.isArray(data)) {
@@ -47,13 +42,8 @@ export default function AdminBloodRequests() {
   const fetchRequestHistory = async () => {
     setHistoryLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/blood-requests/history`, {
-        credentials: 'include'
-      });
+      const data = await adminAPI.getBloodRequestHistory();
       
-      if (!res.ok) throw new Error('Failed to fetch blood request history');
-      
-      const data = await res.json();
       console.log('Blood request history:', data);
       
       if (Array.isArray(data)) {
@@ -71,22 +61,15 @@ export default function AdminBloodRequests() {
 
   const handleApproveOrDecline = async (requestId, approved) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/blood-requests/${requestId}/approval`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ approved })
-      });
+      const result = await adminAPI.updateBloodRequestApproval(requestId, approved);
 
-      if (!res.ok) {
-        throw new Error(`Failed to ${approved ? 'approve' : 'decline'} blood request`);
+      if (result) {
+        // Refresh both lists
+        await fetchAllRequests();
+        await fetchRequestHistory();
+        
+        console.log(`Blood request ${approved ? 'approved' : 'declined'} successfully`);
       }
-
-      // Refresh both lists
-      await fetchAllRequests();
-      await fetchRequestHistory();
-      
-      console.log(`Blood request ${approved ? 'approved' : 'declined'} successfully`);
     } catch (err) {
       console.error(`Error ${approved ? 'approving' : 'declining'} blood request:`, err);
       alert(`Failed to ${approved ? 'approve' : 'decline'} blood request. Please try again.`);

@@ -10,31 +10,31 @@ import {
   findAvailableBloodUnits,
   debugInventory,
 } from "../controllers/bloodInventoryController.js";
-import hospitalAuth from "../middleware/hospitalAuth.js";
+import hybridHospitalAuth from "../middleware/hybridHospitalAuth.js";
 
 const router = express.Router();
 
 // Get hospital blood inventory with filters
-router.get("/inventory", hospitalAuth, getHospitalInventory);
+router.get("/inventory", hybridHospitalAuth, getHospitalInventory);
 
 // Get inventory summary for dashboard
-router.get("/inventory/summary", hospitalAuth, getInventorySummary);
+router.get("/inventory/summary", hybridHospitalAuth, getInventorySummary);
 
 // Get inventory alerts (low stock + expiring)
-router.get("/inventory/alerts", hospitalAuth, getInventoryAlerts);
+router.get("/inventory/alerts", hybridHospitalAuth, getInventoryAlerts);
 
 // Convert approved donation to inventory unit
 router.post(
   "/inventory/convert/:donationId",
-  hospitalAuth,
+  hybridHospitalAuth,
   convertDonationToInventory
 );
 
 // Update blood unit status (use/expire)
-router.put("/inventory/unit/:id", hospitalAuth, updateBloodUnitStatus);
+router.put("/inventory/unit/:id", hybridHospitalAuth, updateBloodUnitStatus);
 
 // Mark expired units
-router.post("/inventory/mark-expired", hospitalAuth, markExpiredUnits);
+router.post("/inventory/mark-expired", hybridHospitalAuth, markExpiredUnits);
 
 // NEW: Get global blood availability across all hospitals
 router.get("/global-availability", getGlobalBloodAvailability);

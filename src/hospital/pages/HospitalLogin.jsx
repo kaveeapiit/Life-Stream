@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function HospitalLogin() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -11,18 +11,12 @@ export default function HospitalLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // ✅ Send session cookie
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
+      const result = await hospitalAPI.login(form.username, form.password);
+      
+      if (result.success) {
         navigate('/hospital/dashboard');
       } else {
-        alert(data.error || 'Login failed');
+        alert(result.error || 'Login failed');
       }
     } catch (err) {
       console.error('Server error:', err);

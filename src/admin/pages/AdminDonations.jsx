@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminSidebar from '../components/AdminSidebar';
 import { FaSearch, FaCheckCircle, FaTimesCircle, FaHistory, FaClock, FaVial } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import adminAPI from '../../config/adminAPI.js';
 
 export default function AdminDonations() {
   const [donations, setDonations] = useState([]);
@@ -20,13 +20,8 @@ export default function AdminDonations() {
   const fetchAllDonations = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/donations/all`, {
-        credentials: 'include'
-      });
+      const data = await adminAPI.getAllDonations();
       
-      if (!res.ok) throw new Error('Failed to fetch donations');
-      
-      const data = await res.json();
       console.log('All donations:', data);
       
       if (Array.isArray(data)) {
@@ -47,13 +42,8 @@ export default function AdminDonations() {
   const fetchDonationHistory = async () => {
     setHistoryLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/donations/history`, {
-        credentials: 'include'
-      });
+      const data = await adminAPI.getDonationHistory();
       
-      if (!res.ok) throw new Error('Failed to fetch donation history');
-      
-      const data = await res.json();
       console.log('Donation history:', data);
       
       if (Array.isArray(data)) {
@@ -71,22 +61,15 @@ export default function AdminDonations() {
 
   const handleApproveOrDecline = async (donationId, status) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/donations/${donationId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ status })
-      });
+      const result = await adminAPI.updateDonationStatus(donationId, status);
 
-      if (!res.ok) {
-        throw new Error(`Failed to ${status.toLowerCase()} donation`);
+      if (result) {
+        // Refresh both lists
+        await fetchAllDonations();
+        await fetchDonationHistory();
+        
+        console.log(`Donation ${status.toLowerCase()}d successfully`);
       }
-
-      // Refresh both lists
-      await fetchAllDonations();
-      await fetchDonationHistory();
-      
-      console.log(`Donation ${status.toLowerCase()}d successfully`);
     } catch (err) {
       console.error(`Error ${status.toLowerCase()}ing donation:`, err);
       alert(`Failed to ${status.toLowerCase()} donation. Please try again.`);

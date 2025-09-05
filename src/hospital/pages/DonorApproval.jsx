@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import HospitalSidebar from '../components/HospitalSidebar';
 import { FaSearch, FaCheckCircle, FaTimesCircle, FaHistory, FaClock, FaVial } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function DonorApproval() {
   const [donations, setDonations] = useState([]);
@@ -20,21 +20,18 @@ export default function DonorApproval() {
   const fetchAllDonations = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/donations/all`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getAllDonations();
       
-      if (!res.ok) throw new Error('Failed to fetch donations');
-      
-      const data = await res.json();
-      console.log('All donations:', data);
-      
-      if (Array.isArray(data)) {
-        // Separate pending from others for better UX
-        const pending = data.filter(d => d.status === 'Pending');
-        setDonations(pending);
-      } else {
-        setDonations([]);
+      if (data) {
+        console.log('All donations:', data);
+        
+        if (Array.isArray(data)) {
+          // Separate pending from others for better UX
+          const pending = data.filter(d => d.status === 'Pending');
+          setDonations(pending);
+        } else {
+          setDonations([]);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch all donations', err);
@@ -47,13 +44,8 @@ export default function DonorApproval() {
   const fetchDonationHistory = async () => {
     setHistoryLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hospital/donations/history`, {
-        credentials: 'include'
-      });
+      const data = await hospitalAPI.getDonationHistory();
       
-      if (!res.ok) throw new Error('Failed to fetch donation history');
-      
-      const data = await res.json();
       console.log('Donation history:', data);
       
       if (Array.isArray(data)) {
@@ -71,22 +63,15 @@ export default function DonorApproval() {
 
   const updateStatus = async (id, status) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/donation/update/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-        credentials: 'include'
-      });
+      const updated = await hospitalAPI.updateDonationStatus(id, status);
       
-      if (!res.ok) throw new Error('Failed to update status');
-      
-      const updated = await res.json();
-      
-      // Remove from pending donations and refresh history
-      setDonations(prev => prev.filter(d => d.id !== updated.id));
-      fetchDonationHistory(); // Refresh history to show the newly processed donation
-      
-      console.log(`Donation ${id} updated to ${status}`);
+      if (updated) {
+        // Remove from pending donations and refresh history
+        setDonations(prev => prev.filter(d => d.id !== updated.id));
+        fetchDonationHistory(); // Refresh history to show the newly processed donation
+        
+        console.log(`Donation ${id} updated to ${status}`);
+      }
     } catch (err) {
       console.error('Error updating status:', err);
       alert('Error updating status');

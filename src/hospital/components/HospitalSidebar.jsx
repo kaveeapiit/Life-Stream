@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Droplet, FlaskConical, Users, LogOut, Menu, Package, Plus, Heart, MapPin, Hospital } from 'lucide-react';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function HospitalSidebar() {
   const navigate = useNavigate();
@@ -24,13 +24,14 @@ export default function HospitalSidebar() {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const logout = () => {
-    localStorage.clear();
+  const logout = async () => {
+    await hospitalAPI.logout();
     navigate('/hospital/login');
   };
 
-  const Item = ({ to, icon: Icon, label }) => {
+  const Item = ({ to, icon, label }) => {
     const active = pathname.toLowerCase().startsWith(to.toLowerCase());
+    const IconComponent = icon;
     
     return (
       <li
@@ -38,7 +39,7 @@ export default function HospitalSidebar() {
         ${active ? 'bg-white/20 text-white' : 'text-gray-200 hover:bg-white/10'}`}
         onClick={() => { navigate(to); setOpen(false); }}
       >
-        <Icon size={18} /> 
+        <IconComponent size={18} /> 
         <span>{label}</span>
       </li>
     );

@@ -1,7 +1,7 @@
 import HospitalSidebar from '../components/HospitalSidebar';
 import { useEffect, useState } from 'react';
 import { FaHospital, FaTint, FaFlask, FaChartBar, FaCog, FaUsers, FaWarehouse, FaHeartbeat, FaHeart } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function HospitalDashboard() {
   // Example: fetch stats later
@@ -27,11 +27,8 @@ export default function HospitalDashboard() {
     // Fetch dashboard statistics
     const fetchDashboardStats = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/hospital/dashboard/stats`, {
-          credentials: 'include'
-        });
-        if (res.ok) {
-          const dashboardStats = await res.json();
+        const dashboardStats = await hospitalAPI.getDashboardStats();
+        if (dashboardStats) {
           setStats(prev => ({
             ...prev,
             ...dashboardStats
@@ -45,11 +42,8 @@ export default function HospitalDashboard() {
     // Fetch inventory summary for dashboard
     const fetchInventorySummary = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/hospital/inventory/summary`, {
-          credentials: 'include'
-        });
-        if (res.ok) {
-          const summary = await res.json();
+        const summary = await hospitalAPI.getInventorySummary();
+        if (summary) {
           const totalUnits = summary.reduce((sum, item) => sum + parseInt(item.available_units), 0);
           const expiringUnits = summary.reduce((sum, item) => sum + parseInt(item.expiring_soon || 0), 0);
           
@@ -67,11 +61,8 @@ export default function HospitalDashboard() {
     // Fetch blood request statistics
     const fetchBloodRequestStats = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/hospital/blood-requests/stats`, {
-          credentials: 'include'
-        });
-        if (res.ok) {
-          const requestStats = await res.json();
+        const requestStats = await hospitalAPI.getBloodRequestStats();
+        if (requestStats) {
           setStats(prev => ({
             ...prev,
             pendingRequests: parseInt(requestStats.pending_requests || 0),
