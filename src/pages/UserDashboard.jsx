@@ -315,7 +315,7 @@ function DashboardSection({ activeTab, setActiveTab, donations, bloodRequests, u
 
       {/* Tab Navigation */}
       <div className="flex justify-center">
-        <div className="flex bg-white/10 p-1 rounded-2xl backdrop-blur-sm border border-white/20">
+        <div className="flex gap-3 bg-white/10 p-2 rounded-2xl backdrop-blur-sm border border-white/20">
           <TabButton
             active={activeTab === 'donor'}
             onClick={() => setActiveTab('donor')}
@@ -376,7 +376,7 @@ function ProfileSection({
 
       {/* Profile Tab Navigation */}
       <div className="flex justify-center">
-        <div className="flex bg-white/10 p-1 rounded-2xl backdrop-blur-sm border border-white/20">
+        <div className="flex gap-3 bg-white/10 p-2 rounded-2xl backdrop-blur-sm border border-white/20">
           <TabButton
             active={activeProfileTab === 'personal'}
             onClick={() => setActiveProfileTab('personal')}
