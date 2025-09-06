@@ -42,21 +42,15 @@ export default function ManageUsers() {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        console.log('Fetching users...');
-        console.log('Admin token exists:', !!adminAPI.token);
         const data = await adminAPI.getUsers();
-        console.log('API response:', data);
         if (data) {
           // Handle API response format: {rows: [...], total: number}
           const users = Array.isArray(data) ? data : data.rows || data.users || [];
-          console.log('Setting users:', users);
           setUsers(users);
         } else {
-          console.log('No data received from API');
           throw new Error('Failed to fetch users');
         }
-      } catch (error) {
-        console.error('Error fetching users:', error);
+      } catch {
         showMessage('error', 'Failed to load users');
         setUsers([]);
       } finally {
@@ -66,32 +60,24 @@ export default function ManageUsers() {
 
     // Check if admin is logged in
     if (!adminAPI.isLoggedIn()) {
-      console.log('Admin not logged in, redirecting to login...');
       navigate('/admin/login');
       return;
     }
-    console.log('Admin is logged in, fetching users...');
     fetchUsers();
   }, [navigate]);
 
   const refetchUsers = async () => {
     try {
       setLoading(true);
-      console.log('Fetching users...');
-      console.log('Admin token exists:', !!adminAPI.token);
       const data = await adminAPI.getUsers();
-      console.log('API response:', data);
       if (data) {
         // Handle API response format: {rows: [...], total: number}
         const users = Array.isArray(data) ? data : data.rows || data.users || [];
-        console.log('Setting users:', users);
         setUsers(users);
       } else {
-        console.log('No data received from API');
         throw new Error('Failed to fetch users');
       }
-    } catch (error) {
-      console.error('Error fetching users:', error);
+    } catch {
       showMessage('error', 'Failed to load users');
       setUsers([]);
     } finally {
@@ -161,7 +147,6 @@ export default function ManageUsers() {
         throw new Error('Operation failed');
       }
     } catch (error) {
-      console.error('Error saving user:', error);
       showMessage('error', error.message || 'Failed to save user');
     }
   };
@@ -177,8 +162,7 @@ export default function ManageUsers() {
       } else {
         throw new Error('Failed to delete user');
       }
-    } catch (error) {
-      console.error('Error deleting user:', error);
+    } catch {
       showMessage('error', 'Failed to delete user');
     }
   };

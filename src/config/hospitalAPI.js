@@ -56,7 +56,6 @@ class HospitalAPI {
 
       return response;
     } catch (error) {
-      console.error("Hospital API request failed:", error);
       throw error;
     }
   }
@@ -139,8 +138,7 @@ class HospitalAPI {
         id: decoded.hospitalId,
         username: decoded.username,
       };
-    } catch (error) {
-      console.error("Error decoding token:", error);
+    } catch {
       this.clearToken();
       return null;
     }
@@ -284,8 +282,8 @@ class HospitalAPI {
         method: "POST",
         credentials: "include",
       });
-    } catch (error) {
-      console.error("Error during logout:", error);
+    } catch {
+      // Silently handle logout errors
     } finally {
       // Always clear local token
       this.clearToken();

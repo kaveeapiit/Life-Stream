@@ -33,15 +33,12 @@ export default function BloodInventory() {
     try {
       setLoading(true);
       setError(null);
-      
-      console.log('🔍 Starting to fetch inventory...');
 
       const params = new URLSearchParams();
       if (filters.bloodType !== 'all') params.append('bloodType', filters.bloodType);
       if (filters.status !== 'all') params.append('status', filters.status);
 
       const url = `${API_BASE_URL}/api/hospital/inventory?${params}`;
-      console.log('📡 Fetching from URL:', url);
 
       const response = await fetch(url, {
         method: 'GET',
@@ -51,30 +48,19 @@ export default function BloodInventory() {
         },
       });
 
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response headers:', response.headers);
-
       if (response.status === 401) {
-        console.log('❌ Unauthorized - redirecting to login');
         setError('You need to log in to view blood inventory');
         navigate('/hospital/login');
         return;
       }
 
       if (!response.ok) {
-        console.log('❌ Response not OK:', response.status, response.statusText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('✅ Received data:', data);
-      console.log('📊 Data type:', typeof data, 'Is array:', Array.isArray(data));
-      console.log('📊 Data length:', data.length);
-      
       setInventory(Array.isArray(data) ? data : []);
-      console.log('✅ Inventory state updated with', Array.isArray(data) ? data.length : 0, 'items');
     } catch (err) {
-      console.error('💥 Error fetching inventory:', err);
       setError(`Failed to load blood inventory: ${err.message}`);
       setInventory([]);
     } finally {
@@ -97,8 +83,8 @@ export default function BloodInventory() {
         const data = await response.json();
         setSummary(Array.isArray(data) ? data : []);
       }
-    } catch (err) {
-      console.error('Error fetching summary:', err);
+    } catch {
+      // Silently handle summary fetch errors
     }
   };
 
@@ -134,8 +120,7 @@ export default function BloodInventory() {
       } else {
         throw new Error('Failed to update unit status');
       }
-    } catch (err) {
-      console.error('Error updating unit status:', err);
+    } catch {
       alert('Failed to update unit status. Please try again.');
     }
   };

@@ -18,9 +18,8 @@ export default function HospitalLogin() {
       } else {
         alert(result.error || 'Login failed');
       }
-    } catch (err) {
-      console.error('Server error:', err);
-      alert('Server error');
+        } catch {
+      setError('Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }

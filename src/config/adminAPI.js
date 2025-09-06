@@ -56,7 +56,6 @@ class AdminAPI {
 
       return response;
     } catch (error) {
-      console.error("Admin API request failed:", error);
       throw error;
     }
   }
@@ -69,8 +68,7 @@ class AdminAPI {
     if (contentType && contentType.includes("application/json")) {
       try {
         return await response.json();
-      } catch (error) {
-        console.warn("Failed to parse JSON response:", error);
+      } catch {
         return null;
       }
     }
@@ -230,8 +228,7 @@ class AdminAPI {
         username: decoded.username,
         email: decoded.email,
       };
-    } catch (error) {
-      console.error("Error decoding token:", error);
+    } catch {
       this.clearToken();
       return null;
     }
@@ -245,8 +242,8 @@ class AdminAPI {
         method: "POST",
         credentials: "include",
       });
-    } catch (error) {
-      console.error("Error during logout:", error);
+    } catch {
+      // Silently handle logout errors
     } finally {
       // Always clear local token
       this.clearToken();

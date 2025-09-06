@@ -40,7 +40,7 @@ export default function UserDashboard() {
       setDonations(Array.isArray(donationsData) ? donationsData : []);
       setBloodRequests(Array.isArray(requestsData) ? requestsData : []);
     })
-    .catch(err => console.error('Fetch error:', err))
+    .catch(() => {/* Silently handle fetch errors */})
     .finally(() => setLoading(false));
   }, [navigate]);
 

@@ -63,7 +63,6 @@ export default function BloodRequests() {
         setError(null);
       } else if (data === null) {
         // This means 401 error and hospitalAPI already redirected to login
-        console.log('❌ Authentication failed - user will be redirected to login');
         setError('Authentication required');
         setRequests([]);
         return;
@@ -71,8 +70,7 @@ export default function BloodRequests() {
         setError('No data received');
         setRequests([]);
       }
-    } catch (err) {
-      console.error('Error fetching blood requests:', err);
+    } catch {
       setError('Failed to load blood requests');
       setRequests([]);
     } finally {
@@ -95,8 +93,7 @@ export default function BloodRequests() {
         setShowDetails(false);
         setSelectedRequest(null);
       }
-    } catch (err) {
-      console.error('Error updating status:', err);
+    } catch {
       alert('Failed to update request status');
     } finally {
       setActionLoading(false);
@@ -111,8 +108,7 @@ export default function BloodRequests() {
         setSelectedRequest(request);
         setShowDetails(true);
       }
-    } catch (err) {
-      console.error('Error fetching request details:', err);
+    } catch {
       alert('Failed to load request details');
     }
   };

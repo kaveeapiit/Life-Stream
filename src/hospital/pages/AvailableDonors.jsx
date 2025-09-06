@@ -24,18 +24,15 @@ export default function AvailableDonors() {
         ...(bloodTypeFilter !== 'all' && { bloodType: bloodTypeFilter })
       };
 
-      console.log('Fetching donors with params:', params);
       const data = await hospitalAPI.getAvailableDonors(params);
 
       if (data) {
-        console.log('Donors data received:', data);
         setDonors(data.donors);
         setCurrentPage(data.page);
         setTotalPages(data.totalPages);
         setTotal(data.total);
       }
-    } catch (err) {
-      console.error('Error fetching donors:', err);
+    } catch {
       setDonors([]);
     } finally {
       setLoading(false);

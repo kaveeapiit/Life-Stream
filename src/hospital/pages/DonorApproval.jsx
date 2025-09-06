@@ -23,7 +23,6 @@ export default function DonorApproval() {
       const data = await hospitalAPI.getAllDonations();
       
       if (data) {
-        console.log('All donations:', data);
         
         if (Array.isArray(data)) {
           // Separate pending from others for better UX
@@ -33,8 +32,7 @@ export default function DonorApproval() {
           setDonations([]);
         }
       }
-    } catch (err) {
-      console.error('Failed to fetch all donations', err);
+    } catch {
       setDonations([]);
     } finally {
       setLoading(false);
@@ -46,15 +44,13 @@ export default function DonorApproval() {
     try {
       const data = await hospitalAPI.getDonationHistory();
       
-      console.log('Donation history:', data);
       
       if (Array.isArray(data)) {
         setHistory(data);
       } else {
         setHistory([]);
       }
-    } catch (err) {
-      console.error('Failed to fetch donation history', err);
+    } catch {
       setHistory([]);
     } finally {
       setHistoryLoading(false);
@@ -70,10 +66,8 @@ export default function DonorApproval() {
         setDonations(prev => prev.filter(d => d.id !== updated.id));
         fetchDonationHistory(); // Refresh history to show the newly processed donation
         
-        console.log(`Donation ${id} updated to ${status}`);
       }
-    } catch (err) {
-      console.error('Error updating status:', err);
+    } catch {
       alert('Error updating status');
     }
   };

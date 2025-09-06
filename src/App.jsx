@@ -82,7 +82,7 @@ function AppWrapper() {
     fetch(`${API_BASE_URL}/api/footer`)
       .then((res) => res.json())
       .then((data) => setFooterData(data))
-      .catch((err) => console.error('Footer fetch failed:', err));
+      .catch(() => {/* Silently handle footer fetch errors */});
   }, []);
 
   return (

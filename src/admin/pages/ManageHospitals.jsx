@@ -25,19 +25,15 @@ export default function ManageHospitals() {
     const fetchHospitals = async () => {
       try {
         setLoading(true);
-        console.log('Fetching hospitals...');
         const data = await adminAPI.getHospitals();
-        console.log('Hospital API response:', data);
         
         if (data) {
           const hospitalList = Array.isArray(data) ? data : (data.rows || data.hospitals || []);
-          console.log('Setting hospitals:', hospitalList);
           setHospitals(hospitalList);
         } else {
           setHospitals([]);
         }
       } catch (error) {
-        console.error('Error fetching hospitals:', error);
         showMessage('error', 'Failed to load hospitals: ' + error.message);
         setHospitals([]);
       } finally {
@@ -55,19 +51,15 @@ export default function ManageHospitals() {
   const refetchHospitals = async () => {
     try {
       setLoading(true);
-      console.log('Fetching hospitals...');
       const data = await adminAPI.getHospitals();
-      console.log('Hospital API response:', data);
       
       if (data) {
         const hospitalList = Array.isArray(data) ? data : (data.rows || data.hospitals || []);
-        console.log('Setting hospitals:', hospitalList);
         setHospitals(hospitalList);
       } else {
         setHospitals([]);
       }
     } catch (error) {
-      console.error('Error fetching hospitals:', error);
       showMessage('error', 'Failed to load hospitals: ' + error.message);
       setHospitals([]);
     } finally {
@@ -119,7 +111,6 @@ export default function ManageHospitals() {
         refetchHospitals();
       }
     } catch (error) {
-      console.error('Error saving hospital:', error);
       showMessage('error', 'Failed to save hospital: ' + error.message);
     }
   };
@@ -132,7 +123,6 @@ export default function ManageHospitals() {
       showMessage('success', 'Hospital deleted successfully');
       refetchHospitals();
     } catch (error) {
-      console.error('Error deleting hospital:', error);
       showMessage('error', 'Failed to delete hospital: ' + error.message);
     }
   };

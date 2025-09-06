@@ -19,7 +19,7 @@ export default function PendingRequests() {
         setPending(p);
         setHistory(h);
       })
-      .catch(err => console.error('Error:', err))
+      .catch(() => {/* Silently handle errors */})
       .finally(() => setLoading(false));
   }, []);
 
