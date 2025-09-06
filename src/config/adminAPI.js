@@ -61,6 +61,24 @@ class AdminAPI {
     }
   }
 
+  // Helper method to safely parse JSON responses
+  async parseResponse(response) {
+    if (!response) return null;
+
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      try {
+        return await response.json();
+      } catch (error) {
+        console.warn("Failed to parse JSON response:", error);
+        return null;
+      }
+    }
+
+    // For non-JSON responses (like empty responses from DELETE), return success indicator
+    return { success: true };
+  }
+
   // Login method
   async login(username, password) {
     const response = await fetch(`${this.baseURL}/api/admin/login`, {
@@ -106,14 +124,14 @@ class AdminAPI {
       method: "PUT",
       body: JSON.stringify(userData),
     });
-    return response ? await response.json() : null;
+    return this.parseResponse(response);
   }
 
   async deleteUser(id) {
     const response = await this.request(`/api/admin/users/${id}`, {
       method: "DELETE",
     });
-    return response ? await response.json() : null;
+    return this.parseResponse(response);
   }
 
   // Blood requests management
@@ -184,14 +202,14 @@ class AdminAPI {
       method: "PUT",
       body: JSON.stringify(hospitalData),
     });
-    return response ? await response.json() : null;
+    return this.parseResponse(response);
   }
 
   async deleteHospital(id) {
     const response = await this.request(`/api/admin/hospitals/${id}`, {
       method: "DELETE",
     });
-    return response ? await response.json() : null;
+    return this.parseResponse(response);
   }
 
   // Check if user is logged in
