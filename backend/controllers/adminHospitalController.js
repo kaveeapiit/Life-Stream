@@ -9,15 +9,19 @@ import {
 
 export const adminListHospitals = async (req, res, next) => {
   try {
-    console.log('adminListHospitals called with query:', req.query);
+    console.log("adminListHospitals called with query:", req.query);
     const { q = "", page = 1, limit = 10 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
-    console.log('Calling listHospitals with params:', { q, limit: parseInt(limit), offset });
+    console.log("Calling listHospitals with params:", {
+      q,
+      limit: parseInt(limit),
+      offset,
+    });
     const data = await listHospitals({ q, limit: parseInt(limit), offset });
-    console.log('listHospitals returned:', data);
+    console.log("listHospitals returned:", data);
     res.json(data);
   } catch (e) {
-    console.error('Error in adminListHospitals:', e);
+    console.error("Error in adminListHospitals:", e);
     next(e);
   }
 };

@@ -1,15 +1,15 @@
 // backend/models/HospitalUserModel.js
-import pool from '../config/db.js';
-import bcrypt from 'bcrypt';
+import pool from "../config/db.js";
+import bcrypt from "bcrypt";
 
-const TABLE = 'hospital_users'; // single source
+const TABLE = "hospital_users"; // single source
 
-export const listHospitals = async ({ q = '', limit = 10, offset = 0 }) => {
+export const listHospitals = async ({ q = "", limit = 10, offset = 0 }) => {
   // Build WHERE + params safely
   const params = [];
-  let where = '';
+  let where = "";
   if (q) {
-    where = 'WHERE username ILIKE $1';
+    where = "WHERE username ILIKE $1";
     params.push(`%${q}%`);
   }
 
@@ -71,7 +71,7 @@ export const updateHospital = async (id, { username, password }) => {
   values.push(id);
   const sql = `
     UPDATE ${TABLE}
-    SET ${fields.join(', ')}
+    SET ${fields.join(", ")}
     WHERE id = $${i}
     RETURNING id, username
   `;
