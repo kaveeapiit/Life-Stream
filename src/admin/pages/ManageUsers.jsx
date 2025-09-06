@@ -15,7 +15,6 @@ import {
   Phone,
   MapPin,
   Droplet,
-  Calendar,
   AlertCircle,
   CheckCircle,
 } from 'lucide-react';
@@ -35,14 +34,36 @@ export default function ManageUsers() {
     name: '',
     email: '',
     phone: '',
-    address: '',
+    location: '',
     blood_type: '',
-    date_of_birth: '',
-    gender: '',
-    emergency_contact: '',
   });
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        console.log('Fetching users...');
+        console.log('Admin token exists:', !!adminAPI.token);
+        const data = await adminAPI.getUsers();
+        console.log('API response:', data);
+        if (data) {
+          // Handle API response format: {rows: [...], total: number}
+          const users = Array.isArray(data) ? data : data.rows || data.users || [];
+          console.log('Setting users:', users);
+          setUsers(users);
+        } else {
+          console.log('No data received from API');
+          throw new Error('Failed to fetch users');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        showMessage('error', 'Failed to load users');
+        setUsers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     // Check if admin is logged in
     if (!adminAPI.isLoggedIn()) {
       console.log('Admin not logged in, redirecting to login...');
@@ -51,9 +72,9 @@ export default function ManageUsers() {
     }
     console.log('Admin is logged in, fetching users...');
     fetchUsers();
-  }, [navigate]); // fetchUsers is stable, doesn't need to be in dependencies
+  }, [navigate]);
 
-  const fetchUsers = async () => {
+  const refetchUsers = async () => {
     try {
       setLoading(true);
       console.log('Fetching users...');
@@ -89,11 +110,8 @@ export default function ManageUsers() {
       name: user.name || '',
       email: user.email || '',
       phone: user.phone || '',
-      address: user.address || '',
+      location: user.location || '',
       blood_type: user.blood_type || '',
-      date_of_birth: user.date_of_birth ? user.date_of_birth.split('T')[0] : '',
-      gender: user.gender || '',
-      emergency_contact: user.emergency_contact || '',
     });
     setModalMode('view');
     setShowModal(true);
@@ -105,11 +123,8 @@ export default function ManageUsers() {
       name: user.name || '',
       email: user.email || '',
       phone: user.phone || '',
-      address: user.address || '',
+      location: user.location || '',
       blood_type: user.blood_type || '',
-      date_of_birth: user.date_of_birth ? user.date_of_birth.split('T')[0] : '',
-      gender: user.gender || '',
-      emergency_contact: user.emergency_contact || '',
     });
     setModalMode('edit');
     setShowModal(true);
@@ -121,11 +136,8 @@ export default function ManageUsers() {
       name: '',
       email: '',
       phone: '',
-      address: '',
+      location: '',
       blood_type: '',
-      date_of_birth: '',
-      gender: '',
-      emergency_contact: '',
     });
     setModalMode('create');
     setShowModal(true);
@@ -144,7 +156,7 @@ export default function ManageUsers() {
       if (result) {
         showMessage('success', `User ${modalMode === 'create' ? 'created' : 'updated'} successfully`);
         setShowModal(false);
-        fetchUsers();
+        refetchUsers();
       } else {
         throw new Error('Operation failed');
       }
@@ -161,7 +173,7 @@ export default function ManageUsers() {
       const result = await adminAPI.deleteUser(userId);
       if (result) {
         showMessage('success', 'User deleted successfully');
-        fetchUsers();
+        refetchUsers();
       } else {
         throw new Error('Failed to delete user');
       }
@@ -286,14 +298,14 @@ export default function ManageUsers() {
                         <td className="px-6 py-4">
                           <div>
                             <p className="text-sm">{user.email || 'N/A'}</p>
-                            <p className="text-sm text-gray-400">{user.phone || 'N/A'}</p>
+                            <p className="text-sm text-gray-400">{user.phone || 'Phone: Confidential'}</p>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             user.blood_type ? 'bg-red-500/20 text-red-300' : 'bg-gray-500/20 text-gray-400'
                           }`}>
-                            {user.blood_type || 'Not Set'}
+                            {user.blood_type || 'Confidential'}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-400">
@@ -352,7 +364,7 @@ export default function ManageUsers() {
               </div>
               
               <div className="p-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       <User size={16} className="inline mr-2" />
@@ -364,6 +376,7 @@ export default function ManageUsers() {
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter full name"
                     />
                   </div>
                   
@@ -378,6 +391,7 @@ export default function ManageUsers() {
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter email address"
                     />
                   </div>
                   
@@ -392,6 +406,22 @@ export default function ManageUsers() {
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       disabled={modalMode === 'view'}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter phone number"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <MapPin size={16} className="inline mr-2" />
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      disabled={modalMode === 'view'}
+                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter location/city"
                     />
                   </div>
                   
@@ -410,35 +440,6 @@ export default function ManageUsers() {
                       {bloodTypes.map(type => (
                         <option key={type} value={type}>{type}</option>
                       ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      <Calendar size={16} className="inline mr-2" />
-                      Date of Birth
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.date_of_birth}
-                      onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Gender</label>
-                    <select
-                      value={formData.gender}
-                      onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                      disabled={modalMode === 'view'}
-                      className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
                     </select>
                   </div>
                 </div>
