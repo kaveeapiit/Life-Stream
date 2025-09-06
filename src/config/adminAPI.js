@@ -160,6 +160,40 @@ class AdminAPI {
     return response ? await response.json() : null;
   }
 
+  // Hospital management
+  async getHospitals() {
+    const response = await this.request("/api/admin/hospitals");
+    return response ? await response.json() : null;
+  }
+
+  async getHospital(id) {
+    const response = await this.request(`/api/admin/hospitals/${id}`);
+    return response ? await response.json() : null;
+  }
+
+  async createHospital(hospitalData) {
+    const response = await this.request("/api/admin/hospitals", {
+      method: "POST",
+      body: JSON.stringify(hospitalData),
+    });
+    return response ? await response.json() : null;
+  }
+
+  async updateHospital(id, hospitalData) {
+    const response = await this.request(`/api/admin/hospitals/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(hospitalData),
+    });
+    return response ? await response.json() : null;
+  }
+
+  async deleteHospital(id) {
+    const response = await this.request(`/api/admin/hospitals/${id}`, {
+      method: "DELETE",
+    });
+    return response ? await response.json() : null;
+  }
+
   // Check if user is logged in
   isLoggedIn() {
     return !!this.token;

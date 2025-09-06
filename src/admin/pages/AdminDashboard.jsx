@@ -3,11 +3,11 @@ import AdminSidebar from "../components/AdminSidebar";
 import {
   Shield,
   Users,
+  Building2,
   Droplet,
   Activity,
   FileText,
   LogOut,
-  ShieldPlus,   // 👈 new icon
 } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -15,10 +15,10 @@ export default function AdminDashboard() {
 
   const quickLinks = [
     { to: "/admin/users", label: "Manage Users", icon: Users },
+    { to: "/admin/hospitals", label: "Manage Hospitals", icon: Building2 },
     { to: "/admin/donations", label: "Donations", icon: Droplet },
     { to: "/admin/requests", label: "Blood Requests", icon: Activity },
     { to: "/admin/reports", label: "Reports", icon: FileText },
-    { to: "/admin/hospitals", label: "Hospitals", icon: ShieldPlus }, // 👈 changed
   ];
 
   return (

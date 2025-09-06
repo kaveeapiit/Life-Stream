@@ -27,6 +27,8 @@ import BloodRequests from './hospital/pages/BloodRequests';
 import HospitalToHospitalRequests from './hospital/pages/HospitalToHospitalRequests';
 import Users from './admin/pages/Users';
 import Hospitals from './admin/pages/Hospitals.jsx';
+import ManageUsers from './admin/pages/ManageUsers';
+import ManageHospitals from './admin/pages/ManageHospitals';
 import AdminDonations from './admin/pages/AdminDonations';
 import AdminBloodRequests from './admin/pages/AdminBloodRequests';
 
@@ -97,14 +99,14 @@ function AppWrapper() {
         <Route path="/find-blood" element={<FindBlood />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/pending-requests" element={<PendingRequests />} />
-        <Route path="/admin/users" element={<Users />} />
-
+        <Route path="/admin/users" element={<ManageUsers />} />
+        
         <Route path="/userdashboard" element={<UserDashboard />} />
         <Route path="/user" element={<UserDashboard />} />
 
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/hospitals" element={<Hospitals />} />
+        <Route path="/admin/hospitals" element={<ManageHospitals />} />
         <Route path="/admin/donations" element={<AdminDonations />} />
         <Route path="/admin/requests" element={<AdminBloodRequests />} />
 

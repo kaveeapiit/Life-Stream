@@ -2,13 +2,13 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  Users, 
+  Users,
   Droplet, 
   Activity, 
   FileText, 
   LogOut, 
   Menu, 
-  ShieldPlus,
+  Building2,
   Shield
 } from 'lucide-react';
 import adminAPI from '../../config/adminAPI.js';
@@ -90,9 +90,9 @@ export default function AdminSidebar() {
           <ul className="space-y-2 text-sm">
             <Item to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />
             <Item to="/admin/users" icon={Users} label="Manage Users" />
+            <Item to="/admin/hospitals" icon={Building2} label="Manage Hospitals" />
             <Item to="/admin/donations" icon={Droplet} label="Donations" />
             <Item to="/admin/requests" icon={Activity} label="Blood Requests" />
-            <Item to="/admin/hospitals" icon={ShieldPlus} label="Hospitals" />
             <Item to="/admin/reports" icon={FileText} label="Reports" />
           </ul>
         </div>

@@ -13,7 +13,7 @@ export const listHospitals = async ({ q = '', limit = 10, offset = 0 }) => {
     params.push(`%${q}%`);
   }
 
-  // Rows query
+  // Rows query - select available columns only
   params.push(limit, offset); // push after q (or not) to keep order
   const rowsSql = `
     SELECT id, username
