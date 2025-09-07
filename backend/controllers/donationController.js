@@ -11,6 +11,7 @@ import {
   autoConvertToInventory,
 } from "../models/donationModel.js";
 import { getAvailableDonors } from "../models/UserModel.js";
+import NotificationModel from "../models/NotificationModel.js";
 import pool from "../config/db.js";
 
 // ✅ 1. Handle donation submission (public/user)
@@ -102,6 +103,36 @@ export const approveOrDeclineDonation = async (req, res) => {
 
   try {
     const updated = await updateDonationStatus(id, status);
+
+    // Create notification for the user
+    if (updated && updated.email) {
+      try {
+        const notificationData = {
+          email: updated.email,
+          type:
+            status === "Approved" ? "donation_approved" : "donation_declined",
+          title:
+            status === "Approved" ? "🎉 Donation Approved!" : "Donation Update",
+          message:
+            status === "Approved"
+              ? `Great news! Your blood donation request has been approved. Thank you for your generosity in helping save lives!`
+              : `Your donation request has been reviewed. Thank you for your willingness to help.`,
+          relatedId: updated.id,
+          relatedType: "donation",
+        };
+
+        await NotificationModel.createNotification(notificationData);
+        console.log(
+          `Notification created for donation ${status.toLowerCase()}: ${
+            updated.email
+          }`
+        );
+      } catch (notificationErr) {
+        console.error("Error creating notification:", notificationErr.message);
+        // Don't fail the request if notification creation fails
+      }
+    }
+
     res.status(200).json(updated);
   } catch (err) {
     console.error("Error updating donation status:", err.message);

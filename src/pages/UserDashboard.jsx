@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NotificationSystem from '../components/NotificationSystem.jsx';
 import API_BASE_URL from '../config/api.js';
 
 export default function UserDashboard() {
@@ -123,6 +124,17 @@ export default function UserDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 ml-64 p-8 overflow-x-hidden">
+        {/* Header Bar with Notifications */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Welcome back, {user?.name}</h1>
+            <p className="text-gray-400">Manage your blood donations and requests</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <NotificationSystem userEmail={user?.email} />
+          </div>
+        </div>
+
         {/* Message Alert */}
         {message && (
           <div className="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slideIn">
