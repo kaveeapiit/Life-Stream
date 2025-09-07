@@ -1,5 +1,6 @@
 import BloodRequestModel from "../models/BloodRequestModel.js";
 import BloodInventoryModel from "../models/BloodInventoryModel.js";
+import NotificationModel from "../models/NotificationModel.js";
 
 // 🏥 Hospital Blood Request Management Controllers
 
@@ -99,6 +100,62 @@ export const updateBloodRequestStatus = async (req, res) => {
 
     if (!updatedRequest) {
       return res.status(404).json({ error: "Blood request not found" });
+    }
+
+    // Debug: Log the status and request details
+    console.log(
+      `🔍 DEBUG: Processing status update - status: "${status}", updatedRequest:`,
+      updatedRequest
+    );
+
+    // Create notification when request is approved or declined
+    if (status === "approved" || status === "declined") {
+      console.log(
+        `🔔 ENTERING notification creation block for ${status} request`
+      );
+      try {
+        console.log(`🔔 Creating notification for ${status} request:`, {
+          email: updatedRequest.email,
+          bloodType: updatedRequest.blood_type,
+          hospital: hospital.username,
+        });
+
+        const notificationMessage =
+          status === "approved"
+            ? `Great news! Your ${updatedRequest.blood_type} blood request has been approved by ${hospital.username}. The hospital will contact you shortly with next steps.`
+            : `Your ${updatedRequest.blood_type} blood request has been declined by ${hospital.username}. Please try submitting a request to another hospital.`;
+
+        console.log(
+          `🔔 About to call NotificationModel.createNotification with:`,
+          {
+            email: updatedRequest.email,
+            title: `Blood Request ${
+              status.charAt(0).toUpperCase() + status.slice(1)
+            }`,
+            message: notificationMessage,
+            type: status === "approved" ? "success" : "info",
+          }
+        );
+
+        const notification = await NotificationModel.createNotification({
+          email: updatedRequest.email,
+          title: `Blood Request ${
+            status.charAt(0).toUpperCase() + status.slice(1)
+          }`,
+          message: notificationMessage,
+          type: status === "approved" ? "success" : "info",
+        });
+
+        console.log(`✅ Notification created successfully:`, notification);
+      } catch (notificationError) {
+        console.error("❌ Error creating notification:", notificationError);
+        console.error("❌ Full error stack:", notificationError.stack);
+        // Continue execution even if notification fails
+      }
+    } else {
+      console.log(
+        `🚫 NOT creating notification - status "${status}" does not match "approved" or "declined"`
+      );
     }
 
     res.status(200).json({

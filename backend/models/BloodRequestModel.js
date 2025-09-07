@@ -56,9 +56,18 @@ const BloodRequestModel = {
     page = 1,
     limit = 20,
   }) => {
-    let whereConditions = ["1=1"]; // Always true base condition
+    let whereConditions = [];
     let params = [];
     let paramIndex = 1;
+
+    // Hospital should see:
+    // 1. Requests assigned to them (approved, declined, fulfilled, etc.)
+    // 2. Pending requests (so they can assign themselves)
+    whereConditions.push(
+      `(assigned_hospital = $${paramIndex} OR status = 'pending')`
+    );
+    params.push(hospital);
+    paramIndex++;
 
     // Filter by blood type if specified
     if (bloodType && bloodType !== "all") {

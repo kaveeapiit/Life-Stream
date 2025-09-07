@@ -7,25 +7,12 @@ export const createBloodRequest = async (req, res) => {
     const request = await BloodRequestModel.createRequest(req.body);
     console.log("Blood request created successfully:", request);
 
-    // Try to auto-fulfill the request if blood is available
-    const autoFulfillResult =
-      await BloodRequestModel.checkAndAutoFulfillRequest(request.id);
-
-    if (autoFulfillResult.success) {
-      res.status(201).json({
-        ...request,
-        autoFulfilled: true,
-        message:
-          "Request created and automatically approved - blood unit reserved",
-        bloodUnit: autoFulfillResult.bloodUnit,
-      });
-    } else {
-      res.status(201).json({
-        ...request,
-        autoFulfilled: false,
-        message: "Request created successfully, awaiting manual review",
-      });
-    }
+    // Blood request created and stays in pending status for hospital review
+    res.status(201).json({
+      ...request,
+      message:
+        "Blood request submitted successfully. Hospital will review your request shortly.",
+    });
   } catch (err) {
     console.error("Error in createBloodRequest:", err);
     console.error("Full error details:", {

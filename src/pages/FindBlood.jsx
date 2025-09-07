@@ -47,7 +47,11 @@ export default function FindBlood() {
       });
 
       if (res.ok) {
-        setMsg({ type: 'success', text: 'Blood request submitted successfully!' });
+        const data = await res.json();
+        setMsg({ 
+          type: 'success', 
+          text: data.message || 'Blood request submitted successfully!' 
+        });
         setForm(f => ({ ...f, blood_type: '', location: '', urgency: false }));
         setTimeout(() => navigate('/userdashboard'), 2000);
       } else {

@@ -120,6 +120,31 @@ export default function DonorRequestMatching() {
     }
   };
 
+  // Handle contacting a donor (approve the blood request)
+  const handleContactDonor = async (donorId, requestId) => {
+    try {
+      // Approve the blood request
+      const response = await hospitalAPI.updateBloodRequestStatus(requestId, 'approved');
+      
+      if (response) {
+        alert(`Blood request approved! Donor contact initiated.`);
+        
+        // Refresh the blood requests list to remove the approved request from pending
+        await fetchBloodRequests();
+        
+        // Hide the matching panel
+        setShowMatchingPanel(false);
+        setSelectedRequest(null);
+        setCompatibleDonors([]);
+      } else {
+        alert('Failed to approve blood request');
+      }
+    } catch (err) {
+      console.error('Error approving blood request:', err);
+      alert('Failed to approve blood request');
+    }
+  };
+
   useEffect(() => {
     fetchDonors(currentPage);
   }, [fetchDonors, currentPage]);
@@ -463,7 +488,10 @@ export default function DonorRequestMatching() {
                         {donor.compatibility_type}
                       </span>
                     </div>
-                    <button className="px-3 py-1 bg-green-600/20 text-green-300 rounded text-xs hover:bg-green-600/30 transition">
+                    <button 
+                      onClick={() => handleContactDonor(donor.id, selectedRequest.id)}
+                      className="px-3 py-1 bg-green-600/20 text-green-300 rounded text-xs hover:bg-green-600/30 transition"
+                    >
                       Contact Donor
                     </button>
                   </div>
