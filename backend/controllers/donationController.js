@@ -112,7 +112,7 @@ export const approveOrDeclineDonation = async (req, res) => {
           type:
             status === "Approved" ? "donation_approved" : "donation_declined",
           title:
-            status === "Approved" ? "🎉 Donation Approved!" : "Donation Update",
+            status === "Approved" ? "Donation Approved!" : "Donation Update",
           message:
             status === "Approved"
               ? `Great news! Your blood donation request has been approved. Thank you for your generosity in helping save lives!`
