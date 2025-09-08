@@ -15,6 +15,7 @@ export default function UserDashboard() {
   const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [isUpdating, setIsUpdating] = useState(false);
   const [message, setMessage] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Add mobile sidebar state
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -107,65 +108,93 @@ export default function UserDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-        <div className="w-12 h-12 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin"></div>
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-300">Loading your dashboard...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="fixed top-4 left-4 z-50 lg:hidden bg-red-600 p-2 rounded-lg shadow-lg"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* New Sidebar */}
       <ModernSidebar 
         activeSection={activeSection} 
         setActiveSection={setActiveSection} 
         onLogout={handleLogout}
         user={user}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 p-8 overflow-x-hidden">
+      <main className="flex-1 lg:ml-64 transition-all duration-300">
         {/* Header Bar with Notifications */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Welcome back, {user?.name}</h1>
-            <p className="text-gray-400">Manage your blood donations and requests</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <NotificationSystem userEmail={user?.email} />
+        <div className="sticky top-0 z-30 bg-gray-900/95 backdrop-blur-sm border-b border-white/10 px-4 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <div className="ml-12 lg:ml-0">
+              <h1 className="text-lg lg:text-2xl font-bold text-white">Welcome back, {user?.name}</h1>
+              <p className="text-sm lg:text-base text-gray-400 hidden sm:block">Manage your blood donations and requests</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <NotificationSystem userEmail={user?.email} />
+            </div>
           </div>
         </div>
 
         {/* Message Alert */}
         {message && (
-          <div className="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slideIn">
+          <div className="fixed top-4 right-4 bg-green-600 text-white px-4 lg:px-6 py-2 lg:py-3 rounded-lg shadow-lg z-50 animate-slideIn text-sm lg:text-base">
             {message}
           </div>
         )}
 
-        {/* Dashboard Section */}
-        {activeSection === 'dashboard' && (
-          <DashboardSection 
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            donations={donations}
-            bloodRequests={bloodRequests}
-            user={user}
-          />
-        )}
+        {/* Content Area */}
+        <div className="p-4 lg:p-8 space-y-6 lg:space-y-8">
+          {/* Dashboard Section */}
+          {activeSection === 'dashboard' && (
+            <DashboardSection 
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              donations={donations}
+              bloodRequests={bloodRequests}
+              user={user}
+            />
+          )}
 
-        {/* Profile Section */}
-        {activeSection === 'profile' && (
-          <ProfileSection
-            user={user}
-            profileData={profileData}
-            setProfileData={setProfileData}
-            passwordData={passwordData}
-            setPasswordData={setPasswordData}
-            onProfileUpdate={handleProfileUpdate}
-            onPasswordUpdate={handlePasswordUpdate}
-            isUpdating={isUpdating}
-          />
-        )}
+          {/* Profile Section */}
+          {activeSection === 'profile' && (
+            <ProfileSection
+              user={user}
+              profileData={profileData}
+              setProfileData={setProfileData}
+              passwordData={passwordData}
+              setPasswordData={setPasswordData}
+              onProfileUpdate={handleProfileUpdate}
+              onPasswordUpdate={handlePasswordUpdate}
+              isUpdating={isUpdating}
+            />
+          )}
+        </div>
       </main>
 
       {/* Animations */}
@@ -186,7 +215,7 @@ export default function UserDashboard() {
 }
 
 /* ---- Modern Sidebar Component ---- */
-function ModernSidebar({ activeSection, setActiveSection, onLogout, user }) {
+function ModernSidebar({ activeSection, setActiveSection, onLogout, user, isOpen, onClose }) {
   const sidebarItems = [
     { 
       id: 'dashboard', 
@@ -208,34 +237,51 @@ function ModernSidebar({ activeSection, setActiveSection, onLogout, user }) {
     }
   ];
 
+  const handleItemClick = (sectionId) => {
+    setActiveSection(sectionId);
+    onClose(); // Close mobile sidebar after selection
+  };
+
   return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-gray-900/95 backdrop-blur-xl border-r border-white/10 z-40">
+    <div className={`fixed left-0 top-0 h-full w-64 bg-gray-900/95 backdrop-blur-xl border-r border-white/10 z-50 transition-transform duration-300 lg:translate-x-0 ${
+      isOpen ? 'translate-x-0' : '-translate-x-full'
+    }`}>
+      {/* Close button for mobile */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 lg:hidden text-gray-400 hover:text-white"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
       {/* Header */}
-      <div className="p-6 border-b border-white/10">
+      <div className="p-4 lg:p-6 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <div className="w-8 lg:w-10 h-8 lg:h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
+            <svg className="w-5 lg:w-6 h-5 lg:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">LifeStream</h1>
+            <h1 className="text-lg lg:text-xl font-bold text-white">LifeStream</h1>
             <p className="text-xs text-gray-400">Dashboard</p>
           </div>
         </div>
       </div>
 
       {/* User Info */}
-      <div className="p-6 border-b border-white/10">
+      <div className="p-4 lg:p-6 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
-            <span className="text-lg font-semibold text-white">
+          <div className="w-10 lg:w-12 h-10 lg:h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
+            <span className="text-sm lg:text-lg font-semibold text-white">
               {user?.name?.charAt(0)?.toUpperCase() || 'U'}
             </span>
           </div>
-          <div>
-            <h3 className="font-semibold text-white">{user?.name || 'User'}</h3>
-            <p className="text-sm text-gray-400">{user?.blood_type || 'N/A'} • {user?.email}</p>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-white text-sm lg:text-base truncate">{user?.name || 'User'}</h3>
+            <p className="text-xs lg:text-sm text-gray-400 truncate">{user?.blood_type || 'N/A'} • {user?.email}</p>
           </div>
         </div>
       </div>
@@ -246,8 +292,8 @@ function ModernSidebar({ activeSection, setActiveSection, onLogout, user }) {
           {sidebarItems.map((item) => (
             <li key={item.id}>
               <button
-                onClick={() => setActiveSection(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                onClick={() => handleItemClick(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm lg:text-base ${
                   activeSection === item.id
                     ? 'bg-red-600 text-white shadow-lg'
                     : 'text-gray-300 hover:bg-white/5 hover:text-white'
@@ -265,7 +311,7 @@ function ModernSidebar({ activeSection, setActiveSection, onLogout, user }) {
       <div className="p-4 border-t border-white/10">
         <button
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-200"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-200 text-sm lg:text-base"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -280,24 +326,24 @@ function ModernSidebar({ activeSection, setActiveSection, onLogout, user }) {
 /* ---- Dashboard Section Component ---- */
 function DashboardSection({ activeTab, setActiveTab, donations, bloodRequests, user }) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
       {/* Header */}
       <header className="text-center">
-        <h1 className="text-4xl font-bold mb-4">
+        <h1 className="text-2xl lg:text-4xl font-bold mb-2 lg:mb-4">
           Welcome back, <span className="text-red-400">{user?.name || 'User'}</span>
         </h1>
-        <p className="text-gray-300 text-lg">
+        <p className="text-gray-300 text-sm lg:text-lg max-w-2xl mx-auto">
           Manage your donations and blood requests from your personalized dashboard
         </p>
       </header>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
         <StatCard
           title="Total Donations"
           value={donations.length}
           icon={
-            <svg className="w-8 h-8 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 lg:w-8 h-6 lg:h-8 text-red-400" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
           }
@@ -307,7 +353,7 @@ function DashboardSection({ activeTab, setActiveTab, donations, bloodRequests, u
           title="Blood Requests"
           value={bloodRequests.length}
           icon={
-            <svg className="w-8 h-8 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 lg:w-8 h-6 lg:h-8 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
             </svg>
           }
@@ -317,7 +363,7 @@ function DashboardSection({ activeTab, setActiveTab, donations, bloodRequests, u
           title="Lives Impacted"
           value={donations.filter(d => d.status === 'Approved').length * 3}
           icon={
-            <svg className="w-8 h-8 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 lg:w-8 h-6 lg:h-8 text-green-400" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
           }
@@ -327,12 +373,12 @@ function DashboardSection({ activeTab, setActiveTab, donations, bloodRequests, u
 
       {/* Tab Navigation */}
       <div className="flex justify-center">
-        <div className="flex gap-3 bg-white/10 p-2 rounded-2xl backdrop-blur-sm border border-white/20">
+        <div className="flex gap-2 lg:gap-3 bg-white/10 p-1.5 lg:p-2 rounded-xl lg:rounded-2xl backdrop-blur-sm border border-white/20">
           <TabButton
             active={activeTab === 'donor'}
             onClick={() => setActiveTab('donor')}
             icon={
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 lg:w-5 h-4 lg:h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
             }
@@ -342,7 +388,7 @@ function DashboardSection({ activeTab, setActiveTab, donations, bloodRequests, u
             active={activeTab === 'recipient'}
             onClick={() => setActiveTab('recipient')}
             icon={
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 lg:w-5 h-4 lg:h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
               </svg>
             }
@@ -377,23 +423,23 @@ function ProfileSection({
   const [activeProfileTab, setActiveProfileTab] = useState('personal');
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
       {/* Header */}
       <header>
-        <h1 className="text-4xl font-bold mb-4">My Profile</h1>
-        <p className="text-gray-300 text-lg">
+        <h1 className="text-2xl lg:text-4xl font-bold mb-2 lg:mb-4">My Profile</h1>
+        <p className="text-gray-300 text-sm lg:text-lg">
           Manage your personal information and account settings
         </p>
       </header>
 
       {/* Profile Tab Navigation */}
       <div className="flex justify-center">
-        <div className="flex gap-3 bg-white/10 p-2 rounded-2xl backdrop-blur-sm border border-white/20">
+        <div className="flex gap-2 lg:gap-3 bg-white/10 p-1.5 lg:p-2 rounded-xl lg:rounded-2xl backdrop-blur-sm border border-white/20">
           <TabButton
             active={activeProfileTab === 'personal'}
             onClick={() => setActiveProfileTab('personal')}
             icon={
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 lg:w-5 h-4 lg:h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             }
@@ -403,7 +449,7 @@ function ProfileSection({
             active={activeProfileTab === 'security'}
             onClick={() => setActiveProfileTab('security')}
             icon={
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 lg:w-5 h-4 lg:h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10.5V11.5C15.4,11.5 16,12.4 16,13V16C16,17 15.4,17.5 14.8,17.5H9.2C8.6,17.5 8,17 8,16V13C8,12.4 8.6,11.5 9.2,11.5V10.5C9.2,8.6 10.6,7 12,7Z"/>
               </svg>
             }
@@ -413,7 +459,7 @@ function ProfileSection({
       </div>
 
       {/* Profile Content */}
-      <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl p-8">
+      <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl lg:rounded-2xl shadow-2xl p-4 lg:p-8">
         {activeProfileTab === 'personal' ? (
           <PersonalInfoForm
             user={user}
@@ -438,13 +484,13 @@ function ProfileSection({
 /* ---- Small Components ---- */
 function StatCard({ title, value, icon, subtitle }) {
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 hover:bg-white/10 transition-all duration-300">
+      <div className="flex items-center justify-between mb-3 lg:mb-4">
         <div>{icon}</div>
-        <span className="text-3xl font-bold text-white">{value}</span>
+        <span className="text-2xl lg:text-3xl font-bold text-white">{value}</span>
       </div>
-      <h3 className="text-lg font-semibold text-white mb-1">{title}</h3>
-      <p className="text-gray-400 text-sm">{subtitle}</p>
+      <h3 className="text-base lg:text-lg font-semibold text-white mb-1">{title}</h3>
+      <p className="text-gray-400 text-xs lg:text-sm">{subtitle}</p>
     </div>
   );
 }
@@ -453,14 +499,14 @@ function TabButton({ active, onClick, icon, label }) {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+      className={`flex items-center gap-2 lg:gap-3 px-3 lg:px-6 py-2 lg:py-3 rounded-lg lg:rounded-xl font-semibold transition-all duration-200 text-sm lg:text-base ${
         active
           ? 'bg-red-600 text-white shadow-lg'
           : 'text-gray-300 hover:text-white hover:bg-white/5'
       }`}
     >
       {icon}
-      <span>{label}</span>
+      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 }
@@ -607,11 +653,11 @@ function RecipientHistoryTable({ bloodRequests }) {
 
 function PersonalInfoForm({ user, profileData, setProfileData, onSubmit, isUpdating }) {
   return (
-    <div className="space-y-6">
-      <h3 className="text-2xl font-bold">Personal Information</h3>
+    <div className="space-y-4 lg:space-y-6">
+      <h3 className="text-xl lg:text-2xl font-bold">Personal Information</h3>
       
-      <form onSubmit={onSubmit} className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
+      <form onSubmit={onSubmit} className="space-y-4 lg:space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           <FormField
             label="Full Name"
             type="text"
@@ -650,7 +696,7 @@ function PersonalInfoForm({ user, profileData, setProfileData, onSubmit, isUpdat
           <button
             type="submit"
             disabled={isUpdating}
-            className="bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-red-600 hover:bg-red-500 text-white px-6 lg:px-8 py-2.5 lg:py-3 rounded-lg lg:rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm lg:text-base"
           >
             {isUpdating ? 'Updating...' : 'Update Profile'}
           </button>
