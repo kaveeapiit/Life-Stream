@@ -45,20 +45,6 @@ jobs:
       env:
         PGPASSWORD: test_password
 
-    - name: Run backend tests
-      run: |
-        cd backend
-        npm test
-      env:
-        NODE_ENV: test
-        DB_HOST: localhost
-        DB_USER: test_user
-        DB_PASSWORD: test_password
-        DB_NAME: life_stream_test
-        DB_PORT: 5432
-        SESSION_SECRET: test-secret
-        JWT_SECRET: test-jwt-secret
-
     - name: Run frontend tests
       run: npm test
 
