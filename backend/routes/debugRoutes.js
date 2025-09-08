@@ -9,6 +9,7 @@ import {
   fixSequences,
   checkSequences,
 } from "../controllers/sequenceController.js";
+import pool from "../config/db.js";
 
 const router = express.Router();
 
@@ -81,6 +82,18 @@ router.get("/hospital-auth", (req, res) => {
     sessionExists: !!req.session,
     sessionId: req.sessionID,
   });
+});
+
+// Test endpoint to get user count for testing purposes
+router.get("/user-count", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT COUNT(*) as count FROM users");
+    const count = parseInt(result.rows[0].count);
+    res.json({ count });
+  } catch (error) {
+    console.error("Error getting user count:", error);
+    res.status(500).json({ error: "Failed to get user count", count: 0 });
+  }
 });
 
 export default router;
