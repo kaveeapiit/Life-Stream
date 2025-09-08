@@ -1,0 +1,110 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: life_stream_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd backend && npm ci
+
+    - name: Setup test database
+      run: |
+        PGPASSWORD=test_password psql -h localhost -U test_user -d life_stream_test -f complete-schema.sql
+      env:
+        PGPASSWORD: test_password
+
+    - name: Run backend tests
+      run: |
+        cd backend
+        npm test
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_USER: test_user
+        DB_PASSWORD: test_password
+        DB_NAME: life_stream_test
+        DB_PORT: 5432
+        SESSION_SECRET: test-secret
+        JWT_SECRET: test-jwt-secret
+
+    - name: Run frontend tests
+      run: npm test
+
+    - name: Build application
+      run: npm run build
+
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+
+    - name: Run E2E tests
+      run: npm run test:e2e
+      env:
+        NODE_ENV: test
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: |
+          playwright-report/
+          coverage/
+          backend/coverage/
+
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to Azure Staging
+      run: |
+        echo "Deploying to staging environment"
+        # Add your Azure deployment commands here
+
+  deploy-production:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to Azure Production
+      run: |
+        echo "Deploying to production environment"
+        # Add your Azure deployment commands here
