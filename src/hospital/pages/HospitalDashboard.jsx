@@ -83,22 +83,22 @@ export default function HospitalDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
       <HospitalSidebar />
 
-      <main className={`flex-1 ml-0 md:ml-64 p-8 md:p-12 space-y-10 overflow-x-hidden transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+      <main className={`flex-1 lg:ml-64 p-4 lg:p-8 xl:p-12 space-y-6 lg:space-y-10 overflow-x-hidden transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
         {/* Hero */}
         <section className="space-y-2 animate-fadeIn">
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
             Welcome to the <span className="text-red-400">Hospital Dashboard</span> <FaHospital className="inline text-red-400" />
           </h1>
-          <p className="text-gray-300 max-w-2xl">
+          <p className="text-gray-300 max-w-2xl text-sm lg:text-base">
             Manage donor & recipient approvals, track requests, and keep things moving smoothly.
           </p>
         </section>
 
         {/* Quick Stats */}
-        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+        <section className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Pending Donors" value={stats.pendingDonors} accent="from-red-500 to-red-700" />
           <StatCard label="Pending Recipients" value={stats.pendingRecipients} accent="from-amber-500 to-amber-700" />
           <StatCard label="Approved Today" value={stats.approvedToday} accent="from-green-500 to-green-700" />
@@ -110,9 +110,9 @@ export default function HospitalDashboard() {
         </section>
 
         {/* Actions */}
-        <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl shadow-2xl p-8 animate-fadeIn" style={{ animationDelay: '120ms' }}>
-          <h2 className="text-2xl font-semibold mb-4">Quick Actions</h2>
-          <div className="flex flex-wrap gap-4">
+        <section className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl shadow-2xl p-4 lg:p-8 animate-fadeIn" style={{ animationDelay: '120ms' }}>
+          <h2 className="text-xl lg:text-2xl font-semibold mb-4 lg:mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
             <DashButton to="/hospital/donor-approval" label="Review Donors" icon={<FaTint />} />
             <DashButton to="/hospital/recipient-approval" label="Review Recipients" icon={<FaFlask />} />
             <DashButton to="/hospital/available-donors" label="Available Donors" icon={<FaUsers />} />
@@ -140,10 +140,10 @@ export default function HospitalDashboard() {
 /* ---------- Small components ---------- */
 function StatCard({ label, value, accent }) {
   return (
-    <div className={`relative overflow-hidden rounded-xl p-6 bg-gradient-to-br ${accent} animate-fadeIn`}>
+    <div className={`relative overflow-hidden rounded-lg lg:rounded-xl p-4 lg:p-6 bg-gradient-to-br ${accent} animate-fadeIn`}>
       <div className="absolute inset-0 bg-black/20 mix-blend-overlay" />
-      <p className="text-sm uppercase tracking-wider text-white/80">{label}</p>
-      <h3 className="text-4xl font-bold mt-2">{value}</h3>
+      <p className="text-xs lg:text-sm uppercase tracking-wider text-white/80">{label}</p>
+      <h3 className="text-2xl lg:text-4xl font-bold mt-1 lg:mt-2">{value}</h3>
     </div>
   );
 }
@@ -152,10 +152,11 @@ function DashButton({ to, label, icon }) {
   return (
     <a
       href={to}
-      className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gray-800/60 border border-gray-700 text-sm font-medium 
-                 hover:bg-gray-700 hover:border-gray-600 transition animate-fadeIn"
+      className="flex flex-col items-center gap-2 lg:gap-3 px-3 lg:px-5 py-3 lg:py-4 rounded-lg bg-gray-800/60 border border-gray-700 text-xs lg:text-sm font-medium 
+                 hover:bg-gray-700 hover:border-gray-600 transition animate-fadeIn text-center"
     >
-      <span className="text-lg text-red-400">{icon}</span> {label}
+      <span className="text-lg lg:text-xl text-red-400">{icon}</span> 
+      <span className="text-gray-200 leading-tight">{label}</span>
     </a>
   );
 }
