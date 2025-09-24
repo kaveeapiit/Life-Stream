@@ -23,6 +23,26 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  font-size: 16px;
+}
+
+/* Responsive font scaling */
+@media screen and (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media screen and (min-width: 1536px) {
+  html {
+    font-size: 18px;
+  }
 }
 
 body {
@@ -31,6 +51,7 @@ body {
   min-height: 100vh;
   touch-action: manipulation;
   -webkit-tap-highlight-color: rgba(239, 68, 68, 0.3);
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Touch-friendly interactions */
@@ -42,9 +63,42 @@ body {
 img {
   max-width: 100%;
   height: auto;
+  display: block;
 }
 
-/* Improved focus states for accessibility */
+/* Responsive containers */
+.container-responsive {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media screen and (min-width: 640px) {
+  .container-responsive {
+    padding: 0 1.5rem;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .container-responsive {
+    padding: 0 2rem;
+  }
+}
+
+/* Responsive sidebar utilities */
+.sidebar-open-mobile {
+  overflow: hidden;
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar-open-mobile {
+    position: fixed;
+    width: 100%;
+  }
+}
+
+/* Enhanced focus states for accessibility */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
