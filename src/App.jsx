@@ -22,6 +22,7 @@ import AvailableDonors from './hospital/pages/AvailableDonors';
 import DonorRequestMatching from './hospital/pages/DonorRequestMatching';
 import LocationBasedDonorMatching from './hospital/pages/LocationBasedDonorMatching';
 import BloodInventory from './hospital/pages/BloodInventory';
+import BloodStock from './hospital/pages/BloodStock';
 import CollectDonation from './hospital/pages/CollectDonation';
 import BloodRequests from './hospital/pages/BloodRequests';
 import HospitalToHospitalRequests from './hospital/pages/HospitalToHospitalRequests';
@@ -117,6 +118,7 @@ function AppWrapper() {
         <Route path="/hospital/donor-matching" element={<DonorRequestMatching />} />
         <Route path="/hospital/location-matching" element={<LocationBasedDonorMatching />} />
         <Route path="/hospital/blood-inventory" element={<BloodInventory />} />
+        <Route path="/hospital/blood-stock" element={<BloodStock />} />
         <Route path="/hospital/collect-donation" element={<CollectDonation />} />
         <Route path="/hospital/blood-requests" element={<BloodRequests />} />
         <Route path="/hospital/hospital-requests" element={<HospitalToHospitalRequests />} />

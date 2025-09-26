@@ -117,6 +117,7 @@ export default function HospitalDashboard() {
             <DashButton to="/hospital/recipient-approval" label="Review Recipients" icon={<FaFlask />} />
             <DashButton to="/hospital/available-donors" label="Available Donors" icon={<FaUsers />} />
             <DashButton to="/hospital/donor-matching" label="Donor Matching" icon={<FaHeart />} />
+            <DashButton to="/hospital/blood-stock" label="Blood Stock" icon={<FaWarehouse />} />
             <DashButton to="/hospital/blood-inventory" label="Blood Inventory" icon={<FaWarehouse />} />
             <DashButton to="/hospital/blood-requests" label="Blood Requests" icon={<FaHeartbeat />} />
             <DashButton to="/hospital/reports" label="View Reports" icon={<FaChartBar />} />

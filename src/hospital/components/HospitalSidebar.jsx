@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Droplet, FlaskConical, Users, LogOut, Menu, Package, Plus, Heart, MapPin, Hospital } from 'lucide-react';
+import { LayoutDashboard, Droplet, FlaskConical, Users, LogOut, Menu, Package, Plus, Heart, MapPin, Hospital, Archive } from 'lucide-react';
 import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function HospitalSidebar() {
@@ -76,6 +76,7 @@ export default function HospitalSidebar() {
           <Item to="/hospital/dashboard" icon={LayoutDashboard} label="Dashboard" />
           <Item to="/hospital/donor-approval" icon={Droplet} label="Donor Management" />
           <Item to="/hospital/available-donors" icon={Users} label="Available Donors" />
+          <Item to="/hospital/blood-stock" icon={Archive} label="Blood Inventory" />
           <Item to="/hospital/donor-matching" icon={Heart} label="Donor Matching" />
           <Item to="/hospital/location-matching" icon={MapPin} label="Location Matching" />
           <Item to="/hospital/collect-donation" icon={Plus} label="Collect Donation" />

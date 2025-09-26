@@ -23,6 +23,7 @@ import bloodInventoryRoutes from "./routes/bloodInventoryRoutes.js";
 import hospitalBloodRequestRoutes from "./routes/hospitalBloodRequestRoutes.js";
 import donorRequestMatchingRoutes from "./routes/donorRequestMatchingRoutes.js";
 import hospitalToHospitalRoutes from "./routes/hospitalToHospitalRoutes.js";
+import bloodStockRoutes from "./routes/bloodStockRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import debugRoutes from "./routes/debugRoutes.js";
 
@@ -96,6 +97,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/donation", donationRoutes);
 app.use("/api/hospital", hospitalRoutes);
 app.use("/api/hospital", bloodInventoryRoutes);
+app.use("/api/hospital", bloodStockRoutes);
 app.use("/api/hospital", hospitalBloodRequestRoutes);
 app.use("/api/hospital", donorRequestMatchingRoutes);
 app.use("/api/hospital", hospitalToHospitalRoutes);
