@@ -11,7 +11,7 @@ import {
   FaPlus,
   FaMinus
 } from 'react-icons/fa';
-import API_BASE_URL from '../../config/api.js';
+import hospitalAPI from '../../config/hospitalAPI.js';
 
 export default function BloodStock() {
   const [bloodStock, setBloodStock] = useState([]);
@@ -31,15 +31,11 @@ export default function BloodStock() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/api/hospital/blood-stock`, {
+      const response = await hospitalAPI.request('/api/hospital/blood-stock', {
         method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
 
-      if (response.status === 401) {
+      if (!response) {
         setError('You need to log in to view blood stock');
         return;
       }
@@ -62,24 +58,20 @@ export default function BloodStock() {
   const fetchSummaryAndAlerts = async () => {
     try {
       const [summaryResponse, alertsResponse] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/hospital/blood-stock/summary`, {
+        hospitalAPI.request('/api/hospital/blood-stock/summary', {
           method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
         }),
-        fetch(`${API_BASE_URL}/api/hospital/blood-stock/alerts`, {
+        hospitalAPI.request('/api/hospital/blood-stock/alerts', {
           method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
         })
       ]);
 
-      if (summaryResponse.ok) {
+      if (summaryResponse && summaryResponse.ok) {
         const summaryData = await summaryResponse.json();
         setSummary(summaryData);
       }
 
-      if (alertsResponse.ok) {
+      if (alertsResponse && alertsResponse.ok) {
         const alertsData = await alertsResponse.json();
         setAlerts(alertsData);
       }
@@ -111,17 +103,13 @@ export default function BloodStock() {
       setSaving(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/api/hospital/blood-stock/${bloodType}`, {
+      const response = await hospitalAPI.request(`/api/hospital/blood-stock/${bloodType}`, {
         method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ stockCount: parseInt(newStock) }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response || !response.ok) {
+        throw new Error(`HTTP error! status: ${response?.status || 'Unknown'}`);
       }
 
       // Refresh data
