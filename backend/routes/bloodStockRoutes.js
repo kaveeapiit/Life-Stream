@@ -5,7 +5,7 @@ import {
   updateMultipleBloodStock,
   getBloodStockSummary,
   getLowStockAlerts,
-  getBloodTypeStock
+  getBloodTypeStock,
 } from "../controllers/bloodStockController.js";
 import hybridHospitalAuth from "../middleware/hybridHospitalAuth.js";
 

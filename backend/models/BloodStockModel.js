@@ -33,21 +33,21 @@ const BloodStockModel = {
   },
 
   // Initialize stock for a hospital (creates all blood types with 0 stock)
-  initializeHospitalStock: async (hospitalId, username = 'system') => {
+  initializeHospitalStock: async (hospitalId, username = "system") => {
     try {
-      const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-      
-      const values = bloodTypes.map(bloodType => 
-        `(${hospitalId}, '${bloodType}', 0, '${username}')`
-      ).join(', ');
-      
+      const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+      const values = bloodTypes
+        .map((bloodType) => `(${hospitalId}, '${bloodType}', 0, '${username}')`)
+        .join(", ");
+
       const query = `
         INSERT INTO blood_stock (hospital_id, blood_type, stock_count, updated_by)
         VALUES ${values}
         ON CONFLICT (hospital_id, blood_type) DO NOTHING
         RETURNING *
       `;
-      
+
       const result = await pool.query(query);
       return result.rows;
     } catch (error) {
@@ -80,12 +80,12 @@ const BloodStockModel = {
   // Update multiple blood types at once
   updateMultipleBloodStock: async (hospitalId, stockUpdates, username) => {
     const client = await pool.connect();
-    
+
     try {
-      await client.query('BEGIN');
-      
+      await client.query("BEGIN");
+
       const updatedStocks = [];
-      
+
       for (const { bloodType, stockCount } of stockUpdates) {
         const result = await client.query(
           `INSERT INTO blood_stock (hospital_id, blood_type, stock_count, updated_by)
@@ -100,11 +100,11 @@ const BloodStockModel = {
         );
         updatedStocks.push(result.rows[0]);
       }
-      
-      await client.query('COMMIT');
+
+      await client.query("COMMIT");
       return updatedStocks;
     } catch (error) {
-      await client.query('ROLLBACK');
+      await client.query("ROLLBACK");
       console.error("Error updating multiple blood stocks:", error);
       throw error;
     } finally {
@@ -166,7 +166,7 @@ const BloodStockModel = {
       console.error("Error fetching blood type stock:", error);
       throw error;
     }
-  }
+  },
 };
 
 export default BloodStockModel;
