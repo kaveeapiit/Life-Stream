@@ -3,7 +3,7 @@ import pool from "../config/db.js";
 import bcrypt from "bcrypt";
 
 const TABLE = "users";
-const ALLOW = ["email", "password", "name", "blood_type"]; // Only these can be set/updated
+const ALLOW = ["email", "password", "name", "blood_type", "phone"]; // Only these can be set/updated
 
 const buildSet = (obj, start = 1) => {
   const keys = Object.keys(obj);
@@ -16,7 +16,7 @@ const buildSet = (obj, start = 1) => {
 // 1. Get user by email (for login, profile, etc)
 export async function getUserByEmail(email) {
   const { rows } = await pool.query(
-    `SELECT id, email, name, blood_type AS blood_group, created_at FROM ${TABLE} WHERE email = $1`,
+    `SELECT id, email, name, blood_type AS blood_group, phone, created_at FROM ${TABLE} WHERE email = $1`,
     [email]
   );
   return rows[0] || null;
@@ -35,6 +35,24 @@ export async function updatePassword(email, newPassword) {
   const hashed = await bcrypt.hash(newPassword, 10);
   await pool.query(`UPDATE ${TABLE} SET password = $1 WHERE email = $2`, [
     hashed,
+    email,
+  ]);
+}
+
+// 3.5. Update contact info (email and phone) by current email
+export async function updateContactInfo(currentEmail, newEmail, phone) {
+  // If email is being changed, update it; otherwise keep the current one
+  const emailToUpdate = newEmail || currentEmail;
+  await pool.query(
+    `UPDATE ${TABLE} SET email = $1, phone = $2 WHERE email = $3`,
+    [emailToUpdate, phone, currentEmail]
+  );
+}
+
+// 3.6. Update phone number by email
+export async function updatePhoneNumber(email, phone) {
+  await pool.query(`UPDATE ${TABLE} SET phone = $1 WHERE email = $2`, [
+    phone,
     email,
   ]);
 }

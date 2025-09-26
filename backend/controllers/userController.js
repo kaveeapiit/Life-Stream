@@ -2,6 +2,8 @@ import {
   getUserByEmail,
   updateUserProfile,
   updatePassword,
+  updateContactInfo,
+  updatePhoneNumber,
 } from '../models/UserModel.js';
 
 // GET /api/user/profile/:email
@@ -34,5 +36,27 @@ export const changePassword = async (req, res) => {
     res.json({ message: 'Password changed successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to change password' });
+  }
+};
+
+// PUT /api/user/profile/contact
+export const updateContact = async (req, res) => {
+  const { currentEmail, newEmail, phone } = req.body;
+  try {
+    await updateContactInfo(currentEmail, newEmail, phone);
+    res.json({ message: 'Contact information updated successfully', success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update contact information' });
+  }
+};
+
+// PUT /api/user/profile/phone
+export const updatePhone = async (req, res) => {
+  const { email, phone } = req.body;
+  try {
+    await updatePhoneNumber(email, phone);
+    res.json({ message: 'Phone number updated successfully', success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update phone number' });
   }
 };

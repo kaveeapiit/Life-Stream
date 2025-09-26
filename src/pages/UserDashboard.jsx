@@ -13,6 +13,8 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({ name: '', bloodType: '' });
   const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [contactData, setContactData] = useState({ email: '', phone: '' });
+  const [phoneOtpData, setPhoneOtpData] = useState({ showOtpForm: false, otp: '', enteredOtp: '' });
   const [isUpdating, setIsUpdating] = useState(false);
   const [message, setMessage] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false); // Add mobile sidebar state
@@ -39,6 +41,7 @@ export default function UserDashboard() {
     .then(([profileData, donationsData, requestsData]) => {
       setUser(profileData);
       setProfileData({ name: profileData.name || '', bloodType: profileData.blood_type || '' });
+      setContactData({ email: profileData.email || '', phone: profileData.phone || '' });
       setDonations(Array.isArray(donationsData) ? donationsData : []);
       setBloodRequests(Array.isArray(requestsData) ? requestsData : []);
     })
@@ -99,6 +102,76 @@ export default function UserDashboard() {
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
       setMessage('Failed to update password');
+    } finally {
+      setIsUpdating(false);
+      setTimeout(() => setMessage(''), 3000);
+    }
+  };
+
+  const handleEmailUpdate = async (e) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/user/profile/contact`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          currentEmail: localStorage.getItem('email'), 
+          newEmail: contactData.email,
+          phone: user?.phone || ''
+        }),
+      });
+      const result = await res.json();
+      setMessage(result.message || 'Email updated successfully!');
+      
+      if (result.success) {
+        setUser(u => ({ ...u, email: contactData.email }));
+        localStorage.setItem('email', contactData.email);
+      }
+    } catch (err) {
+      setMessage('Failed to update email');
+    } finally {
+      setIsUpdating(false);
+      setTimeout(() => setMessage(''), 3000);
+    }
+  };
+
+  const handlePhoneUpdate = async (e) => {
+    e.preventDefault();
+    // Generate a random 4-digit OTP
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    setPhoneOtpData({ showOtpForm: true, otp, enteredOtp: '' });
+    setMessage(`OTP sent! Please enter: ${otp}`);
+    setTimeout(() => setMessage(''), 5000);
+  };
+
+  const handleOtpVerification = async (e) => {
+    e.preventDefault();
+    if (phoneOtpData.enteredOtp !== phoneOtpData.otp) {
+      setMessage('Invalid OTP. Please try again.');
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/user/profile/phone`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: localStorage.getItem('email'), 
+          phone: contactData.phone
+        }),
+      });
+      const result = await res.json();
+      setMessage(result.message || 'Phone number updated successfully!');
+      
+      if (result.success) {
+        setUser(u => ({ ...u, phone: contactData.phone }));
+        setPhoneOtpData({ showOtpForm: false, otp: '', enteredOtp: '' });
+      }
+    } catch (err) {
+      setMessage('Failed to update phone number');
     } finally {
       setIsUpdating(false);
       setTimeout(() => setMessage(''), 3000);
@@ -189,8 +262,15 @@ export default function UserDashboard() {
               setProfileData={setProfileData}
               passwordData={passwordData}
               setPasswordData={setPasswordData}
+              contactData={contactData}
+              setContactData={setContactData}
+              phoneOtpData={phoneOtpData}
+              setPhoneOtpData={setPhoneOtpData}
               onProfileUpdate={handleProfileUpdate}
               onPasswordUpdate={handlePasswordUpdate}
+              onEmailUpdate={handleEmailUpdate}
+              onPhoneUpdate={handlePhoneUpdate}
+              onOtpVerification={handleOtpVerification}
               isUpdating={isUpdating}
             />
           )}
@@ -416,8 +496,15 @@ function ProfileSection({
   setProfileData, 
   passwordData, 
   setPasswordData, 
+  contactData,
+  setContactData,
+  phoneOtpData,
+  setPhoneOtpData,
   onProfileUpdate, 
-  onPasswordUpdate, 
+  onPasswordUpdate,
+  onEmailUpdate,
+  onPhoneUpdate,
+  onOtpVerification,
   isUpdating 
 }) {
   const [activeProfileTab, setActiveProfileTab] = useState('personal');
@@ -446,6 +533,16 @@ function ProfileSection({
             label="Personal Info"
           />
           <TabButton
+            active={activeProfileTab === 'contact'}
+            onClick={() => setActiveProfileTab('contact')}
+            icon={
+              <svg className="w-4 lg:w-5 h-4 lg:h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4L20,4Z M20,18H4V8L12,13L20,8V18Z M20,6L12,11L4,6V6H20V6Z"/>
+              </svg>
+            }
+            label="Contact Info"
+          />
+          <TabButton
             active={activeProfileTab === 'security'}
             onClick={() => setActiveProfileTab('security')}
             icon={
@@ -466,6 +563,18 @@ function ProfileSection({
             profileData={profileData}
             setProfileData={setProfileData}
             onSubmit={onProfileUpdate}
+            isUpdating={isUpdating}
+          />
+        ) : activeProfileTab === 'contact' ? (
+          <ContactInfoForm
+            user={user}
+            contactData={contactData}
+            setContactData={setContactData}
+            phoneOtpData={phoneOtpData}
+            setPhoneOtpData={setPhoneOtpData}
+            onEmailUpdate={onEmailUpdate}
+            onPhoneUpdate={onPhoneUpdate}
+            onOtpVerification={onOtpVerification}
             isUpdating={isUpdating}
           />
         ) : (
@@ -742,7 +851,114 @@ function SecurityForm({ passwordData, setPasswordData, onSubmit, isUpdating }) {
   );
 }
 
-function FormField({ label, type = 'text', value, onChange, placeholder, disabled = false, options = [] }) {
+function ContactInfoForm({ user, contactData, setContactData, phoneOtpData, setPhoneOtpData, onEmailUpdate, onPhoneUpdate, onOtpVerification, isUpdating }) {
+  return (
+    <div className="space-y-4 lg:space-y-6">
+      <h3 className="text-xl lg:text-2xl font-bold">Contact Information</h3>
+      
+      <div className="space-y-6">
+        {/* Email Section */}
+        <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+          <h4 className="text-lg font-semibold mb-4">Email Address</h4>
+          <form onSubmit={onEmailUpdate} className="space-y-4">
+            <FormField
+              label="Email Address"
+              type="email"
+              value={contactData.email}
+              onChange={(e) => setContactData(prev => ({ ...prev, email: e.target.value }))}
+              placeholder="Enter your email address"
+            />
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={isUpdating}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                {isUpdating ? 'Updating...' : 'Update Email'}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Phone Section */}
+        <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+          <h4 className="text-lg font-semibold mb-4">Phone Number</h4>
+          
+          {!phoneOtpData.showOtpForm ? (
+            <form onSubmit={onPhoneUpdate} className="space-y-4">
+              <FormField
+                label="Phone Number"
+                type="tel"
+                value={contactData.phone}
+                onChange={(e) => setContactData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="Enter your phone number"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="bg-green-600 hover:bg-green-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  Send OTP
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={onOtpVerification} className="space-y-4">
+              <div className="mb-4">
+                <p className="text-sm text-gray-300 mb-2">Phone Number: {contactData.phone}</p>
+                <p className="text-sm text-yellow-300">Enter the OTP to verify your phone number</p>
+              </div>
+              
+              <FormField
+                label="Enter OTP"
+                type="text"
+                value={phoneOtpData.enteredOtp}
+                onChange={(e) => setPhoneOtpData(prev => ({ ...prev, enteredOtp: e.target.value }))}
+                placeholder="Enter 4-digit OTP"
+                maxLength="4"
+              />
+              
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setPhoneOtpData({ showOtpForm: false, otp: '', enteredOtp: '' })}
+                  className="bg-gray-600 hover:bg-gray-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="bg-green-600 hover:bg-green-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  {isUpdating ? 'Verifying...' : 'Verify OTP'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+
+        {/* Current Contact Info Display */}
+        <div className="p-6 bg-white/5 rounded-xl border border-white/10">
+          <h4 className="text-lg font-semibold mb-4">Current Contact Information</h4>
+          <div className="space-y-2">
+            <p className="text-sm">
+              <span className="font-semibold text-gray-300">Email:</span>{' '}
+              <span className="text-gray-200">{user?.email || 'Not set'}</span>
+            </p>
+            <p className="text-sm">
+              <span className="font-semibold text-gray-300">Phone:</span>{' '}
+              <span className="text-gray-200">{user?.phone || 'Not set'}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FormField({ label, type = 'text', value, onChange, placeholder, disabled = false, options = [], maxLength }) {
   if (type === 'select') {
     return (
       <div>
@@ -772,6 +988,7 @@ function FormField({ label, type = 'text', value, onChange, placeholder, disable
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
+        maxLength={maxLength}
         className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 backdrop-blur-xl disabled:opacity-50 disabled:cursor-not-allowed"
       />
     </div>
